@@ -16,6 +16,8 @@ public class Car implements CarEvents {
 	private int wheelRadius;
 	private Map<eventType, ArrayList<EventHandler<Event>>> carHashMap;
 
+	///test
+	
 	public Car(int id, int model_id, CarLog log) {
 		this.id = id;
 		this.model_id = model_id;
