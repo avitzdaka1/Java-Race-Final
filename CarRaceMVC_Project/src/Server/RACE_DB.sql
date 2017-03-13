@@ -18,3 +18,4 @@ create table Car (name varchar(10) not null unique, make varchar(10) not null, s
 create table GamblerRaceResult(raceNumber integer not null, gamblerId integer not null, revenue integer, constraint fkRaceNumber foreign key (raceNumber) referencees Race(number), constraint fkGamblerId foreign key (gamblerId) references Gambler(id));
 create table GamblerCarRace(gamblerId integer not null, raceNumber integer not null, carName varchar(10) not null, bet integer, position integer, constraint fkGamblerId foreign key (gamblerId) referencees Gambler(id), constraint fkRaceNumber foreign key (raceNumber) referencees Race(number), constraint fkCarName foreign key (carName) references Car(name));
 create table CarRaceResult(raceNumber integer not null, carName varchar(10) not null, position integer not null, constraint fkRaceNumber foreign key (raceNumber) references Race(number), constraint fkCarName foreign key (carName) references Car(name));
+/* */

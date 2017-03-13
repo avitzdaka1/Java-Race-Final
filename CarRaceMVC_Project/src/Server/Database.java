@@ -170,7 +170,7 @@ public class Database {
 				"WHERE CarRaceResult.raceNumber = " + raceNumber + " " +
 				"ORDER BY CarRaceResult.position ASC";
 	ResultSet resultSet = executeQuery(query);
-	// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
+	// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();//
 	try {
 		while (resultSet.next()) {
 			//	CarRaceResult result = new CarRaceResult(resultSet.getInt(1), resultSet.getString(2));
