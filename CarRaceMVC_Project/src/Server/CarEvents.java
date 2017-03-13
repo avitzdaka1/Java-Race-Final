@@ -1,5 +1,6 @@
+package Server;
 public interface CarEvents {
 	enum eventType {
-		RADIUS, COLOR, SPEED
+		RADIUS, COLOR, SPEED, Connect
 	}
 }

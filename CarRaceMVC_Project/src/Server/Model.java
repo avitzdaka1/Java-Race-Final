@@ -1,3 +1,6 @@
+package Server;
+import Car;
+import CarLog;
 import javafx.scene.paint.Color;
 
 public class Model {

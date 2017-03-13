@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+
+import Server.Model;
 import javafx.application.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,9 +38,11 @@ public class CarRaceMVC extends Application {
 				}
 			}
 		});
+		
 		controllerList = new ArrayList<Controller>();
 		viewList = new ArrayList<View>();
 		modelList = new ArrayList<Model>();
+		
 		btnNewWindow.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
