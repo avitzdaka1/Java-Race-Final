@@ -99,11 +99,11 @@ public class Database {
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
 	// in a his tableview.
-	public void getAllRaces() {
+	public void getFinishedRaces() {
 		String query = "SELECT Race.number, Race.raceDate, Race.totalBets " + 
 					"FROM Race " +
 					"WHERE Race.state = 5" +	//	state finished
-					"ORDER BY Race.number DSC";
+					"ORDER BY Race.number ASC";
 		ResultSet resultSet = executeQuery(query);
 		// ArrayList<RaceResult> raceResults = new ArrayList<>();
 		try {
@@ -138,14 +138,18 @@ public class Database {
 		}
 	}
 
-	// Returns car-race results (cars and their final position in race), given its number.
+	// Returns race results (cars names and positions, gamblers and their bets+revenues), given the race number.
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
 	// in a his tableview.
-	public void getCarRaceResult(int raceNumber) {
-		String query = "SELECT CarRaceResult.position, CarRaceResult.carName " + 
-				"FROM CarRaceResult " +
+	public void getFinishedRaceResults(int raceNumber) {
+		String query = "SELECT CarRaceResult.position, CarRaceResult.carName, GamblerCarRace.gamblerId, GamblerCarRace.bet, GamblerRaceResult.revenue " + 
+				"FROM CarRaceResult, GamblerCarRace, GamblerRaceResult, Race " +
 				"WHERE CarRaceResult.raceNumber = " + raceNumber + " " +
+				"AND CarRaceResult.raceNumber = Race.number " +
+				"AND Race.number = GamblerCarRace.raceNumber " +
+				"AND GamblerRaceResult.raceNumber = Race.number " +
+				"AND Race.state = 5 " +
 				"ORDER BY CarRaceResult.position ASC";
 	ResultSet resultSet = executeQuery(query);
 	// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
@@ -159,18 +163,21 @@ public class Database {
 			sqlException.printStackTrace();
 		}
 	}
-
-	// Returns gambler-race results (cars and their final position in race), given its number.
+	
+	
+	// Returns gambler race results (all races, bets, cars bet on, revenues), given the gambler id number.
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
 	// in a his tableview.
-	public void getCarRaceResult(int raceNumber) {
-		String query = "SELECT CarRaceResult.position, CarRaceResult.carName " + 
-				"FROM CarRaceResult " +
-				"WHERE CarRaceResult.raceNumber = " + raceNumber + " " +
-				"ORDER BY CarRaceResult.position ASC";
+	public void getGamblerHistory(int gamblerId) {
+		String query = "SELECT GamblerCarRace.raceNumber, Gambler.name, GamblerCarRace.carName, GamblerCarRace.bet, GamblerRaceResult.revenue " + 
+				"FROM GamblerCarRace, Gambler, GamblerRaceResult " +
+				"WHERE Gambler.id = " + gamblerId + " " +
+				"AND Gambler.id = GamblerCarRace.gamblerId " +
+				"AND Gambler.id = GamblerRaceResult.gamblerId " +
+				"ORDER BY GamblerCarRace.raceNumber ASC";
 	ResultSet resultSet = executeQuery(query);
-	// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();//
+	// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
 	try {
 		while (resultSet.next()) {
 			//	CarRaceResult result = new CarRaceResult(resultSet.getInt(1), resultSet.getString(2));
@@ -182,12 +189,28 @@ public class Database {
 		}
 	}
 	
-	// Returns gambler details, given his id number.
-	// TODO: Create some sort of a race result to return to the function caller
-	// and to display
-	// in a his tableview.
-	public void getGambler(int gamblerId) {
-
-	}
+		// Returns live race results (cars names, gamblers and their bets), given the race number.
+		// TODO: Create some sort of a race result to return to the function caller
+		// and to display
+		// in a his tableview.
+		public void getLiveRaceResults(int raceNumber) {
+			String query = "SELECT Race.number, Race.state, GamblerCarRace.gamblerId, CarRaceResult.carName,  GamblerCarRace.bet " + 
+					"FROM CarRaceResult, GamblerCarRace, Race " +
+					"WHERE CarRaceResult.raceNumber = " + raceNumber + " " +
+					"AND CarRaceResult.raceNumber = Race.number " +
+					"AND Race.number = GamblerCarRace.raceNumber " +
+					"ORDER BY Race.number ASC";
+		ResultSet resultSet = executeQuery(query);
+		// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
+		try {
+			while (resultSet.next()) {
+				//	CarRaceResult result = new CarRaceResult(resultSet.getInt(1), resultSet.getString(2));
+				//	carRaceResults.add(result);
+			}
+			//	return carRaceResults;
+			} catch (SQLException sqlException) {
+				sqlException.printStackTrace();
+			}
+		}
 
 }
