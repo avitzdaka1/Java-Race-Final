@@ -138,14 +138,50 @@ public class Database {
 		}
 	}
 
-	// Returns race details, given its number.
+	// Returns car-race results (cars and their final position in race), given its number.
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
 	// in a his tableview.
-	public void getRace(int raceNumber) {
-
+	public void getCarRaceResult(int raceNumber) {
+		String query = "SELECT CarRaceResult.position, CarRaceResult.carName " + 
+				"FROM CarRaceResult " +
+				"WHERE CarRaceResult.raceNumber = " + raceNumber + " " +
+				"ORDER BY CarRaceResult.position ASC";
+	ResultSet resultSet = executeQuery(query);
+	// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
+	try {
+		while (resultSet.next()) {
+			//	CarRaceResult result = new CarRaceResult(resultSet.getInt(1), resultSet.getString(2));
+			//	carRaceResults.add(result);
+		}
+		//	return carRaceResults;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
 	}
 
+	// Returns gambler-race results (cars and their final position in race), given its number.
+	// TODO: Create some sort of a race result to return to the function caller
+	// and to display
+	// in a his tableview.
+	public void getCarRaceResult(int raceNumber) {
+		String query = "SELECT CarRaceResult.position, CarRaceResult.carName " + 
+				"FROM CarRaceResult " +
+				"WHERE CarRaceResult.raceNumber = " + raceNumber + " " +
+				"ORDER BY CarRaceResult.position ASC";
+	ResultSet resultSet = executeQuery(query);
+	// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
+	try {
+		while (resultSet.next()) {
+			//	CarRaceResult result = new CarRaceResult(resultSet.getInt(1), resultSet.getString(2));
+			//	carRaceResults.add(result);
+		}
+		//	return carRaceResults;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+	}
+	
 	// Returns gambler details, given his id number.
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
