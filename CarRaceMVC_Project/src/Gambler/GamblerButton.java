@@ -9,7 +9,9 @@ import javafx.scene.paint.Color;
 
 public class GamblerButton extends ImageView {
 
-	public enum ButtonId { goToLogin, Login, goToRegistration, Registration, Back, Cancel, Exit };
+	public enum ButtonId {
+		goToLogin, Login, goToRegistration, Registration, Bet, Back, Cancel, Exit
+	};
 
 	private DropShadow shadowEffect = new DropShadow();
 	public ButtonId btnId;

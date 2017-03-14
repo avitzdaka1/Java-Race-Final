@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
-import Entities.Message;
+import Entities.MessageGambler;
 
 public class HandlerRace implements Runnable, MainServerListener{
 
@@ -14,11 +14,13 @@ public class HandlerRace implements Runnable, MainServerListener{
 	private boolean gamblerConnected;
 	private ObjectInputStream inputStream;
 	private ObjectOutputStream outputStream;
+	private int id;
 	private CarRaceServer mainServer;
 	
-	public HandlerRace(Socket clientSocket, CarRaceServer mainServer){
+	public HandlerRace(Socket clientSocket, CarRaceServer mainServer, int id){
 		this.clientSocket = clientSocket;
 		this.mainServer = mainServer;
+		this.id = id;
 	}
 
 	@Override
@@ -28,7 +30,7 @@ public class HandlerRace implements Runnable, MainServerListener{
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 
 			while (gamblerConnected) {
-				Message inputMessage = (Message) inputStream.readObject();
+				MessageGambler inputMessage = (MessageGambler) inputStream.readObject();
 				handleMessage(outputStream, inputMessage);
 			}
 		} 		
@@ -50,7 +52,7 @@ public class HandlerRace implements Runnable, MainServerListener{
 		}		
 	}
 	
-	private void handleMessage(ObjectOutputStream outputStream, Message inputMessage) {
+	private void handleMessage(ObjectOutputStream outputStream, MessageGambler inputMessage) {
 		// TODO Auto-generated method stub		
 	}
 	

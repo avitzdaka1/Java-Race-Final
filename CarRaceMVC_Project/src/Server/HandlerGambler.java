@@ -13,11 +13,13 @@ class HandlerGambler implements Runnable, MainServerListener {
 	private boolean gamblerConnected;
 	private ObjectInputStream inputStream;
 	private ObjectOutputStream outputStream;
+	private int id;
 	private CarRaceServer mainServer;
 	
-	public HandlerGambler(Socket clientSocket, CarRaceServer mainServer){
+	public HandlerGambler(Socket clientSocket, CarRaceServer mainServer, int id){
 		this.clientSocket = clientSocket;
 		this.mainServer = mainServer;
+		this.id = id;
 	}
 	
 	@Override
@@ -27,7 +29,7 @@ class HandlerGambler implements Runnable, MainServerListener {
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 
 			while (gamblerConnected) {
-				Message inputMessage = (Message) inputStream.readObject();
+				MessageGambler inputMessage = (MessageGambler) inputStream.readObject();
 				handleMessage(outputStream, inputMessage);
 			}
 		} 		
@@ -49,7 +51,7 @@ class HandlerGambler implements Runnable, MainServerListener {
 		}
 	}
 
-	private void handleMessage(ObjectOutputStream outputStream, Message inputMessage) {
+	private void handleMessage(ObjectOutputStream outputStream, MessageGambler inputMessage) {
 		// TODO Auto-generated method stub
 		
 	}

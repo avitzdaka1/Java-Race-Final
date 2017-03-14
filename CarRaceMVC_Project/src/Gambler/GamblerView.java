@@ -52,6 +52,9 @@ public class GamblerView {
 			switch (btnClicked.getButtonId()) {
 			case Login:
 				
+				
+				
+				
 				break;
 
 			case Cancel:

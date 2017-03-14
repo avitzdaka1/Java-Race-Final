@@ -53,18 +53,6 @@ public class GamblerLogin extends StackPane{
 		gridsContainer.setSpacing(panelHeight*0.02);
 		gridsContainer.setPadding(new Insets(5,5,5,5));
 		gridsContainer.getChildren().addAll(txtName, txtPassword);
-	
-		loginBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent e) {
-
-			}
-		});
-		
-		regiserBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent e) {
-
-			}
-		});
 
 		VBox buttonsPanel = new VBox();
 		buttonsPanel.getChildren().addAll(loginBtn,regiserBtn);

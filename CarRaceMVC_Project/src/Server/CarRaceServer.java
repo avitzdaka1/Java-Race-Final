@@ -12,7 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-
+import Entities.MessageGambler;
+import Gambler.GamblerClient;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -37,7 +38,10 @@ public class CarRaceServer extends Application {
 	public static int numOfConnections = 0;
 	private ArrayList<Model> modelList;
 	private ArrayList<MainServerListener> ClientHandlersArray;
-	private int raceCounter = 0; // = clientNumber
+	
+	private int raceCounter = 0; // = race Number
+	private int gamblerCounter = 0; // = gambler Number
+	
 	private CarLog carLog;
 
 	private ServerSocket serverSocket;
@@ -82,8 +86,6 @@ public class CarRaceServer extends Application {
 		Scene scene = new Scene(pane, 900, buttonsBoxVB.getMinHeight());
 		scene.getStylesheets().add("Server/serverStyles.css");
 		
-		
-
 		//	Creates a new gambler window.
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -113,7 +115,9 @@ public class CarRaceServer extends Application {
 			@Override
 			public void handle(WindowEvent event) {
 				try {
-					 
+					//	Notify all handlers to close their windows amd disconnect clients.
+					 for(MainServerListener listener : ClientHandlersArray )
+						 listener.serverDisconnection();					 
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally{
@@ -128,20 +132,15 @@ public class CarRaceServer extends Application {
 		modelList = new ArrayList<Model>();
 		ClientHandlersArray = new ArrayList<MainServerListener>();
 		
-		listenNewRace();
 		listenNewGambler();
+		listenNewRace();		
 	}
 
 	// Open new thread for new client.
 	public void startNewGambler() {
-		new Thread(() -> {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-		//			new CarRaceClient(new Stage(), ++raceCounter);
-				}
-			});
-		}).start();
+		GamblerClient gamblerClient = new GamblerClient();
+		Thread thread = new Thread(gamblerClient);
+		thread.start();
 	}
 
 	public void listenNewRace() {
@@ -152,7 +151,7 @@ public class CarRaceServer extends Application {
 				while (true) {
 					clientSocket = serverSocket.accept();
 					clientAddress = clientSocket.getInetAddress();
-					HandleAClient(clientSocket);
+					ClientHandlersArray.add(new HandlerRace(clientSocket, this, 7));
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
@@ -168,7 +167,17 @@ public class CarRaceServer extends Application {
 				while (true) {
 					clientSocket = serverSocket.accept();
 					clientAddress = clientSocket.getInetAddress();
-					ClientHandlersArray.add(new HandlerGambler(clientSocket, this));
+					
+					Platform.runLater(()-> {
+						//	TODO Update Server Log
+						
+					});
+					
+					gamblerCounter++;
+					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, gamblerCounter);
+					ClientHandlersArray.add(handlerGambler);
+					Thread thread = new Thread(handlerGambler);
+					thread.start();
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
@@ -177,8 +186,12 @@ public class CarRaceServer extends Application {
 	}
 		
 		
+	
+	
+	
+	
 	// Client Handler
-	public void HandleAClient(Socket clientSocket) {
+	/*public void HandleAClient(Socket clientSocket) {
 
 		new Thread(() -> {
 			try {
@@ -189,7 +202,7 @@ public class CarRaceServer extends Application {
 					CarEvents.eventType event = (CarEvents.eventType) inputStreamFromClient.readObject();
 					Object obj = inputStreamFromClient.readObject();
 					
-					runFunctionOnServer(outputStreamToClient, event, obj);
+				//	runFunctionOnServer(outputStreamToClient, event, obj);
 					//if (event == CarEvents.eventType.Disconnect) {
 					//	break;
 					//}
@@ -204,11 +217,11 @@ public class CarRaceServer extends Application {
 				e.printStackTrace();
 			}
 		}).start();
-	}
+	}*/
 
 	
-	public void runFunctionOnServer(ObjectOutputStream outputStreamToClient, CarEvents.eventType serverCommand, Object log) throws IOException {
-		switch (serverCommand) {
+	public synchronized void runFunctionOnServer(MessageGambler message) throws IOException {
+		switch (1) {
 
 		/*case Connect:
 			modelList.add(new Model(++raceCounter));
