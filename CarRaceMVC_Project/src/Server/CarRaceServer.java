@@ -36,6 +36,7 @@ public class CarRaceServer extends Application {
 
 	public static int numOfConnections = 0;
 	private ArrayList<Model> modelList;
+	private ArrayList<MainServerListener> ClientHandlersArray;
 	private int raceCounter = 0; // = clientNumber
 	private CarLog carLog;
 
@@ -80,9 +81,8 @@ public class CarRaceServer extends Application {
 
 		Scene scene = new Scene(pane, 900, buttonsBoxVB.getMinHeight());
 		scene.getStylesheets().add("Server/serverStyles.css");
-		//primaryStage.getIcons().add(new Image(CarRaceServer.class.getResource("Server/resources/icon2.png").toExternalForm(),250,250,true,true));
 		
-		modelList = new ArrayList<Model>();
+		
 
 		//	Creates a new gambler window.
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
@@ -113,16 +113,23 @@ public class CarRaceServer extends Application {
 			@Override
 			public void handle(WindowEvent event) {
 				try {
-					Platform.exit();
-					System.exit(0); ///
+					 
 				} catch (Exception e) {
 					e.printStackTrace();
+				} finally{
+					Platform.exit();
+					System.exit(0);
 				}
 			}
 		});
 
 		carLog.printMsg("Server was started at " + dateFormat.format(date));
-		listenNewConnections();
+		
+		modelList = new ArrayList<Model>();
+		ClientHandlersArray = new ArrayList<MainServerListener>();
+		
+		listenNewRace();
+		listenNewGambler();
 	}
 
 	// Open new thread for new client.
@@ -137,7 +144,7 @@ public class CarRaceServer extends Application {
 		}).start();
 	}
 
-	public void listenNewConnections() {
+	public void listenNewRace() {
 
 		new Thread(() -> {
 			try {
@@ -152,7 +159,24 @@ public class CarRaceServer extends Application {
 			}
 		}).start();
 	}
+	
+	public void listenNewGambler() {
 
+		new Thread(() -> {
+			try {
+				serverSocket = new ServerSocket(8889);	//	TODO: Create final for port number.
+				while (true) {
+					clientSocket = serverSocket.accept();
+					clientAddress = clientSocket.getInetAddress();
+					ClientHandlersArray.add(new HandlerGambler(clientSocket, this));
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}).start();
+	}
+		
+		
 	// Client Handler
 	public void HandleAClient(Socket clientSocket) {
 
@@ -164,6 +188,7 @@ public class CarRaceServer extends Application {
 				while (true) {
 					CarEvents.eventType event = (CarEvents.eventType) inputStreamFromClient.readObject();
 					Object obj = inputStreamFromClient.readObject();
+					
 					runFunctionOnServer(outputStreamToClient, event, obj);
 					//if (event == CarEvents.eventType.Disconnect) {
 					//	break;
