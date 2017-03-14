@@ -71,7 +71,7 @@ public class CarRaceServer extends Application {
 		ScrollPane srcPane = new ScrollPane();
 		srcPane.setFitToHeight(true);
 		srcPane.setFitToWidth(true);
-		srcPane.setContent(taLog);
+		srcPane.setContent(carLog);
 		
 		buttonsBoxVB.getChildren().addAll( btnNewGambler, btnEditUsers, btnHistory, 
 				btnCurrentState, btnStatistics, btnClearLog);
@@ -164,9 +164,9 @@ public class CarRaceServer extends Application {
 					CarEvents.eventType event = (CarEvents.eventType) inputStreamFromClient.readObject();
 					Object obj = inputStreamFromClient.readObject();
 					runFunctionOnServer(outputStreamToClient, event, obj);
-					if (event == CarEvents.eventType.Disconnect) {
-						break;
-					}
+					//if (event == CarEvents.eventType.Disconnect) {
+					//	break;
+					//}
 				}
 			} catch (SocketException ex) {
 				try {
@@ -184,7 +184,7 @@ public class CarRaceServer extends Application {
 	public void runFunctionOnServer(ObjectOutputStream outputStreamToClient, CarEvents.eventType serverCommand, Object log) throws IOException {
 		switch (serverCommand) {
 
-		case Connect:
+		/*case Connect:
 			modelList.add(new Model(++raceCounter));
 			outputStreamToClient.writeObject(CarEvents.eventType.Connect);
 			outputStreamToClient.writeObject(raceCounter);
@@ -217,19 +217,19 @@ public class CarRaceServer extends Application {
 			updateLog("In Client #" + log.getRaceNum() + " Radius of Car #" + log.getCarNum() + " was changed to: " + log.getRadius());
 			break;
 		default:
-			break;
+			break;*/
 		}
 	}
 
 	public static void updateLog(String str) {
 		Platform.runLater(() -> {
-			taLog.appendText(str + "\n-------------------------------------------\n");
+			//taLog.appendText(str + "\n-------------------------------------------\n");
 		});
 	}
 
 	public static void clearLog() {
 		Platform.runLater(() -> {
-			taLog.setText("The Log was cleared at " + dateFormat.format(date) + "\n\n");
+			//taLog.setText("The Log was cleared at " + dateFormat.format(date) + "\n\n");
 		});
 	}
 

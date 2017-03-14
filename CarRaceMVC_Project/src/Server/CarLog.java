@@ -1,24 +1,21 @@
 package Server;
-import javafx.scene.Scene;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-public class CarLog {
+public class CarLog extends BorderPane {
 	private ScrollPane srcPane;
 	private VBox vBoxInSrcPane;
-	private BorderPane mainFrame;
 
 	public CarLog() {
 		srcPane = new ScrollPane();
 		srcPane.setFitToHeight(true);
 		srcPane.setFitToWidth(true);
 		vBoxInSrcPane = new VBox(3);
-		mainFrame = new BorderPane();
 		srcPane.setContent(vBoxInSrcPane);
-		mainFrame.setCenter(srcPane);
+		setCenter(srcPane);
 	}
 
 	public void printMsg(String str) {
