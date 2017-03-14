@@ -1,3 +1,4 @@
+import Server.ServerCar;
 import Server.CarEvents;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -39,14 +40,14 @@ public class CarPane extends Pane implements CarEvents {
 	private Timeline tl; // speed=setRate()
 	private Color color;
 	private int r;// radius
-	private Car car;
+	private ServerCar car;
 
 	public CarPane() {
 		xCoor = 0;
 		r = 5;
 	}
 
-	public void setCarModel(Car myCar) {
+	public void setCarModel(ServerCar myCar) {
 		car = myCar;
 		if (car != null) {
 			car.addEventHandler(new ColorEvent(), eventType.COLOR);
@@ -55,7 +56,7 @@ public class CarPane extends Pane implements CarEvents {
 		}
 	}
 
-	public Car getCarModel() {
+	public ServerCar getCarModel() {
 		return car;
 	}
 

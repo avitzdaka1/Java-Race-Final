@@ -1,14 +1,14 @@
+package Server;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import Server.CarEvents;
 import javafx.event.Event;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 //
-public class Car implements CarEvents {
+public class ServerCar implements CarEvents {
 	private int id;
 	//	The model the car belongs to
 	private int model_id;
@@ -20,7 +20,7 @@ public class Car implements CarEvents {
 
 	///test
 	
-	public Car(int id, int model_id, CarLog log) {
+	public ServerCar(int id, int model_id, CarLog log) {
 		this.id = id;
 		this.model_id = model_id;
 		this.log = log;

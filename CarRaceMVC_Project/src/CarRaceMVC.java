@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+import Server.CarLog;
 import Server.Model;
 import javafx.application.*;
 import javafx.beans.value.ChangeListener;

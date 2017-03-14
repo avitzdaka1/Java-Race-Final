@@ -37,7 +37,8 @@ public class CarRaceServer extends Application {
 	public static int numOfConnections = 0;
 	private ArrayList<Model> modelList;
 	private int raceCounter = 0; // = clientNumber
-	private static TextArea taLog;
+	//private static TextArea taLog;
+	private CarLog carLog;
 
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
@@ -56,8 +57,8 @@ public class CarRaceServer extends Application {
 		VBox buttonsBoxVB = new VBox(), serverLogVB = new VBox();
 		buttonsBoxVB.setPrefSize(160, 50);
 		
-		taLog = new TextArea();
-		taLog.setEditable(false);
+		//taLog = new TextArea();
+		//taLog.setEditable(false);
 		
 		TableView<String> tableView = new TableView<>();
 		tableView.setPrefSize(primaryStage.getWidth(), 260);
@@ -66,6 +67,7 @@ public class CarRaceServer extends Application {
 				btnHistory = new Button("History"), btnCurrentState = new Button("Current State"), 
 				btnStatistics = new Button("Statistics"), btnClearLog = new Button("Clear Log");
 
+		carLog = new CarLog();
 		ScrollPane srcPane = new ScrollPane();
 		srcPane.setFitToHeight(true);
 		srcPane.setFitToWidth(true);
