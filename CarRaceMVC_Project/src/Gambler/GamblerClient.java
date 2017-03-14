@@ -36,7 +36,7 @@ public class GamblerClient implements Runnable{
 			while (!clientSocket.isClosed()) {
 				try {
 					MessageGambler message = (MessageGambler) inputStreamFromServer.readObject();		
-					receiveFromServer(MessageGambler);
+					receiveFromServer(message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
