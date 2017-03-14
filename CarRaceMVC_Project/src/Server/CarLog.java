@@ -23,4 +23,8 @@ public class CarLog extends BorderPane {
 		vBoxInSrcPane.getChildren().add(action);
 		srcPane.setVvalue(action.getScaleY() + action.getHeight());
 	}
+	
+	public void clearLog() {
+		vBoxInSrcPane.getChildren().clear();
+	}
 }

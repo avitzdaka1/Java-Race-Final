@@ -91,7 +91,7 @@ public class CarRaceServer extends Application {
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-			//	updateLog("BUTTON TEST " + dateFormat.format(date));
+				carLog.printMsg("BUTTON TEST " + dateFormat.format(date));
 				startNewGambler();
 			}
 		});
@@ -120,7 +120,7 @@ public class CarRaceServer extends Application {
 			}
 		});
 
-		updateLog("Server was started at " + dateFormat.format(date));
+		carLog.printMsg("Server was started at " + dateFormat.format(date));
 		listenNewConnections();
 	}
 
@@ -188,11 +188,11 @@ public class CarRaceServer extends Application {
 			modelList.add(new Model(++raceCounter));
 			outputStreamToClient.writeObject(CarEvents.eventType.Connect);
 			outputStreamToClient.writeObject(raceCounter);
-			updateLog("Client #" + raceCounter + " from: " + clientAddress.getHostAddress() + " connected");
+			carLog.printMsg("Client #" + raceCounter + " from: " + clientAddress.getHostAddress() + " connected");
 			break;
 
 		case Disconnect: //Close connection with client
-			updateLog("Client #" + log.getRaceNum() + " disconnected!");
+			carLog.printMsg("Client #" + log.getRaceNum() + " disconnected!");
 			break;
 
 		case COLOR:
@@ -204,32 +204,27 @@ public class CarRaceServer extends Application {
 				e.printStackTrace();
 			}
 
-			updateLog("In Client #" + log.getRaceNum() + " Color of Car #" + log.getCarNum() + " was changed to: " + colorType[log.colorIndex]);
+			carLog.printMsg("In Client #" + log.getRaceNum() + " Color of Car #" + log.getCarNum() + " was changed to: " + colorType[log.colorIndex]);
 			break;
 
 		case SPEED:
 			modelList.get(log.getRaceNum()-1).changeSpeed(log.getCarNum(), log.getSpeed());
-			updateLog("In Client #" + log.getRaceNum() + " Speed of Car #" + log.getCarNum() + " was changed to: " + log.getSpeed());
+			carLog.printMsg("In Client #" + log.getRaceNum() + " Speed of Car #" + log.getCarNum() + " was changed to: " + log.getSpeed());
 			break;
 
 		case RADIUS:
 			modelList.get(log.getRaceNum()-1).changeRadius(log.getCarNum(), log.getRadius());
-			updateLog("In Client #" + log.getRaceNum() + " Radius of Car #" + log.getCarNum() + " was changed to: " + log.getRadius());
+			carLog.printMsg("In Client #" + log.getRaceNum() + " Radius of Car #" + log.getCarNum() + " was changed to: " + log.getRadius());
 			break;
 		default:
 			break;*/
 		}
 	}
 
-	public static void updateLog(String str) {
+	public void clearLog() {
 		Platform.runLater(() -> {
-			//taLog.appendText(str + "\n-------------------------------------------\n");
-		});
-	}
-
-	public static void clearLog() {
-		Platform.runLater(() -> {
-			//taLog.setText("The Log was cleared at " + dateFormat.format(date) + "\n\n");
+			carLog.clearLog();
+			carLog.printMsg("The Log was cleared at " + dateFormat.format(date) + "\n\n");
 		});
 	}
 
