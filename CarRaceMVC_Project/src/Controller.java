@@ -16,6 +16,7 @@ public class Controller implements CarEvents {
 	private final int CAR2_ID = 1;
 	private final int CAR3_ID = 2;
 	private Stage stg;
+	//	replace with socket
 	private Model model;
 	private View view;
 	private Color colors[] = { Color.RED, Color.AQUA, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.PINK,

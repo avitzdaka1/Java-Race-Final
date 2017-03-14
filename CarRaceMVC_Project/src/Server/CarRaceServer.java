@@ -37,7 +37,6 @@ public class CarRaceServer extends Application {
 	public static int numOfConnections = 0;
 	private ArrayList<Model> modelList;
 	private int raceCounter = 0; // = clientNumber
-	//private static TextArea taLog;
 	private CarLog carLog;
 
 	private ServerSocket serverSocket;
@@ -56,9 +55,6 @@ public class CarRaceServer extends Application {
 		BorderPane pane = new BorderPane();
 		VBox buttonsBoxVB = new VBox(), serverLogVB = new VBox();
 		buttonsBoxVB.setPrefSize(160, 50);
-		
-		//taLog = new TextArea();
-		//taLog.setEditable(false);
 		
 		TableView<String> tableView = new TableView<>();
 		tableView.setPrefSize(primaryStage.getWidth(), 260);
@@ -88,18 +84,23 @@ public class CarRaceServer extends Application {
 		
 		modelList = new ArrayList<Model>();
 
+		//	Creates a new gambler window.
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				carLog.printMsg("BUTTON TEST " + dateFormat.format(date));
+				carLog.printMsg("New gambler added " + dateFormat.format(date));
 				startNewGambler();
 			}
 		});
 
+		//	Clears the server log.
 		btnClearLog.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				clearLog();
+				Platform.runLater(() -> {
+					carLog.clearLog();
+					carLog.printMsg("The Log was cleared at " + dateFormat.format(date) + "\n\n");
+				});
 			}
 		});
 
@@ -219,13 +220,6 @@ public class CarRaceServer extends Application {
 		default:
 			break;*/
 		}
-	}
-
-	public void clearLog() {
-		Platform.runLater(() -> {
-			carLog.clearLog();
-			carLog.printMsg("The Log was cleared at " + dateFormat.format(date) + "\n\n");
-		});
 	}
 
 	public static void main(String[] args) {
