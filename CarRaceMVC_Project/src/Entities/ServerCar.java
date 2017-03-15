@@ -1,4 +1,4 @@
-package Server;
+package Entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +50,11 @@ public class ServerCar implements CarEvents {
 
 	public double getSpeed() {
 		return speed;
+	}
+	
+	//	TODO: create string name attribute and change what this getter returns.
+	public String getName() {
+		return "";
 	}
 
 	public void setColor(Color color) {
