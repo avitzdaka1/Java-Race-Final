@@ -1,9 +1,5 @@
 package Entities;
 
-enum GamblerCommand {
-	GamblerConnect, GamblerDisconnect, GamblerLogin, GamblerLogout, GamblerBet;
-}
-
 //	Message between gambler client and gambler handler on the server.
 public class MessageGambler {
 
@@ -12,6 +8,10 @@ public class MessageGambler {
 	private int raceNumber, bet, balance;
 	private boolean status;
 	
+	public MessageGambler(GamblerCommand command, boolean status) {
+		this.command = command;
+		this.status = status;
+	}
 	public GamblerCommand getCommand() {
 		return command;
 	}

@@ -1,5 +1,6 @@
 package Gambler;
 
+import Entities.Gambler;
 import Gambler.GamblerButton.ButtonId;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -16,35 +17,73 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class GamblerMainWin extends StackPane {
 	
 	private Image backgroundImage;
-	GamblerButton betBtn, cancelBtn;
-	private Label messageLbl;
+	private GamblerComboBox raceCombo, carCombo;
+	private GamblerButton betBtn, exitBtn;
+	private GamblerTextField betTxt;
+	private Label messageLbl, gamblerInfoLbl;
+	private Gambler gambler = new Gambler(0, "empty", "Empty");
 	
 	public GamblerMainWin(int panelWidth,int panelHeight) {
 		
-		backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/gamblerBackground2.jpg").toExternalForm()); 
-		betBtn = new GamblerButton(ButtonId.Bet,"bet.png", 180, 170, panelWidth*0.6, panelHeight*0.12);				
+		backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/gamblerBackground1.jpg").toExternalForm()); 
+		betBtn = new GamblerButton(ButtonId.Bet,"bet.png", 180, 170, panelWidth*0.40, panelHeight*0.15);				
+		exitBtn = new GamblerButton(ButtonId.Exit,"exit.png", 190, 150, panelWidth*0.25, panelHeight*0.15);				
 		
+		raceCombo = new GamblerComboBox("Race: ");
+		carCombo = new GamblerComboBox("Car: ");
+		betTxt = new GamblerTextField("Your Bet: ", 0);
+		messageLbl = new Label();
+		
+		gamblerInfoLbl = new Label("Welcome " + gambler.getName() + ". Your balance: " + gambler.getBalance());
+		gamblerInfoLbl.setFont(new Font("Serif", 20));
+		gamblerInfoLbl.setTextFill(Color.DEEPSKYBLUE);
+		gamblerInfoLbl.setStyle("-fx-font-weight: bold;");
+
 		setPrefWidth(panelWidth);
 		setPrefHeight(panelHeight);
 		setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 
-		VBox buttonsPanel = new VBox();
-		buttonsPanel.getChildren().addAll(cancelBtn,betBtn);
+		VBox mainVbox = new VBox();
+		mainVbox.setAlignment(Pos.TOP_CENTER);
+		mainVbox.setPadding(new Insets(panelHeight*0.2, 0, 0, 0));
+		mainVbox.setMaxWidth(panelWidth*0.65);
+		mainVbox.setSpacing(panelHeight*0.02);		
+		
+		VBox gridsContainer = new VBox();
+		gridsContainer.setBackground(new Background(new BackgroundFill(Color.web("#ffffff70"), CornerRadii.EMPTY, Insets.EMPTY)));
+		gridsContainer.setSpacing(panelHeight*0.05);
+		gridsContainer.setPadding(new Insets(10,10,10,10));
+		gridsContainer.getChildren().addAll(raceCombo, carCombo, betTxt);
+		
+		HBox buttonsPanel = new HBox();
+		buttonsPanel.getChildren().addAll(exitBtn, betBtn);
 		buttonsPanel.setAlignment(Pos.CENTER);
+		
+		mainVbox.getChildren().addAll(gamblerInfoLbl, messageLbl,gridsContainer, buttonsPanel);
 						
 	    StackPane.setAlignment(buttonsPanel, Pos.CENTER);
-		getChildren().add(buttonsPanel);
+		getChildren().add(mainVbox);
 	}
 	
+	public Gambler getGambler() {
+		return gambler;
+	}
+
+	public void setGambler(Gambler gambler) {
+		this.gambler = gambler;
+	}
+
 	public void setEventHandler(EventHandler<MouseEvent> mouseEventHandler){
-		cancelBtn.setOnMousePressed(mouseEventHandler);
+		exitBtn.setOnMousePressed(mouseEventHandler);
 		betBtn.setOnMousePressed(mouseEventHandler);
 	}
 

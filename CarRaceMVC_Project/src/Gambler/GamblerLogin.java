@@ -26,7 +26,7 @@ public class GamblerLogin extends StackPane{
 	private GamblerTextField txtName,txtPassword;
 	private Label messageLbl;
 	private Image backgroundImage;
-	GamblerButton regiserBtn,loginBtn;
+	private GamblerButton regiserBtn,loginBtn;
 	
 	public GamblerLogin(int panelWidth,int panelHeight) {
 	
@@ -77,7 +77,7 @@ public class GamblerLogin extends StackPane{
 		return((PasswordField)txtPassword.getTextControl()).getText();
 	}
 	
-	public void showErrorMessage(String message){
+	public void showMessage(String message){
 		messageLbl.setTextFill(Color.RED);
 		messageLbl.setText(message);
 	}
