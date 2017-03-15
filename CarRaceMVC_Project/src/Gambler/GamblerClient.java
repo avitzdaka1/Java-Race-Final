@@ -1,19 +1,18 @@
 package Gambler;
 
-import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Random;
-import Entities.*;
+
+import Entities.GamblerCommand;
+import Entities.MessageGambler;
 
 
 public class GamblerClient implements Runnable{
 	private Socket clientSocket;
 	private ObjectOutputStream outputStreamToServer;
 	private ObjectInputStream inputStreamFromServer;		
-	private Random random;
 	private boolean connected = false;
 	private MessageGambler message;
 	
@@ -58,8 +57,8 @@ public class GamblerClient implements Runnable{
 		switch(message.getCommand()){
 			case  GamblerConnect:
 				///				
-				gamblerView = new GamblerView(outputStreamToServer);				
-				gamblerView.getGamblerLoginPanel().showMessage("Connected!");
+			//	gamblerView = new GamblerView(outputStreamToServer);				
+			//	gamblerView.getGamblerLoginPanel().showMessage("Connected!");
 				break;
 				
 			case  GamblerDisconnect:

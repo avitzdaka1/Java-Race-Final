@@ -1,64 +1,42 @@
 package Gambler;
 
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
 
 import Entities.Gambler;
+import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class GamblerView {
+public class GamblerView extends Application{
 		
-	private Stage mainStage;
 	private Scene mainScene;
 	private AnchorPane mainPane;
 	private double screenWidth, screenHeight;
 	private ObjectOutputStream outputStreamToServer;
-	
-	public GamblerView(ObjectOutputStream outputStreamToServer) {
-		this.outputStreamToServer = outputStreamToServer;
-	}
-
-	public GamblerLogin getGamblerLoginPanel() {
-		return gamblerLoginPanel;
-	}
-
-	public void setGamblerLoginPanel(GamblerLogin gamblerLoginPanel) {
-		this.gamblerLoginPanel = gamblerLoginPanel;
-	}
-
-	public GamblerRegister getGamblerRegistrationPanel() {
-		return gamblerRegistrationPanel;
-	}
-
-	public void setGamblerRegistrationPanel(GamblerRegister gamblerRegistrationPanel) {
-		this.gamblerRegistrationPanel = gamblerRegistrationPanel;
-	}
-
-	public GamblerMainWin getGamblerMainPanel() {
-		return gamblerMainPanel;
-	}
-
-	public void setGamblerMainPanel(GamblerMainWin gamblerMainPanel) {
-		this.gamblerMainPanel = gamblerMainPanel;
-	}
 
 	private GamblerLogin gamblerLoginPanel;
 	private GamblerRegister gamblerRegistrationPanel;
 	private GamblerMainWin gamblerMainPanel;
-		
-	public GamblerView(){
-		
+	
+	
+	
+	public GamblerView() {
+	}
+
+	@Override
+	public void start(Stage mainStage) throws Exception {	
 		//Screen Size.
 		screenWidth = Screen.getPrimary().getVisualBounds().getWidth()*0.35;
 		screenHeight = Screen.getPrimary().getVisualBounds().getHeight()*0.5;
-		
+				
 		//Initialization of main View
-		mainStage = new Stage();
 		mainPane = new AnchorPane();
 		mainScene = new Scene(mainPane, screenWidth, screenHeight);
 		
@@ -81,6 +59,10 @@ public class GamblerView {
 		mainStage.setTitle("CarRace Gambler");
 		mainStage.setAlwaysOnTop(true);
 		mainStage.setScene(mainScene);
+		
+		mainStage.setWidth(screenWidth);
+		mainStage.setHeight(screenHeight);
+		
 		mainStage.show();
 	}
 	
@@ -129,4 +111,40 @@ public class GamblerView {
 	};
 	
 
+	public GamblerView(ObjectOutputStream outputStreamToServer) {
+		this.outputStreamToServer = outputStreamToServer;
+	}
+
+	public GamblerLogin getGamblerLoginPanel() {
+		return gamblerLoginPanel;
+	}
+
+	public void setGamblerLoginPanel(GamblerLogin gamblerLoginPanel) {
+		this.gamblerLoginPanel = gamblerLoginPanel;
+	}
+
+	public GamblerRegister getGamblerRegistrationPanel() {
+		return gamblerRegistrationPanel;
+	}
+
+	public void setGamblerRegistrationPanel(GamblerRegister gamblerRegistrationPanel) {
+		this.gamblerRegistrationPanel = gamblerRegistrationPanel;
+	}
+
+	public GamblerMainWin getGamblerMainPanel() {
+		return gamblerMainPanel;
+	}
+
+	public void setGamblerMainPanel(GamblerMainWin gamblerMainPanel) {
+		this.gamblerMainPanel = gamblerMainPanel;
+	}
+	
+	public static void main(String[] args) {
+	//	try {
+		launch(args);
+	//	}
+	//	catch (InvocationTargetException e) {
+	//		System.out.println(e.getStackTrace());
+	//	}
+	}
 }
