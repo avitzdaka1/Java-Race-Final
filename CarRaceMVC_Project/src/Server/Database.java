@@ -3,8 +3,6 @@ package Server;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
 import Entities.*;
@@ -12,89 +10,42 @@ import Entities.*;
 public class Database {
 
 	// DB connecting information
-	private String dbAdress, dbName, dbUserName, dbPassword;
-	private final String RACE_DB = "RACE_DB.sql";
-
-	// Statement for executing queries
-	private Statement dbStateMent;
-	private Connection dbConnection;
-
-	public Database(String dbAdress, String dbName, String dbUserName, String dbPassword) {
-		this.dbAdress = dbAdress;
-		this.dbName = dbName;
-		this.dbUserName = dbUserName;
-		this.dbPassword = dbPassword;
-
-		initializeDB();
-
-		FileInputStream fstream;
-		try {
-			fstream = new FileInputStream(RACE_DB);
-			createDB(fstream);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+	private final String RACE_DB = "RACE_DB.txt";
 
 	// create new DB if not exists , loads create commands from file
-	private void createDB(FileInputStream fstream) {
+	public boolean createNewDB () {
+		try (FileInputStream fstream = new FileInputStream(RACE_DB)) {
+			try (DataInputStream in = new DataInputStream(fstream)) {
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+					Class.forName("com.mysql.jdbc.Driver");
+					try (Connection dbConnection = DriverManager
+							.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+						try (Statement dbStatement = dbConnection.createStatement()) {
+							String strLine = "", strLine1 = "";
+							// Read File Line By Line
 
-		try {
-			// Get the object of DataInputStream
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			String strLine = "", strLine1 = "";
-			// Read File Line By Line
-			while ((strLine = br.readLine()) != null) {
-				if (strLine != null && !strLine.trim().equals("")) {
-					if ((strLine.trim().indexOf("/*") < 0) && (strLine.trim().indexOf("*/") < 0)) {
-						if (strLine.indexOf(';') >= 0) {
-							strLine1 += strLine;
-							System.out.println(strLine1);
-							dbStateMent.execute(strLine1);
-							strLine1 = "";
-						} else
-							strLine1 += strLine;
+							while ((strLine = br.readLine()) != null) {
+								if (strLine != null && !strLine.trim().equals("")) {
+									if ((strLine.trim().indexOf("/*") < 0) && (strLine.trim().indexOf("*/") < 0)) {
+										if (strLine.indexOf(';') >= 0) {
+											strLine1 += strLine;
+											System.out.println(strLine1);
+											dbStatement.execute(strLine1);
+											strLine1 = "";
+										} else
+											strLine1 += strLine;
+									}
+								}
+							}
+						}
 					}
 				}
 			}
-		} catch (SQLException | IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
-	}
-
-	public int update(String query) {
-		try {
-			if (!query.isEmpty() && query != null)
-				return dbStateMent.executeUpdate(query);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return -1;
-	}
-
-	public ResultSet executeQuery(String query) {
-		try {
-			if (!query.isEmpty() && query != null)
-				return dbStateMent.executeQuery(query);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private void initializeDB() {
-		try {
-			// Load the JDBC driver
-			Class.forName("com.mysql.jdbc.Driver");
-			// Establish a connection
-			dbConnection = DriverManager.getConnection("jdbc:mysql://" + dbAdress + "/" +
-										dbName, dbUserName, dbPassword);
-			// Create a statement
-			dbStateMent = dbConnection.createStatement();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		return true;
 	}
 
 	// Returns all race records.
@@ -106,17 +57,27 @@ public class Database {
 					"FROM Race " + 
 					"WHERE Race.state = 5" + // state finished
 					"ORDER BY Race.number ASC";
-		ResultSet resultSet = executeQuery(query);
-		// ArrayList<RaceResult> raceResults = new ArrayList<>();
 		try {
-			while (resultSet.next()) {
-				// RaceResult result = new RaceResult(resultSet.getInt(1),
-				// resultSet.getDate(2), resultSet.getInt(3));
-				// raceResults.add(result);
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						// ArrayList<RaceResult> raceResults = new
+						// ArrayList<>();
+						while (resultSet.next()) {
+							// RaceResult result = new
+							// RaceResult(resultSet.getInt(1),
+							// resultSet.getDate(2), resultSet.getInt(3));
+							// raceResults.add(result);
+						}
+						// return raceResults;
+					}
+
+				}
 			}
-			// return raceResults;
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -128,18 +89,25 @@ public class Database {
 		String query = "SELECT Gambler.id, Gambler.name, Gambler.password, Gambler.balance " + 
 					"FROM Gambler " + 
 					"ORDER BY Gambler.id ASC";
-		ResultSet resultSet = executeQuery(query);
-		// ArrayList<GamblerResult> gamblerResults = new ArrayList<>();
 		try {
-			while (resultSet.next()) {
-				// GamblerResult result = new GamblerResult(resultSet.getInt(1),
-				// resultSet.getString(2), resultSet.getString(3),
-				// resultSet.getInt(4));
-				// gamblerResults.add(result);
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						while (resultSet.next()) {
+							// GamblerResult result = new
+							// GamblerResult(resultSet.getInt(1),
+							// resultSet.getString(2), resultSet.getString(3),
+							// resultSet.getInt(4));
+							// gamblerResults.add(result);
+						}
+						// return raceResults;
+					}
+				}
 			}
-			// return raceResults;
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -156,17 +124,25 @@ public class Database {
 					"AND Race.number = GamblerCarRace.raceNumber " + 
 					"AND GamblerRaceResult.raceNumber = Race.number " + 
 					"AND Race.state = 5 " + "ORDER BY CarRaceResult.position ASC";
-		ResultSet resultSet = executeQuery(query);
-		// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
 		try {
-			while (resultSet.next()) {
-				// CarRaceResult result = new CarRaceResult(resultSet.getInt(1),
-				// resultSet.getString(2));
-				// carRaceResults.add(result);
-			}
-			// return carRaceResults;
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						// ArrayList<CarRaceResult> carRaceResults = new
+						// ArrayList<>();
+						while (resultSet.next()) {
+							// CarRaceResult result = new
+							// CarRaceResult(resultSet.getInt(1),
+							// resultSet.getString(2));
+							// carRaceResults.add(result);
+						}
+					}
+				}
+			} // return carRaceResults;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -182,17 +158,25 @@ public class Database {
 					"AND Gambler.id = GamblerCarRace.gamblerId " + 
 					"AND Gambler.id = GamblerRaceResult.gamblerId " + 
 					"ORDER BY GamblerCarRace.raceNumber ASC";
-		ResultSet resultSet = executeQuery(query);
-		// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
 		try {
-			while (resultSet.next()) {
-				// CarRaceResult result = new CarRaceResult(resultSet.getInt(1),
-				// resultSet.getString(2));
-				// carRaceResults.add(result);
-			}
-			// return carRaceResults;
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						// ArrayList<CarRaceResult> carRaceResults = new
+						// ArrayList<>();
+						while (resultSet.next()) {
+							// CarRaceResult result = new
+							// CarRaceResult(resultSet.getInt(1),
+							// resultSet.getString(2));
+							// carRaceResults.add(result);
+						}
+					}
+				}
+			} // return carRaceResults;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -208,17 +192,26 @@ public class Database {
 					"AND CarRaceResult.raceNumber = Race.number " + 
 					"AND Race.number = GamblerCarRace.raceNumber " + 
 					"ORDER BY Race.number ASC";
-		ResultSet resultSet = executeQuery(query);
-		// ArrayList<CarRaceResult> carRaceResults = new ArrayList<>();
 		try {
-			while (resultSet.next()) {
-				// CarRaceResult result = new CarRaceResult(resultSet.getInt(1),
-				// resultSet.getString(2));
-				// carRaceResults.add(result);
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						// ArrayList<CarRaceResult> carRaceResults = new
+						// ArrayList<>();
+						while (resultSet.next()) {
+							// CarRaceResult result = new
+							// CarRaceResult(resultSet.getInt(1),
+							// resultSet.getString(2));
+							// carRaceResults.add(result);
+						}
+						// return carRaceResults;
+					}
+				}
 			}
-			// return carRaceResults;
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -227,15 +220,22 @@ public class Database {
 		String query = "SELECT Race.number " + 
 					"FROM Race " + 
 					"ORDER BY Race.number DESC";
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next()) {
-				int raceNumber = resultSet.getInt(1);
-				resultSet.close();
-				return raceNumber;
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next()) {
+							int raceNumber = resultSet.getInt(1);
+							resultSet.close();
+							return raceNumber;
+						}
+					}
+				}
 			}
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return 0;
 	}
@@ -245,12 +245,19 @@ public class Database {
 		String query = "SELECT Gambler.id " + 
 					"FROM Gambler " + 
 					"ORDER BY Race.number DESC";
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next())
-				return resultSet.getInt(1);
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							return resultSet.getInt(1);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return 0;
 	}
@@ -260,13 +267,20 @@ public class Database {
 		String query = "SELECT * " + 
 					"FROM Gambler " + 
 					"WHERE Gambler.name = '" + gamblerName + "'";
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next())
-				return new Gambler(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
-						resultSet.getInt(4));
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							return new Gambler(resultSet.getInt(1), resultSet.getString(2), 
+									resultSet.getString(3), resultSet.getInt(4));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -276,13 +290,20 @@ public class Database {
 		String query = "SELECT Gambler.name " + 
 					"FROM Gambler " + 
 					"WHERE Gambler.name = '" + gamblerName + "'";
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next())
-				if (resultSet.getString(1).equals(gamblerName))
-					return true;
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							if (resultSet.getString(1).equals(gamblerName))
+								return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -293,13 +314,20 @@ public class Database {
 					"FROM Gambler " + 
 					"WHERE Gambler.name = '" + gamblerName + "' " + 
 					"AND Gambler.password = '" + gamblerPassword + "'";
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next())
-				if (resultSet.getBoolean(3))
-					return true;
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							if (resultSet.getBoolean(3))
+								return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -311,45 +339,58 @@ public class Database {
 					"FROM Gambler " + 
 					"WHERE Gambler.name = '" + gamblerName + "' " + 
 					"AND Gambler.password = '" + gamblerPassword + "'";
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next()) {
-				if (resultSet.getBoolean(3))
-					return true;
-			}
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next()) {
+							if (resultSet.getBoolean(3))
+								return true;
+						}
 
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
 
-	// Checks if gambler has enough balance to afford given bet.
+	// Checks if gambler has enough balance to afford given bet,
 	// if he does, bet on given car in a given race.
 	public boolean gamblerBet(Gambler gambler, Race race, ServerCar car, int bet) {
 		String query = "SELECT Gambler.balance " + 
 					"FROM Gambler " +
 					"WHERE Gambler.name = '" + gambler.getName() + "' ";
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next()) {
-				int balance = resultSet.getInt(1);
-				//	If gambler's balance is equal or greater than bet.
-				if (bet <= balance) {
-					//	Place gambler bet.
-					placeGamblerBet(gambler.getId(), race.getNumber(), car.getName(), bet);
-					updateRaceTotalBets(race.getNumber(), bet);
-					updateGamblerBalance(gambler, balance - bet);
-					return true;
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next()) {
+							int balance = resultSet.getInt(1);
+							// If gambler's balance is equal or greater than bet.
+							if (bet <= balance) {
+								// Place gambler bet.
+								placeGamblerBet(gambler.getId(), race.getNumber(), car.getName(), bet);
+								updateRaceTotalBets(race.getNumber(), bet);
+								updateGamblerBalance(gambler, balance - bet);
+								return true;
+							}
+						}
+
+					}
 				}
 			}
-
-
-			} catch (SQLException sqlException) {
-				sqlException.printStackTrace();
-			}
-		return false;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		return false;
+	}
 
 	// Places a gambler bet on a given car and race.
 	public synchronized boolean placeGamblerBet(int gamblerId, int raceNumber, String carName, int bet) {
@@ -357,51 +398,113 @@ public class Database {
 					"(gamblerId, raceNumber, carName, bet) " + 
 					"VALUES ( ?, ?, ?, ?)";
 		try {
-			PreparedStatement statement = dbConnection.prepareStatement(query);
-			statement.setInt(1, gamblerId);
-			statement.setInt(2, raceNumber);
-			statement.setString(3, carName);
-			statement.setInt(4, bet);
-			statement.executeUpdate();
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setInt(1, gamblerId);
+					dbPrepStatement.setInt(2, raceNumber);
+					dbPrepStatement.setString(3, carName);
+					dbPrepStatement.setInt(4, bet);
+					dbPrepStatement.executeUpdate();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
-
-	// Updates a given race's total bets.
-		public synchronized boolean updateRaceTotalBets(int raceNumber, int bet) {
-			String query = "UPDATE Race " + 
-						"SET totalBets = ? " + 
-						"WHERE number = ?";
-			try {
-				PreparedStatement statement = dbConnection.prepareStatement(query);
-				int raceTotalBets = getRaceTotalBets(raceNumber);
-				if (raceTotalBets != -1) {
-					statement.setInt(1, raceTotalBets + bet);
-					statement.setInt(2, raceNumber);
-					statement.executeUpdate();
-					return true;
+	
+	// Inserts new gambler-race result (revenue from race).
+	public synchronized boolean insertGamblerRaceResult(int gamblerId, int raceNumber, int revenue) {
+		String query = "INSERT INTO GamblerRaceResult " + 
+					"(gamblerId, raceNumber, revenue) " + 
+					"VALUES ( ?, ?, ?)";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setInt(1, gamblerId);
+					dbPrepStatement.setInt(2, raceNumber);
+					dbPrepStatement.setInt(3, revenue);
+					dbPrepStatement.executeUpdate();
 				}
-			} catch (SQLException sqlException) {
-				sqlException.printStackTrace();
-				return false;
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
+		return true;
+	}
+	
+	// Inserts new car-race result (car's position in race).
+		public synchronized boolean insertCarRaceResult(int raceNumber, String carName, int position) {
+			String query = "INSERT INTO CarRaceResult " + 
+						"(raceNumber, carName, position) " + 
+						"VALUES ( ?, ?, ?)";
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				try (Connection dbConnection = DriverManager
+						.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+						dbPrepStatement.setInt(1, raceNumber);
+						dbPrepStatement.setString(2, carName);
+						dbPrepStatement.setInt(3, position);
+						dbPrepStatement.executeUpdate();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+
+	// Updates a given race's total bets.
+	public synchronized boolean updateRaceTotalBets(int raceNumber, int bet) {
+		String query = "UPDATE Race " + 
+					"SET totalBets = ? " + 
+					"WHERE number = ?";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					int raceTotalBets = getRaceTotalBets(raceNumber);
+					if (raceTotalBets != -1) {
+						dbPrepStatement.setInt(1, raceTotalBets + bet);
+						dbPrepStatement.setInt(2, raceNumber);
+						dbPrepStatement.executeUpdate();
+						return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 		
 	// Retrieves a given race's total bets (using race number).
 	public int getRaceTotalBets(int raceNumber) {
 		String query = "SELECT Race.totalBets " + 
 					"FROM Race " + 
 					"WHERE Race.number = " + raceNumber;
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next())
-				return resultSet.getInt(1);
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							return resultSet.getInt(1);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return -1;
 	}
@@ -412,12 +515,17 @@ public class Database {
 					"SET balance = ? " + 
 					"WHERE id = ?";
 		try {
-			PreparedStatement statement = dbConnection.prepareStatement(query);
-			statement.setInt(1, balance);
-			statement.setString(2, gambler.getName());
-			statement.executeUpdate();
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setInt(1, balance);
+					dbPrepStatement.setString(2, gambler.getName());
+					dbPrepStatement.executeUpdate();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -430,13 +538,18 @@ public class Database {
 					"WHERE name = ? " + 
 					"AND password = ?";
 		try {
-			PreparedStatement statement = dbConnection.prepareStatement(query);
-			statement.setBoolean(1, online);
-			statement.setString(2, gamblerName);
-			statement.setString(3, gamblerPassword);
-			statement.executeUpdate();
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setBoolean(1, online);
+					dbPrepStatement.setString(2, gamblerName);
+					dbPrepStatement.setString(3, gamblerPassword);
+					dbPrepStatement.executeUpdate();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -447,13 +560,20 @@ public class Database {
 		String query = "SELECT Car.name " + 
 					"FROM Car " + 
 					"WHERE Car.name = '" + carName + "' ";
-		ResultSet resultSet = executeQuery(query);
 		try {
-			if (resultSet.next())
-				if (resultSet.getString(1).equals(carName))
-					return true;
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							if (resultSet.getString(1).equals(carName))
+								return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -464,14 +584,19 @@ public class Database {
 					"(number, raceDate, state, totalBets) " + 
 					"VALUES ( ?, ?, ?, ?)";
 		try {
-			PreparedStatement statement = dbConnection.prepareStatement(query);
-			statement.setInt(1, race.getNumber());
-			statement.setDate(2, race.getDate());
-			statement.setInt(3, race.getState());
-			statement.setInt(4, race.getTotalBets());
-			statement.executeUpdate();
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setInt(1, race.getNumber());
+					dbPrepStatement.setDate(2, race.getDate());
+					dbPrepStatement.setInt(3, race.getState());
+					dbPrepStatement.setInt(4, race.getTotalBets());
+					dbPrepStatement.executeUpdate();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -483,14 +608,19 @@ public class Database {
 					"(id, name, password, balance) " + 
 					"VALUES ( ?, ?, ?, ?)";
 		try {
-			PreparedStatement statement = dbConnection.prepareStatement(query);
-			statement.setInt(1, gambler.getId());
-			statement.setString(2, gambler.getName());
-			statement.setString(3, gambler.getPassword());
-			statement.setInt(4, gambler.getBalance());
-			statement.executeUpdate();
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setInt(1, gambler.getId());
+					dbPrepStatement.setString(2, gambler.getName());
+					dbPrepStatement.setString(3, gambler.getPassword());
+					dbPrepStatement.setInt(4, gambler.getBalance());
+					dbPrepStatement.executeUpdate();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;

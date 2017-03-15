@@ -36,20 +36,16 @@ import javafx.stage.WindowEvent;
 public class CarRaceServer extends Application {
 
 	public static int numOfConnections = 0;
+	public Database database;
 	private ArrayList<Model> modelList;
 	private ArrayList<MainServerListener> ClientHandlersArray;
-	
 	private int raceCounter = 0; // = race Number
 	private int gamblerCounter = 0; // = gambler Number
-	
 	private CarLog carLog;
-
 	private ServerSocket serverSocket;
-	private Socket clientSocket;
-	private InetAddress clientAddress;
+	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	private Date date = new Date();
 
-	public static DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-	public static Date date = new Date();
 
 	public void start(Stage primaryStage) {
 		createServerGUI(primaryStage);
@@ -86,6 +82,7 @@ public class CarRaceServer extends Application {
 		Scene scene = new Scene(pane, 900, buttonsBoxVB.getMinHeight());
 		scene.getStylesheets().add("Server/serverStyles.css");
 		
+		database = new Database();
 		//	Creates a new gambler window.
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -149,9 +146,17 @@ public class CarRaceServer extends Application {
 			try {
 				serverSocket = new ServerSocket(8888);	//	TODO: Create final for port number.
 				while (true) {
-					clientSocket = serverSocket.accept();
-					clientAddress = clientSocket.getInetAddress();
-					ClientHandlersArray.add(new HandlerRace(clientSocket, this, 7));
+					Socket clientSocket = serverSocket.accept();
+					InetAddress clientAddress = clientSocket.getInetAddress();
+					
+					Platform.runLater(()-> {
+						//	TODO Update Server Log
+						
+					});
+					HandlerRace handlerRace = new HandlerRace(clientSocket, this, 7);
+					ClientHandlersArray.add(handlerRace);
+					Thread thread = new Thread(handlerRace);
+					thread.start();
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
@@ -165,8 +170,8 @@ public class CarRaceServer extends Application {
 			try {
 				serverSocket = new ServerSocket(8889);	//	TODO: Create final for port number.
 				while (true) {
-					clientSocket = serverSocket.accept();
-					clientAddress = clientSocket.getInetAddress();
+					Socket clientSocket = serverSocket.accept();
+					InetAddress clientAddress = clientSocket.getInetAddress();
 					
 					Platform.runLater(()-> {
 						//	TODO Update Server Log
