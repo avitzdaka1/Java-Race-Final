@@ -1,12 +1,8 @@
 package Server;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,12 +20,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -42,7 +34,6 @@ public class CarRaceServer extends Application {
 	private int raceCounter = 0; // = race Number
 	private int gamblerCounter = 0; // = gambler Number
 	private CarLog carLog;
-	//private ServerSocket serverSocket;
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 	public void start(Stage primaryStage) {
@@ -185,81 +176,6 @@ public class CarRaceServer extends Application {
 				ex.printStackTrace();
 			}
 		}).start();
-	}
-		
-		
-	
-	
-	
-	
-	// Client Handler
-	/*public void HandleAClient(Socket clientSocket) {
-
-		new Thread(() -> {
-			try {
-				ObjectInputStream inputStreamFromClient = new ObjectInputStream(clientSocket.getInputStream());
-				ObjectOutputStream outputStreamToClient = new ObjectOutputStream(clientSocket.getOutputStream());
-
-				while (true) {
-					CarEvents.eventType event = (CarEvents.eventType) inputStreamFromClient.readObject();
-					Object obj = inputStreamFromClient.readObject();
-					
-				//	runFunctionOnServer(outputStreamToClient, event, obj);
-					//if (event == CarEvents.eventType.Disconnect) {
-					//	break;
-					//}
-				}
-			} catch (SocketException ex) {
-				try {
-					clientSocket.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}).start();
-	}*/
-
-	
-	public synchronized void runFunctionOnServer(MessageGambler message) throws IOException {
-		switch (1) {
-
-		/*case Connect:
-			modelList.add(new Model(++raceCounter));
-			outputStreamToClient.writeObject(CarEvents.eventType.Connect);
-			outputStreamToClient.writeObject(raceCounter);
-			carLog.printMsg("Client #" + raceCounter + " from: " + clientAddress.getHostAddress() + " connected");
-			break;
-
-		case Disconnect: //Close connection with client
-			carLog.printMsg("Client #" + log.getRaceNum() + " disconnected!");
-			break;
-
-		case COLOR:
-			try { // Converting from string to COLOR - unnecessary.
-				Field f = Color.class.getField(colorType[log.colorIndex]);
-				Color c = (Color) f.get(null);
-				modelList.get(log.getRaceNum()-1).changeColor(log.getCarNum(), c);////////////////////////
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
-
-			carLog.printMsg("In Client #" + log.getRaceNum() + " Color of Car #" + log.getCarNum() + " was changed to: " + colorType[log.colorIndex]);
-			break;
-
-		case SPEED:
-			modelList.get(log.getRaceNum()-1).changeSpeed(log.getCarNum(), log.getSpeed());
-			carLog.printMsg("In Client #" + log.getRaceNum() + " Speed of Car #" + log.getCarNum() + " was changed to: " + log.getSpeed());
-			break;
-
-		case RADIUS:
-			modelList.get(log.getRaceNum()-1).changeRadius(log.getCarNum(), log.getRadius());
-			carLog.printMsg("In Client #" + log.getRaceNum() + " Radius of Car #" + log.getCarNum() + " was changed to: " + log.getRadius());
-			break;
-		default:
-			break;*/
-		}
 	}
 
 	public static void main(String[] args) {
