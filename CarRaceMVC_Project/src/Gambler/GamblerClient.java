@@ -54,7 +54,8 @@ public class GamblerClient implements Runnable{
 					
 			case  GamblerLogin:
 				if(message.getStatus()){
-					Gambler gambler = new Gambler(message.getId(), message.getUsername(), message.getPassword());
+					Gambler gambler = new Gambler(message.getId(), message.getUsername(), message.getPassword(),
+							message.getBalance());
 					gamblerView.loginSuccessful(gambler);
 				}
 				else

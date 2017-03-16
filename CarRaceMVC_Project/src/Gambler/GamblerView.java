@@ -143,7 +143,8 @@ public class GamblerView extends Application implements GamblerListener{
 
 	@Override
 	public void loginSuccessful(Gambler gambler) {
-		Platform.runLater(() -> {
+		Platform.runLater(() -> {		
+			gamblerMainPanel.setGambler(gambler);
 			mainPane.getChildren().remove(gamblerLoginPanel);
 			mainPane.getChildren().add(gamblerMainPanel);
 		});
