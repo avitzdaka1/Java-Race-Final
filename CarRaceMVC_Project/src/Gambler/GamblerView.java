@@ -7,6 +7,7 @@ import Entities.Gambler;
 import Entities.GamblerCommand;
 import Entities.MessageGambler;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -16,7 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class GamblerView extends Application{
+public class GamblerView extends Application implements GamblerListener{
 		
 	private Scene mainScene;
 	private AnchorPane mainPane;
@@ -75,21 +76,11 @@ public class GamblerView extends Application{
 			GamblerButton btnClicked = (GamblerButton)e.getSource();
 
 			switch (btnClicked.getButtonId()) {
-			case Login:
-				
+			case Login:			
 				String username = gamblerLoginPanel.getName();
 				String password = gamblerLoginPanel.getPassword();				
 				MessageGambler message = new MessageGambler(GamblerCommand.GamblerLogin, username, password);
 				client.loginGambler(message);
-
-
-		//		gamblerMainPanel.setGambler(testGambler);
-				//Check gambler out  of in the dataBase/			
-				//if (successful):
-
-				
-				//else: gamblerLoginPanel.showErrorMessage(String message)
-							
 				break;
 
 			case Cancel:
@@ -147,11 +138,45 @@ public class GamblerView extends Application{
 	}
 	
 	public static void main(String[] args) {
-	//	try {
 		launch(args);
-	//	}
-	//	catch (InvocationTargetException e) {
-	//		System.out.println(e.getStackTrace());
-	//	}
+	}
+
+	@Override
+	public void loginSuccessful(Gambler gambler) {
+		Platform.runLater(() -> {
+			mainPane.getChildren().remove(gamblerLoginPanel);
+			mainPane.getChildren().add(gamblerMainPanel);
+		});
+
+	}
+
+	@Override
+	public void loginUnsuccessful() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void betPlaceSuccess(int newBalance) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void betPlaceFailed() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void newRaceStart() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void raceEnded() {
+		// TODO Auto-generated method stub
+		
 	}
 }

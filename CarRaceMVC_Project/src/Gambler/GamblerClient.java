@@ -53,10 +53,12 @@ public class GamblerClient implements Runnable{
 		switch(message.getCommand()){
 					
 			case  GamblerLogin:
-				///
-				gamblerView.getMainPane().getChildren().remove(gamblerView.getGamblerLoginPanel());
-				gamblerView.getMainPane().getChildren().add(gamblerView.getGamblerMainPanel());
-
+				if(message.getStatus()){
+					Gambler gambler = new Gambler(message.getId(), message.getUsername(), message.getPassword());
+					gamblerView.loginSuccessful(gambler);
+				}
+				else
+					gamblerView.loginUnsuccessful();				
 				break;
 				
 			case  GamblerBet:

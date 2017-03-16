@@ -8,18 +8,36 @@ public class MessageGambler implements Serializable {
 	private static final long serialVersionUID = 4074618552007098484L;
 	private GamblerCommand command;
 	private String username, password, carName;
-	private int raceNumber, bet, balance;
+	private int raceNumber, bet, balance, id;
+
 	private boolean status;
+	
 	
 	public MessageGambler(GamblerCommand command, boolean status) {
 		this.command = command;
 		this.status = status;
 	}
+	
+	
+	public MessageGambler(GamblerCommand command, String username, String password, int balance, int id,
+			boolean status) {
+		this.command = command;
+		this.username = username;
+		this.password = password;
+		this.balance = balance;
+		this.id = id;
+		this.status = status;
+	}
+
+
 	public MessageGambler(GamblerCommand command, String username, String password) {
 		this.command = command;
 		this.username = username;
 		this.password = password;
 	}
+	
+	
+	
 	public GamblerCommand getCommand() {
 		return command;
 	}
@@ -62,10 +80,13 @@ public class MessageGambler implements Serializable {
 	public void setBalance(int balance) {
 		this.balance = balance;
 	}
-	public boolean isStatus() {
+	public boolean getStatus() {
 		return status;
 	}
 	public void setStatus(boolean status) {
 		this.status = status;
+	}
+	public int getId() {
+		return id;
 	}
 }
