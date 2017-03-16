@@ -8,9 +8,11 @@ import java.net.Socket;
 import Entities.Gambler;
 import Entities.GamblerCommand;
 import Entities.MessageGambler;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 
-public class GamblerClient implements Runnable{
+public class GamblerClient implements Runnable {
 	private Socket clientSocket;
 	private ObjectOutputStream outputStreamToServer;
 	private ObjectInputStream inputStreamFromServer;		
@@ -27,11 +29,11 @@ public class GamblerClient implements Runnable{
 			outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			connected = true;	
-			gamblerView = new GamblerView(this);		
+			gamblerView = new GamblerView(this);
 			//	Listen for server commands.
 			initReceiverFromServer();
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -53,7 +55,7 @@ public class GamblerClient implements Runnable{
 		switch(message.getCommand()){
 					
 			case  GamblerLogin:
-				if(message.getStatus()){
+				if(message.getStatus()) {
 					Gambler gambler = new Gambler(message.getId(), message.getUsername(), message.getPassword(),
 							message.getBalance());
 					gamblerView.loginSuccessful(gambler);

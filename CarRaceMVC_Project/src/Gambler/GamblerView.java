@@ -1,25 +1,22 @@
 package Gambler;
 
-import java.io.ObjectOutputStream;
-import java.lang.reflect.InvocationTargetException;
 
 import Entities.Gambler;
 import Entities.GamblerCommand;
 import Entities.MessageGambler;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class GamblerView extends Application implements GamblerListener{
+public class GamblerView implements GamblerListener{
 		
 	private Scene mainScene;
+	private Stage mainStage;
 	private AnchorPane mainPane;
 	private double screenWidth, screenHeight;
 
@@ -28,45 +25,46 @@ public class GamblerView extends Application implements GamblerListener{
 	private GamblerMainWin gamblerMainPanel;
 	
 	private GamblerClient client;
-		
+	
 	public GamblerView(GamblerClient client) {
 		this.client = client;
-	}
+		// Screen Size.
+		screenWidth = Screen.getPrimary().getVisualBounds().getWidth() * 0.45;
+		screenHeight = Screen.getPrimary().getVisualBounds().getHeight() * 0.6;
 
-	@Override
-	public void start(Stage mainStage) throws Exception {	
-		//Screen Size.
-		screenWidth = Screen.getPrimary().getVisualBounds().getWidth()*0.45;
-		screenHeight = Screen.getPrimary().getVisualBounds().getHeight()*0.6;
-				
-		//Initialization of main View
-		mainPane = new AnchorPane();
-		mainScene = new Scene(mainPane, screenWidth, screenHeight);
+		// Initialization of main View
+		Platform.runLater(() -> {
+			mainStage = new Stage();
+			mainPane = new AnchorPane();
+			mainScene = new Scene(mainPane, screenWidth, screenHeight);
+
+			// Initialization of panels into 'mainPane'
+			gamblerLoginPanel = new GamblerLogin((int) screenWidth, (int) screenHeight);
+			gamblerRegistrationPanel = new GamblerRegister((int) screenWidth, (int) screenHeight);
+			gamblerMainPanel = new GamblerMainWin((int) screenWidth, (int) screenHeight);
+
+			// Set Click events to panels.
+			gamblerLoginPanel.setEventHandler(clickListener);
+			gamblerRegistrationPanel.setEventHandler(clickListener);
+			gamblerMainPanel.setEventHandler(clickListener);
+
+			// Set startUp (Login) panel on mainPane.
+			mainPane.getChildren().add(gamblerLoginPanel);
+
+			// Set up properties of mainStage
+			Image appIcon = new Image(GamblerView.class.getResource("/Server/resources/icon2.png").toExternalForm(), 225,
+					225, true, true);
+			mainStage.getIcons().add(appIcon);
+			mainStage.setTitle("CarRace Gambler");
+			mainStage.setAlwaysOnTop(true);
+			mainStage.setScene(mainScene);
+			mainStage.setMinWidth(screenWidth * 0.9);
+			mainStage.setMinHeight(screenHeight * 0.9);
+			mainStage.setMaxWidth(screenWidth);
+			mainStage.setMaxHeight(screenHeight);
+			mainStage.show();
+		});
 		
-		//Initialization of panels into 'mainPane'
-		gamblerLoginPanel = new GamblerLogin((int)screenWidth, (int)screenHeight);		
-		gamblerRegistrationPanel = new GamblerRegister((int)screenWidth, (int)screenHeight);
-		gamblerMainPanel = new GamblerMainWin((int)screenWidth, (int)screenHeight);
-		
-		//Set Click events to panels.
-		gamblerLoginPanel.setEventHandler(clickListener);
-		gamblerRegistrationPanel.setEventHandler(clickListener);
-		gamblerMainPanel.setEventHandler(clickListener);
-		
-		//Set startUp (Login) panel on mainPane.
-		mainPane.getChildren().add(gamblerLoginPanel);
-		
-		//Set up properties of mainStage
-		Image appIcon = new Image(GamblerView.class.getResource("/Server/resources/icon2.png").toExternalForm(),225,225,true,true);
-		mainStage.getIcons().add(appIcon);
-		mainStage.setTitle("CarRace Gambler");
-		mainStage.setAlwaysOnTop(true);
-		mainStage.setScene(mainScene);		
-		mainStage.setMinWidth(screenWidth*0.9);
-		mainStage.setMinHeight(screenHeight*0.9);
-		mainStage.setMaxWidth(screenWidth);
-		mainStage.setMaxHeight(screenHeight);		
-		mainStage.show();
 	}
 	
 	//Mouse listener, gets events from panels of gambler.
@@ -136,10 +134,7 @@ public class GamblerView extends Application implements GamblerListener{
 	public void setGamblerMainPanel(GamblerMainWin gamblerMainPanel) {
 		this.gamblerMainPanel = gamblerMainPanel;
 	}
-	
-	public static void main(String[] args) {
-		launch(args);
-	}
+
 
 	@Override
 	public void loginSuccessful(Gambler gambler) {

@@ -270,7 +270,7 @@ public class Database {
 	public int getLastGamblerId() {
 		String query = "SELECT Gambler.id " + 
 					"FROM Gambler " + 
-					"ORDER BY Race.number DESC";
+					"ORDER BY Gambler.id DESC";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
