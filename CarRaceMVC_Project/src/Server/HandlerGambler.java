@@ -54,24 +54,37 @@ class HandlerGambler implements Runnable, MainServerListener {
 	}
 
 	private void handleMessage(ObjectOutputStream outputStream, MessageGambler inputMessage) {
-		switch (inputMessage.getCommand()) {
-			
-		case GamblerDisconnect:
-			///
-			break;
-			
-		case GamblerLogin:
-			///
-			break;
-			
-		case GamblerBet:
-			///
-			break;
-		default:
-			break;
+		try {
+			switch (inputMessage.getCommand()) {
+
+			case GamblerDisconnect:
+				///
+				break;
+
+			case GamblerLogin:
+				loginGambler(inputMessage.getUsername(), inputMessage.getPassword());
+				break;
+			case GamblerBet:
+				///
+				break;
+			default:
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
+	private void loginGambler(String username, String password) throws IOException {
+		if (database.checkGamblerAuth(username, password)) {
+			database.updateGamblerOnline(username, password, true);
+			Gambler gambler = database.getGamblerDetails(username);
+			MessageGambler message = new MessageGambler(GamblerCommand.GamblerLogin, username, 
+					password, gambler.getBalance(), gambler.getId(), true);
+			outputStream.writeObject(message);
+		}
+	}
+	
 	@Override
 	public void serverDisconnection() {
 		// TODO Auto-generated method stub
