@@ -67,7 +67,7 @@ class HandlerGambler implements Runnable, MainServerListener {
 				loginGambler(inputMessage.getUsername(), inputMessage.getPassword());
 				break;
 			case Bet:
-				///
+				processBet();
 				break;
 			default:
 				break;
@@ -106,6 +106,10 @@ class HandlerGambler implements Runnable, MainServerListener {
 			message = new MessageGambler(GamblerCommand.Register, false);
 		}
 		outputStream.writeObject(message);
+	}
+	
+	private void processBet() {
+		
 	}
 	
 	@Override

@@ -16,3 +16,24 @@ create table Car (name varchar(10) not null unique, make varchar(10) not null, s
 create table GamblerRaceResult(gamblerId integer not null, raceNumber integer not null, revenue integer, constraint fkRaceNumberGRR foreign key (raceNumber) references Race(number), constraint fkGamblerIdGRR foreign key (gamblerId) references Gambler(id));
 create table GamblerCarRace(gamblerId integer not null, raceNumber integer not null, carName varchar(10) not null, bet integer, constraint fkGamblerIdGCR foreign key (gamblerId) references Gambler(id), constraint fkRaceNumberGCR foreign key (raceNumber) references Race(number), constraint fkCarNameGCR foreign key (carName) references Car(name));
 create table CarRaceResult(raceNumber integer not null, carName varchar(10) not null, position integer not null, constraint fkRaceNumberCRR foreign key (raceNumber) references Race(number), constraint fkCarNameCRR foreign key (carName) references Car(name));
+
+insert into Car () values ('Justy', 'Subaru', 'Small', 'Red', 'Hatchback');
+insert into Car () values ('Impreza', 'Subaru', 'Large', 'White', 'Sedan');
+insert into Car () values ('Panda', 'Fiat', 'Small', 'Red', 'Hatchback');
+insert into Car () values ('Punto', 'Fiat', 'Medium', 'Blue', 'Hatchback');
+insert into Car () values ('500', 'Fiat', 'Small', 'White', 'Hatchback');
+insert into Car () values ('Getz', 'Hyundai', 'Small', 'Yellow', 'Hatchback');
+insert into Car () values ('Accent', 'Hyundai', 'Large', 'Yellow', 'Sedan');
+insert into Car () values ('Corolla', 'Toyota', 'Large', 'White', 'Sedan');
+insert into Car () values ('Yaris', 'Toyota', 'Small', 'White', 'Hatchback');
+insert into Car () values ('MX5', 'Mazda', 'Medium', 'Black', 'Cabriolet');
+insert into Car () values ('3', 'Mazda', 'Large', 'Black', 'Sedan');
+insert into Car () values ('Mustang', 'Ford', 'Large', 'Black', 'Cabriolet');
+insert into Car () values ('911', 'Porsche', 'Large', 'Black', 'Cabriolet');
+insert into Car () values ('F-TYPE','Jaguar','Small','Red','Cabriolet');
+insert into Car () values ('XJ','Jaguar','Large','Red','Cabriolet');
+insert into Car () values ('4MATIC','Mercedes','Medium','Blue','Sedan');
+insert into Car () values ('AMG','Mercedes','Large','Red','Cabriolet');
+insert into Car () values ('Carrera','Porsche','Small','Green','Sedan');
+insert into Car () values ('Cayman','Porsche','Medium','Red','Sedan');
+insert into Car () values ('Targa','Porsche','Medium','Green','Cabriolet');

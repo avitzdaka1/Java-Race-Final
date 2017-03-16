@@ -1,8 +1,8 @@
 package Entities;
 
 public class CarProperties {
-	public enum Make {Jaguar, Mercedes, Porsche}
-	public enum Color {Red, Green, Blue}
-	public enum Size {Small, Medium, Large}
-	public enum Type {Cabriolet, Sedan, Truck}	
+	public enum Make { Jaguar, Mercedes, Porsche, Ford, Mazda, Toyota, Hyundai, Fiat, Subaru }
+	public enum Color { Red, Green, Blue, White, Yellow, Black }
+	public enum Size { Small, Medium, Large }
+	public enum Type { Cabriolet, Sedan, Truck }	
 }
