@@ -42,7 +42,7 @@ public class CarRaceServer extends Application {
 	private int raceCounter = 0; // = race Number
 	private int gamblerCounter = 0; // = gambler Number
 	private CarLog carLog;
-	private ServerSocket serverSocket;
+	//private ServerSocket serverSocket;
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 	public void start(Stage primaryStage) {
@@ -144,7 +144,7 @@ public class CarRaceServer extends Application {
 
 		new Thread(() -> {
 			try {
-				serverSocket = new ServerSocket(8888);	//	TODO: Create final for port number.
+				ServerSocket serverSocket = new ServerSocket(8888);	//	TODO: Create final for port number.
 				while (true) {
 					Socket clientSocket = serverSocket.accept();
 					InetAddress clientAddress = clientSocket.getInetAddress();
@@ -168,8 +168,9 @@ public class CarRaceServer extends Application {
 
 		new Thread(() -> {
 			try {
-				serverSocket = new ServerSocket(8889);	//	TODO: Create final for port number.
+				ServerSocket serverSocket = new ServerSocket(8889);	//	TODO: Create final for port number.
 				while (true) {
+					
 					Socket clientSocket = serverSocket.accept();
 					InetAddress clientAddress = clientSocket.getInetAddress();
 					Platform.runLater(()-> {
@@ -178,7 +179,7 @@ public class CarRaceServer extends Application {
 					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, ++gamblerCounter, database);
 					ClientHandlersArray.add(handlerGambler);
 					Thread thread = new Thread(handlerGambler);
-					thread.start();
+					thread.start();		
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();

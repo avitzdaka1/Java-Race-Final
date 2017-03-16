@@ -22,14 +22,13 @@ public class GamblerClient implements Runnable {
 	@Override
 	public void run() {
 		
-	//	message = new MessageGambler(GamblerCommand.GamblerConnect, true);
-
 		try {
 			clientSocket = new Socket("localhost", 8889);
 			outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			connected = true;	
 			gamblerView = new GamblerView(this);
+			
 			//	Listen for server commands.
 			initReceiverFromServer();
 
