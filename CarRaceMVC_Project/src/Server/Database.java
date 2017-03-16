@@ -12,6 +12,32 @@ public class Database {
 	// DB connecting information
 	private final String RACE_DB = "RACE_DB.txt";
 
+	public Database() {
+		if (!checkDBExists())
+			createNewDB();
+	}
+	
+	//	Checks if database tables exist (car table must always be not empty).
+	private boolean checkDBExists() {
+		String query = "SELECT * FROM Car";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace", "scott",
+					"tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							return true;
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	// create new DB if not exists , loads create commands from file
 	public boolean createNewDB () {
 		try (FileInputStream fstream = new FileInputStream(RACE_DB)) {

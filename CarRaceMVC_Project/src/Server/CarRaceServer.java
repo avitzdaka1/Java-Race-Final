@@ -83,6 +83,8 @@ public class CarRaceServer extends Application {
 		scene.getStylesheets().add("Server/serverStyles.css");
 		
 		database = new Database();
+		raceCounter = database.getLastRaceNumber();
+		gamblerCounter = database.getLastGamblerId();
 		//	Creates a new gambler window.
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -153,7 +155,7 @@ public class CarRaceServer extends Application {
 						//	TODO Update Server Log
 						
 					});
-					HandlerRace handlerRace = new HandlerRace(clientSocket, this, 7);
+					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter, database);
 					ClientHandlersArray.add(handlerRace);
 					Thread thread = new Thread(handlerRace);
 					thread.start();
@@ -179,7 +181,7 @@ public class CarRaceServer extends Application {
 					});
 					
 					gamblerCounter++;
-					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, gamblerCounter);
+					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, ++gamblerCounter, database);
 					ClientHandlersArray.add(handlerGambler);
 					Thread thread = new Thread(handlerGambler);
 					thread.start();

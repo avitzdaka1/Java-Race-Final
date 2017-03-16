@@ -16,11 +16,13 @@ public class HandlerRace implements Runnable, MainServerListener{
 	private ObjectOutputStream outputStream;
 	private int id;
 	private CarRaceServer mainServer;
+	private Database database;
 	
-	public HandlerRace(Socket clientSocket, CarRaceServer mainServer, int id){
+	public HandlerRace(Socket clientSocket, CarRaceServer mainServer, int id, Database database){
 		this.clientSocket = clientSocket;
 		this.mainServer = mainServer;
 		this.id = id;
+		this.database = database;
 	}
 
 	@Override
