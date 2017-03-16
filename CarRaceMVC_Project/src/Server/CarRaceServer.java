@@ -89,7 +89,7 @@ public class CarRaceServer extends Application {
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				carLog.printMsg("New gambler added " + dateFormat.format(date));
+				carLog.printMsg("New gambler started " + dateFormat.format(date));
 				startNewGambler();
 			}
 		});
@@ -152,7 +152,7 @@ public class CarRaceServer extends Application {
 					InetAddress clientAddress = clientSocket.getInetAddress();
 					
 					Platform.runLater(()-> {
-						//	TODO Update Server Log
+						carLog.printMsg("New race connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(date));
 						
 					});
 					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter, database);
@@ -176,7 +176,7 @@ public class CarRaceServer extends Application {
 					InetAddress clientAddress = clientSocket.getInetAddress();
 					
 					Platform.runLater(()-> {
-						//	TODO Update Server Log
+						carLog.printMsg("New gambler connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(date));
 						
 					});
 					
