@@ -372,7 +372,7 @@ public class Database {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next()) {
-							if (resultSet.getBoolean(3))
+							if (!resultSet.getBoolean(3))
 								return true;
 						}
 

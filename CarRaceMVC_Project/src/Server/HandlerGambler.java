@@ -60,7 +60,9 @@ class HandlerGambler implements Runnable, MainServerListener {
 			case Disconnect:
 				///
 				break;
-
+			case Register:
+				registerGambler(inputMessage.getUsername(), inputMessage.getPassword());
+				break;
 			case Login:
 				loginGambler(inputMessage.getUsername(), inputMessage.getPassword());
 				break;
@@ -75,14 +77,35 @@ class HandlerGambler implements Runnable, MainServerListener {
 		}
 	}
 
+	//	Logins a new gambler to the database.
 	private void loginGambler(String username, String password) throws IOException {
+		MessageGambler message = null;
 		if (database.checkGamblerAuth(username, password)) {
 			database.updateGamblerOnline(username, password, true);
 			Gambler gambler = database.getGamblerDetails(username);
-			MessageGambler message = new MessageGambler(GamblerCommand.Login, username, 
+			message = new MessageGambler(GamblerCommand.Login, username, 
 					password, gambler.getBalance(), gambler.getId(), true);
-			outputStream.writeObject(message);
+
 		}
+		else {
+			message = new MessageGambler(GamblerCommand.Login, false);
+		}
+		outputStream.writeObject(message);
+	}
+	
+	//	Registers a new gambler to the database.
+	private void registerGambler(String username, String password) throws IOException {
+		MessageGambler message = null;
+		if (!database.gamblerExists(username)) {
+			Gambler gambler = new Gambler(database.getLastGamblerId(), username, password);
+			database.insertNewGambler(gambler);
+			message = new MessageGambler(GamblerCommand.Register, username,
+					password, gambler.getBalance(), gambler.getId(), true);
+		}
+		else {
+			message = new MessageGambler(GamblerCommand.Register, false);
+		}
+		outputStream.writeObject(message);
 	}
 	
 	@Override

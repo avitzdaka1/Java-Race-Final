@@ -153,7 +153,7 @@ public class GamblerView implements GamblerListener{
 			});
 		}
 		else{
-			gamblerLoginPanel.showMessage("Error! Login unsuccessful!");
+			gamblerLoginPanel.showMessage("Error! Registration unsuccessful!");
 		}
 		
 	}
@@ -168,7 +168,9 @@ public class GamblerView implements GamblerListener{
 			});
 		}
 		else{
+			Platform.runLater(() -> {	
 			gamblerLoginPanel.showMessage("Error! Login unsuccessful!");
+			});
 		}
 		
 

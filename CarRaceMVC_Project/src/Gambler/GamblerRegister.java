@@ -51,7 +51,7 @@ public class GamblerRegister extends StackPane{
 		gridsContainer.setBackground(new Background(new BackgroundFill(Color.web("#ffffff70"), CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		txtName = new GamblerTextField("Name : ",fieldTypeText);
-		txtPassword = new GamblerTextField("Password : ",fieldTypeText);
+		txtPassword = new GamblerTextField("Password : ",fieldTypePassword);
 		txtConfPassword = new GamblerTextField("Confirm Password : ",fieldTypePassword);
 		
 		gridsContainer.getChildren().addAll(txtName, txtPassword, txtConfPassword);	
