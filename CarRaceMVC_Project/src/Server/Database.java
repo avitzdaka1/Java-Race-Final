@@ -289,7 +289,7 @@ public class Database {
 	}
 
 	// Gets gambler details using given gambler name.
-	public Gambler getLastGamblerDetails(String gamblerName) {
+	public Gambler getGamblerDetails(String gamblerName) {
 		String query = "SELECT * " + 
 					"FROM Gambler " + 
 					"WHERE Gambler.name = '" + gamblerName + "'";
