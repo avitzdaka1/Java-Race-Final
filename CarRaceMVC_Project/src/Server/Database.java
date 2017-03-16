@@ -1,4 +1,4 @@
-package Server;
+	package Server;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -387,7 +387,7 @@ public class Database {
 
 	// Checks if gambler has enough balance to afford given bet,
 	// if he does, bet on given car in a given race.
-	public boolean gamblerBet(Gambler gambler, Race race, ServerCar car, int bet) {
+	public boolean gamblerBet(Gambler gambler, Race race, Car car, int bet) {
 		String query = "SELECT Gambler.balance " + 
 					"FROM Gambler " +
 					"WHERE Gambler.name = '" + gambler.getName() + "' ";
@@ -654,7 +654,7 @@ public class Database {
 
 /*
 	// Inserts a given new car to the database. public boolean
-	public synchronized boolean insertNewRace(ServerCar car) {
+	public synchronized boolean insertNewCar(ServerCar car) {
 		String query = "INSERT INTO Car " + 
 					"(name, make, size, color, type) " + 
 					"VALUES ( ?, ?, ?, ?, ?)";

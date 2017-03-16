@@ -34,7 +34,9 @@ public class GamblerMainWin extends StackPane {
 	
 	public GamblerMainWin(int panelWidth,int panelHeight) {
 		
-		backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/gamblerBackground1.jpg").toExternalForm()); 
+		setStyle( "-fx-background-image: url(/Gambler/resources/gamblerBackground1.jpg);"
+	            + "-fx-background-size: cover;" );
+		//backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/gamblerBackground1.jpg").toExternalForm()); 
 		betBtn = new GamblerButton(ButtonId.Bet,"bet.png", 180, 170, panelWidth*0.40, panelHeight*0.15);				
 		exitBtn = new GamblerButton(ButtonId.Exit,"exit.png", 190, 150, panelWidth*0.25, panelHeight*0.15);				
 		
@@ -50,7 +52,7 @@ public class GamblerMainWin extends StackPane {
 
 		setPrefWidth(panelWidth);
 		setPrefHeight(panelHeight);
-		setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+		//setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 
 		VBox mainVbox = new VBox();
 		mainVbox.setAlignment(Pos.TOP_CENTER);

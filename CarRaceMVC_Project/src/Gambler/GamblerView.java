@@ -33,8 +33,8 @@ public class GamblerView extends Application{
 	@Override
 	public void start(Stage mainStage) throws Exception {	
 		//Screen Size.
-		screenWidth = Screen.getPrimary().getVisualBounds().getWidth()*0.35;
-		screenHeight = Screen.getPrimary().getVisualBounds().getHeight()*0.5;
+		screenWidth = Screen.getPrimary().getVisualBounds().getWidth()*0.45;
+		screenHeight = Screen.getPrimary().getVisualBounds().getHeight()*0.6;
 				
 		//Initialization of main View
 		mainPane = new AnchorPane();
@@ -60,8 +60,10 @@ public class GamblerView extends Application{
 		mainStage.setAlwaysOnTop(true);
 		mainStage.setScene(mainScene);
 		
-		mainStage.setWidth(screenWidth);
-		mainStage.setHeight(screenHeight);
+		mainStage.setMinWidth(screenWidth*0.9);
+		mainStage.setMinHeight(screenHeight*0.9);
+		mainStage.setMaxWidth(screenWidth);
+		mainStage.setMaxHeight(screenHeight);
 		
 		mainStage.show();
 	}

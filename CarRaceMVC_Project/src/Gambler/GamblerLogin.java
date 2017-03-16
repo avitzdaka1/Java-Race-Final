@@ -33,13 +33,22 @@ public class GamblerLogin extends StackPane{
 		txtName = new GamblerTextField("Name : ",fieldTypeText);
 		txtPassword = new GamblerTextField("Password : ",fieldTypePassword);
 		messageLbl = new Label();
-		backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/gamblerBackground1.jpg").toExternalForm()); 
+		
+		//backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/gamblerBackground1.jpg").toExternalForm()); 
+		setStyle(
+	            "-fx-background-image: url(/Gambler/resources/gamblerBackground1.jpg);"
+	            + "-fx-background-size: cover;"
+	        );
+		
+
+		
+		
 		loginBtn = new GamblerButton(ButtonId.Login,"loginNew.png", 180, 170, panelWidth*0.6, panelHeight*0.12);				
 		regiserBtn = new GamblerButton(ButtonId.goToRegistration,"register.png", 190, 150, panelWidth*0.5, panelHeight*0.3);
 		
 		setPrefWidth(panelWidth);
 		setPrefHeight(panelHeight);
-		setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+		//setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 
 		
 		VBox mainVbox = new VBox();

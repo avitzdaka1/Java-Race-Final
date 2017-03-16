@@ -30,7 +30,7 @@ class HandlerGambler implements Runnable, MainServerListener {
 			inputStream = new ObjectInputStream(clientSocket.getInputStream());
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 
-			while (gamblerConnected) {
+			while (true) {
 				MessageGambler inputMessage = (MessageGambler) inputStream.readObject();
 				handleMessage(outputStream, inputMessage);
 			}
@@ -54,8 +54,22 @@ class HandlerGambler implements Runnable, MainServerListener {
 	}
 
 	private void handleMessage(ObjectOutputStream outputStream, MessageGambler inputMessage) {
-		// TODO Auto-generated method stub
-		
+		switch (inputMessage.getCommand()) {
+			
+		case GamblerDisconnect:
+			///
+			break;
+			
+		case GamblerLogin:
+			///
+			break;
+			
+		case GamblerBet:
+			///
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override

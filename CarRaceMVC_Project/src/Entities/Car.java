@@ -1,15 +1,14 @@
-package Race;
+package Entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import Server.CarLog;
 import javafx.event.Event;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 //
-public class ClientCar implements CarEvents {
+public class Car implements CarEvents {
 	private int id;
 	//	The model the car belongs to
 	private int model_id;
@@ -21,7 +20,7 @@ public class ClientCar implements CarEvents {
 
 	///test
 	
-	public ClientCar(int id, int model_id, CarLog log) {
+	public Car(int id, int model_id, CarLog log) {
 		this.id = id;
 		this.model_id = model_id;
 		this.log = log;
@@ -51,6 +50,11 @@ public class ClientCar implements CarEvents {
 
 	public double getSpeed() {
 		return speed;
+	}
+	
+	//	TODO: create string name attribute and change what this getter returns.
+	public String getName() {
+		return "";
 	}
 
 	public void setColor(Color color) {

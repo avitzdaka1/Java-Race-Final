@@ -35,9 +35,8 @@ public class GamblerRegister extends StackPane{
 		setPrefWidth(panelWidth);
 		setPrefHeight(panelHeight);
 		
-		backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/registerBackground1.jpg").toExternalForm()); 		
-		setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, 
-				BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+		setStyle( "-fx-background-image: url(/Gambler/resources/gamblerBackground1.jpg);"
+	            + "-fx-background-size: cover;" );
 
 		
 		VBox mainVbox = new VBox();

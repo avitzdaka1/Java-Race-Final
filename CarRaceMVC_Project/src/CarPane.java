@@ -40,14 +40,14 @@ public class CarPane extends Pane implements CarEvents {
 	private Timeline tl; // speed=setRate()
 	private Color color;
 	private int r;// radius
-	private ServerCar car;
+	private Car car;
 
 	public CarPane() {
 		xCoor = 0;
 		r = 5;
 	}
 
-	public void setCarModel(ServerCar myCar) {
+	public void setCarModel(Car myCar) {
 		car = myCar;
 		if (car != null) {
 			car.addEventHandler(new ColorEvent(), eventType.COLOR);
@@ -56,7 +56,7 @@ public class CarPane extends Pane implements CarEvents {
 		}
 	}
 
-	public ServerCar getCarModel() {
+	public Car getCarModel() {
 		return car;
 	}
 

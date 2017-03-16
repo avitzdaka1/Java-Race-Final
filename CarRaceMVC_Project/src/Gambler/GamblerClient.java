@@ -15,22 +15,19 @@ public class GamblerClient implements Runnable{
 	private ObjectInputStream inputStreamFromServer;		
 	private boolean connected = false;
 	private MessageGambler message;
-	
 	private GamblerView gamblerView;
 	
 	@Override
 	public void run() {
 		
-		message = new MessageGambler(GamblerCommand.GamblerConnect, true);
+	//	message = new MessageGambler(GamblerCommand.GamblerConnect, true);
 
 		try {
 			clientSocket = new Socket("127.0.0.1", 8889);
 			outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			connected = true;	
-			
-			//	Send connect message to the server.
-			outputStreamToServer.writeObject(message);
+			gamblerView = new GamblerView(outputStreamToServer);
 			
 			//	Listen for server commands.
 			initReceiverFromServer();
@@ -55,11 +52,6 @@ public class GamblerClient implements Runnable{
 
 	private void processMessage(MessageGambler message) {
 		switch(message.getCommand()){
-			case  GamblerConnect:
-				///				
-			//	gamblerView = new GamblerView(outputStreamToServer);				
-			//	gamblerView.getGamblerLoginPanel().showMessage("Connected!");
-				break;
 				
 			case  GamblerDisconnect:
 				///
