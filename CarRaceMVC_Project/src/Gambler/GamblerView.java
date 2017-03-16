@@ -27,9 +27,7 @@ public class GamblerView extends Application{
 	private GamblerMainWin gamblerMainPanel;
 	
 	private GamblerClient client;
-	
-	
-	
+		
 	public GamblerView(GamblerClient client) {
 		this.client = client;
 	}
@@ -62,13 +60,11 @@ public class GamblerView extends Application{
 		mainStage.getIcons().add(appIcon);
 		mainStage.setTitle("CarRace Gambler");
 		mainStage.setAlwaysOnTop(true);
-		mainStage.setScene(mainScene);
-		
+		mainStage.setScene(mainScene);		
 		mainStage.setMinWidth(screenWidth*0.9);
 		mainStage.setMinHeight(screenHeight*0.9);
 		mainStage.setMaxWidth(screenWidth);
-		mainStage.setMaxHeight(screenHeight);
-		
+		mainStage.setMaxHeight(screenHeight);		
 		mainStage.show();
 	}
 	
@@ -82,19 +78,16 @@ public class GamblerView extends Application{
 			case Login:
 				
 				String username = gamblerLoginPanel.getName();
-				String password = gamblerLoginPanel.getPassword();
-				
+				String password = gamblerLoginPanel.getPassword();				
 				MessageGambler message = new MessageGambler(GamblerCommand.GamblerLogin, username, password);
 				client.loginGambler(message);
-				//Check gambler out in the dataBase  , get gambler,			
-				//if (successful):
-				Gambler testGambler = new Gambler(00, "Test", "pass", 9999);
-				//
-				gamblerMainPanel.setGambler(testGambler);
+
+
+		//		gamblerMainPanel.setGambler(testGambler);
 				//Check gambler out  of in the dataBase/			
 				//if (successful):
-				mainPane.getChildren().remove(gamblerLoginPanel);
-				mainPane.getChildren().add(gamblerMainPanel);
+
+				
 				//else: gamblerLoginPanel.showErrorMessage(String message)
 							
 				break;
@@ -131,6 +124,14 @@ public class GamblerView extends Application{
 
 	public GamblerRegister getGamblerRegistrationPanel() {
 		return gamblerRegistrationPanel;
+	}
+
+	public AnchorPane getMainPane() {
+		return mainPane;
+	}
+
+	public void setMainPane(AnchorPane mainPane) {
+		this.mainPane = mainPane;
 	}
 
 	public void setGamblerRegistrationPanel(GamblerRegister gamblerRegistrationPanel) {

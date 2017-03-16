@@ -54,6 +54,9 @@ public class GamblerClient implements Runnable{
 					
 			case  GamblerLogin:
 				///
+				gamblerView.getMainPane().getChildren().remove(gamblerView.getGamblerLoginPanel());
+				gamblerView.getMainPane().getChildren().add(gamblerView.getGamblerMainPanel());
+
 				break;
 				
 			case  GamblerBet:
