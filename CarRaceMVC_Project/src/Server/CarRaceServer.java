@@ -44,8 +44,6 @@ public class CarRaceServer extends Application {
 	private CarLog carLog;
 	private ServerSocket serverSocket;
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-	private Date date = new Date();
-
 
 	public void start(Stage primaryStage) {
 		createServerGUI(primaryStage);
@@ -89,7 +87,7 @@ public class CarRaceServer extends Application {
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				carLog.printMsg("New gambler started " + dateFormat.format(date));
+				carLog.printMsg("New gambler started " + dateFormat.format(new Date()));
 				startNewGambler();
 			}
 		});
@@ -100,7 +98,7 @@ public class CarRaceServer extends Application {
 			public void handle(ActionEvent event) {
 				Platform.runLater(() -> {
 					carLog.clearLog();
-					carLog.printMsg("The Log was cleared at " + dateFormat.format(date) + "\n\n");
+					carLog.printMsg("The Log was cleared at " + dateFormat.format(new Date()) + "\n\n");
 				});
 			}
 		});
@@ -126,7 +124,7 @@ public class CarRaceServer extends Application {
 			}
 		});
 
-		carLog.printMsg("Server was started at " + dateFormat.format(date));
+		carLog.printMsg("Server was started at " + dateFormat.format(new Date()));
 		
 		modelList = new ArrayList<Model>();
 		ClientHandlersArray = new ArrayList<MainServerListener>();
@@ -152,7 +150,7 @@ public class CarRaceServer extends Application {
 					InetAddress clientAddress = clientSocket.getInetAddress();
 					
 					Platform.runLater(()-> {
-						carLog.printMsg("New race connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(date));
+						carLog.printMsg("New race connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(new Date()));
 						
 					});
 					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter, database);
@@ -174,13 +172,9 @@ public class CarRaceServer extends Application {
 				while (true) {
 					Socket clientSocket = serverSocket.accept();
 					InetAddress clientAddress = clientSocket.getInetAddress();
-					
 					Platform.runLater(()-> {
-						carLog.printMsg("New gambler connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(date));
-						
+						carLog.printMsg("New gambler connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(new Date()));
 					});
-					
-					gamblerCounter++;
 					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, ++gamblerCounter, database);
 					ClientHandlersArray.add(handlerGambler);
 					Thread thread = new Thread(handlerGambler);

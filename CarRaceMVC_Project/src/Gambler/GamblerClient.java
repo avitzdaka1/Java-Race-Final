@@ -25,7 +25,7 @@ public class GamblerClient implements Runnable {
 	//	message = new MessageGambler(GamblerCommand.GamblerConnect, true);
 
 		try {
-			clientSocket = new Socket("127.0.0.1", 8889);
+			clientSocket = new Socket("localhost", 8889);
 			outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			connected = true;	
