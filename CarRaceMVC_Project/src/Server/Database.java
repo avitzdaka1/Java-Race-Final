@@ -12,12 +12,19 @@ public class Database {
 	// DB connecting information
 	private final String RACE_DB = "RACE_DB.txt";
 
+	/**
+	 * Database constructor, if the database is empty, it creates it.
+	 */
 	public Database() {
 		if (!checkDBExists())
 			createNewDB();
 	}
 	
-	//	Checks if database tables exist (car table must always be not empty).
+	/**
+	 * Checks if database tables exist (car table must always be not empty).
+	 * @return whether the database exists or not.
+	 * @exception Exception
+	 */
 	private boolean checkDBExists() {
 		String query = "SELECT * FROM Car";
 		try {
@@ -38,7 +45,11 @@ public class Database {
 		return false;
 	}
 	
-	// create new DB if not exists , loads create commands from file
+	/**
+	 * Creates and inserts tables to the (empty) database.
+	 * @return whether the method succeeded or not.
+	 * @exception Exception
+	 */
 	public boolean createNewDB () {
 		try (FileInputStream fstream = new FileInputStream(RACE_DB)) {
 			try (DataInputStream in = new DataInputStream(fstream)) {
@@ -74,10 +85,14 @@ public class Database {
 		return true;
 	}
 
-	// Returns all race records.
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
 	// in a his tableview.
+	/**
+	 * Returns all finished race records.
+	 * TODO: update @param and @return after changing this method.
+	 * @exception Exception
+	 */
 	public void getFinishedRaces() {
 		String query = "SELECT Race.number, Race.raceDate, Race.totalBets " + 
 					"FROM Race " + 
@@ -107,10 +122,13 @@ public class Database {
 		}
 	}
 
-	// Returns all gambler records.
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
 	// in a his tableview.
+	/**
+	 * Returns all gambler records.
+	 * TODO: update @param and @return after changing this method.
+	 */
 	public void getAllGamblers() {
 		String query = "SELECT Gambler.id, Gambler.name, Gambler.password, Gambler.balance " + 
 					"FROM Gambler " + 
@@ -137,11 +155,17 @@ public class Database {
 		}
 	}
 
-	// Returns race results (cars names and positions, gamblers and their
-	// bets+revenues), given the race number.
+
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
-	// in a his tableview.
+	// in a his tableview.	
+	/**
+	 * Returns race results (cars names and positions, gamblers and their bets + revenues),
+	 * given the race number.
+	 * @param raceNumber the race number you wish to search for.
+	 * TODO: update @param and @return after changing this method.
+	 * @exception Exception
+	 */
 	public void getFinishedRaceResults(int raceNumber) {
 		String query = "SELECT CarRaceResult.position, CarRaceResult.carName, GamblerCarRace.gamblerId, GamblerCarRace.bet, GamblerRaceResult.revenue " + 
 					"FROM CarRaceResult, GamblerCarRace, GamblerRaceResult, Race " + 
@@ -172,11 +196,16 @@ public class Database {
 		}
 	}
 
-	// Returns gambler race results (all races, bets, cars bet on, revenues),
-	// given the gambler id number.
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
 	// in a his tableview.
+	/**
+	 * Returns gambler race results (all races, bets, cars bet on, revenues),
+	 * given the gamb'ers id number.
+	 * @param gamblerId the gambler's id number.
+	 * TODO: update @param and @return after changing this method.
+	 * @exception Exception
+	 */
 	public void getGamblerHistory(int gamblerId) {
 		String query = "SELECT GamblerCarRace.raceNumber, Gambler.name, GamblerCarRace.carName, GamblerCarRace.bet, GamblerRaceResult.revenue " + 
 					"FROM GamblerCarRace, Gambler, GamblerRaceResult " + 
@@ -206,11 +235,15 @@ public class Database {
 		}
 	}
 
-	// Returns live race results (cars names, gamblers and their bets), given
-	// the race number.
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
 	// in a his tableview.
+	/**
+	 * Returns live race results (car names, gamblers and their bets), given the race number.
+	 * TODO: update @param and @return after changing this method.
+	 * @param raceNumber the race number to search for.
+	 * @exception Exception
+	 */
 	public void getLiveRaceResults(int raceNumber) {
 		String query = "SELECT Race.number, Race.state, GamblerCarRace.gamblerId, CarRaceResult.carName,  GamblerCarRace.bet " + 
 					"FROM CarRaceResult, GamblerCarRace, Race " + 
@@ -241,7 +274,11 @@ public class Database {
 		}
 	}
 
-	// Gets the last race number.
+	/**
+	 * Returns the last race number.
+	 * @return the last race number.
+	 * @exception Exception
+	 */
 	public int getLastRaceNumber() {
 		String query = "SELECT Race.number " + 
 					"FROM Race " + 
@@ -266,7 +303,11 @@ public class Database {
 		return 0;
 	}
 
-	// Gets the last gambler id.
+	/**
+	 * Returns the last gambler's id.
+	 * @return the last gambler's id.
+	 * @exception Exception
+	 */
 	public int getLastGamblerId() {
 		String query = "SELECT Gambler.id " + 
 					"FROM Gambler " + 
@@ -288,7 +329,12 @@ public class Database {
 		return 0;
 	}
 
-	// Gets gambler details using given gambler name.
+	/**
+	 * Returns gambler details using given gambler name.
+	 * @param gamblerName the gambler's name to search for.
+	 * @return gambler details.
+	 * @exception Exception
+	 */
 	public Gambler getGamblerDetails(String gamblerName) {
 		String query = "SELECT * " + 
 					"FROM Gambler " + 
@@ -311,7 +357,12 @@ public class Database {
 		return null;
 	}
 
-	// Finds out of a given gambler already exists in database (checks name).
+	/**
+	 * Finds out of a given gambler already exists in database (checks name).
+	 * @param gamblerName the gambler's name to search for.
+	 * @return if the gambler already exists.
+	 * @exception Exception
+	 */
 	public boolean gamblerExists(String gamblerName) {
 		String query = "SELECT Gambler.name " + 
 					"FROM Gambler " + 
@@ -334,12 +385,16 @@ public class Database {
 		return false;
 	}
 
-	// Finds out if a given gambler (name and password) is online.
-	public boolean gamblerOnline(String gamblerName, String gamblerPassword) {
-		String query = "SELECT Gambler.name, Gambler.password, Gambler.isOnline " + 
+	/**
+	 * Finds out if a given gambler (name and password) is online.
+	 * @param gamblerName the gambler's name to search for.
+	 * @return whether gambler is online or not.
+	 * @exception Exception
+	 */
+	public boolean gamblerOnline(String gamblerName) {
+		String query = "SELECT Gambler.name, Gambler.isOnline " + 
 					"FROM Gambler " + 
-					"WHERE Gambler.name = '" + gamblerName + "' " + 
-					"AND Gambler.password = '" + gamblerPassword + "'";
+					"WHERE Gambler.name = '" + gamblerName + "' ";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
@@ -347,7 +402,7 @@ public class Database {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next())
-							if (resultSet.getBoolean(3))
+							if (resultSet.getBoolean(2))
 								return true;
 					}
 				}
@@ -358,8 +413,13 @@ public class Database {
 		return false;
 	}
 
-	// Checks a given gambler's login credentials, and if the gambler is
-	// currently online.
+	/**
+	 * Checks a given gambler's login credentials, and if the gambler is currently online.
+	 * @param gamblerName the gambler's user name.
+	 * @param gamblerPassword the gambler's password.
+	 * @return whether the gambler can login or not.
+	 * @exception Exception
+	 */
 	public boolean checkGamblerAuth(String gamblerName, String gamblerPassword) {
 		String query = "SELECT Gambler.name, Gambler.password, Gambler.isOnline " + 
 					"FROM Gambler " + 
@@ -385,8 +445,16 @@ public class Database {
 		return false;
 	}
 
-	// Checks if gambler has enough balance to afford given bet,
-	// if he does, bet on given car in a given race.
+	/**
+	 * Checks if gambler has enough balance to afford given bet,
+	 * if he does, bet on given car in a given race.
+	 * @param gambler the gambler that bets.
+	 * @param race the race the gamblers bets in.
+	 * @param car the car the gamblers bets on.
+	 * @param bet the gambler's bet.
+	 * @return whether the bet has been placed or not.
+	 * @exception Exception
+	 */
 	public boolean gamblerBet(Gambler gambler, Race race, Car car, int bet) {
 		String query = "SELECT Gambler.balance " + 
 					"FROM Gambler " +
@@ -418,7 +486,15 @@ public class Database {
 		return false;
 	}
 
-	// Places a gambler bet on a given car and race.
+	/**
+	 * Places a gambler bet on a given car and race.
+	 * @param gamblerId the gambler that bets.
+	 * @param raceNumber the race the gambler bets in.
+	 * @param carName the car the gambler bets on.
+	 * @param bet the bet.
+	 * @return whether the bet has been placed or not.
+	 * @exception Exception
+	 */
 	public synchronized boolean placeGamblerBet(int gamblerId, int raceNumber, String carName, int bet) {
 		String query = "INSERT INTO GamblerCarRace " + 
 					"(gamblerId, raceNumber, carName, bet) " + 
@@ -442,7 +518,14 @@ public class Database {
 		return true;
 	}
 	
-	// Inserts new gambler-race result (revenue from race).
+	/**
+	 * Inserts new gambler-race result (revenue from race).
+	 * @param gamblerId the result's gambler id.
+	 * @param raceNumber the result's race number.
+	 * @param revenue the gambler revenue of the race.
+	 * @return whether the insertion succeeded.
+	 * @exception Exception
+	 */
 	public synchronized boolean insertGamblerRaceResult(int gamblerId, int raceNumber, int revenue) {
 		String query = "INSERT INTO GamblerRaceResult " + 
 					"(gamblerId, raceNumber, revenue) " + 
@@ -465,30 +548,43 @@ public class Database {
 		return true;
 	}
 	
-	// Inserts new car-race result (car's position in race).
-		public synchronized boolean insertCarRaceResult(int raceNumber, String carName, int position) {
-			String query = "INSERT INTO CarRaceResult " + 
-						"(raceNumber, carName, position) " + 
-						"VALUES ( ?, ?, ?)";
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				try (Connection dbConnection = DriverManager
-						.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
-					try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
-						dbPrepStatement.setInt(1, raceNumber);
-						dbPrepStatement.setString(2, carName);
-						dbPrepStatement.setInt(3, position);
-						dbPrepStatement.executeUpdate();
-					}
+	/**
+	 * Inserts new car-race result (car's position in race).
+	 * @param raceNumber the result's race number.
+	 * @param carName the result's car name.
+	 * @param position the position of the car.
+	 * @return whether the insertion succeeded.
+	 * @exception exception
+	 */
+	public synchronized boolean insertCarRaceResult(int raceNumber, String carName, int position) {
+		String query = "INSERT INTO CarRaceResult " + 
+					"(raceNumber, carName, position) " + 
+					"VALUES ( ?, ?, ?)";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace", "scott",
+					"tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setInt(1, raceNumber);
+					dbPrepStatement.setString(2, carName);
+					dbPrepStatement.setInt(3, position);
+					dbPrepStatement.executeUpdate();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
 			}
-			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
+		return true;
+	}
 
-	// Updates a given race's total bets.
+	/**
+	 * Updates a given race's total bets.
+	 * @param raceNumber the race number to update.
+	 * @param bet the bet to add.
+	 * @return whether update succeeded.
+	 * @exception Exception
+	 */
 	public synchronized boolean updateRaceTotalBets(int raceNumber, int bet) {
 		String query = "UPDATE Race " + 
 					"SET totalBets = ? " + 
@@ -513,7 +609,12 @@ public class Database {
 		return false;
 	}
 		
-	// Retrieves a given race's total bets (using race number).
+	/**
+	 * Retrieves a given race's total bets (using race number).
+	 * @param raceNumber the race to look for.
+	 * @return the total amount of bets of a given race.
+	 * @exception Exception
+	 */
 	public int getRaceTotalBets(int raceNumber) {
 		String query = "SELECT Race.totalBets " + 
 					"FROM Race " + 
@@ -535,7 +636,13 @@ public class Database {
 		return -1;
 	}
 		
-	// Updates a given gambler's balance.
+	/**
+	 * Updates a given gambler's balance.
+	 * @param gambler the gambler to update.
+	 * @param balance the balance to update.
+	 * @return whether update succeeded.
+	 * @exception Exception
+	 */
 	public synchronized boolean updateGamblerBalance(Gambler gambler, int balance) {
 		String query = "UPDATE Gambler " + 
 					"SET balance = ? " + 
@@ -557,7 +664,14 @@ public class Database {
 		return true;
 	}
 
-	// Sets a given gambler's online status (using gambler name and password).
+	/**
+	 * Sets a given gambler's online status (using gambler name and password).
+	 * @param gamblerName the gambler to update.
+	 * @param gamblerPassword the gambler's password
+	 * @param online the new online status.
+	 * @return whether the update succeeded.
+	 * @exception Exception
+	 */
 	public synchronized boolean updateGamblerOnline(String gamblerName, String gamblerPassword, boolean online) {
 		String query = "UPDATE Gambler " + 
 					"SET isOnline = ? " + 
@@ -581,7 +695,12 @@ public class Database {
 		return true;
 	}
 
-	// Finds out of a given car already exists in database (checks name).
+	/**
+	 * Finds out of a given car already exists in database (checks name).
+	 * @param carName the car name to search.
+	 * @return whether the car already exists.
+	 * @exception Exception
+	 */
 	public boolean carExists(String carName) {
 		String query = "SELECT Car.name " + 
 					"FROM Car " + 
@@ -604,7 +723,12 @@ public class Database {
 		return false;
 	}
 
-	// Inserts a given new race to the database.
+	/**
+	 * Inserts a given new race to the database.
+	 * @param race the new race to insert.
+	 * @return whether the insertion succeeded.
+	 * @exception Exception
+	 */
 	public synchronized boolean insertNewRace(Race race) {
 		String query = "INSERT INTO Race " + 
 					"(number, raceDate, state, totalBets) " + 
@@ -628,7 +752,12 @@ public class Database {
 		return true;
 	}
 
-	// Inserts a given new gambler to the database.
+	/**
+	 * Inserts a given new gambler to the database.
+	 * @param gambler the new gambler to insert.
+	 * @return whether the insertion succeeded.
+	 * @exception Exception.
+	 */
 	public synchronized boolean insertNewGambler(Gambler gambler) {
 		String query = "INSERT INTO Gambler " + 
 					"(id, name, password, balance) " + 
