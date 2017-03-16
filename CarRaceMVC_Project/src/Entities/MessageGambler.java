@@ -1,8 +1,11 @@
 package Entities;
 
-//	Message between gambler client and gambler handler on the server.
-public class MessageGambler {
+import java.io.Serializable;
 
+//	Message between gambler client and gambler handler on the server.
+public class MessageGambler implements Serializable {
+
+	private static final long serialVersionUID = 4074618552007098484L;
 	private GamblerCommand command;
 	private String username, password, carName;
 	private int raceNumber, bet, balance;
@@ -11,6 +14,11 @@ public class MessageGambler {
 	public MessageGambler(GamblerCommand command, boolean status) {
 		this.command = command;
 		this.status = status;
+	}
+	public MessageGambler(GamblerCommand command, String username, String password) {
+		this.command = command;
+		this.username = username;
+		this.password = password;
 	}
 	public GamblerCommand getCommand() {
 		return command;

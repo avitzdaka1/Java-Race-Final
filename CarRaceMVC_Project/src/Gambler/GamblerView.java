@@ -4,6 +4,8 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 
 import Entities.Gambler;
+import Entities.GamblerCommand;
+import Entities.MessageGambler;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -19,15 +21,17 @@ public class GamblerView extends Application{
 	private Scene mainScene;
 	private AnchorPane mainPane;
 	private double screenWidth, screenHeight;
-	private ObjectOutputStream outputStreamToServer;
 
 	private GamblerLogin gamblerLoginPanel;
 	private GamblerRegister gamblerRegistrationPanel;
 	private GamblerMainWin gamblerMainPanel;
 	
+	private GamblerClient client;
 	
 	
-	public GamblerView() {
+	
+	public GamblerView(GamblerClient client) {
+		this.client = client;
 	}
 
 	@Override
@@ -77,9 +81,14 @@ public class GamblerView extends Application{
 			switch (btnClicked.getButtonId()) {
 			case Login:
 				
+				String username = gamblerLoginPanel.getName();
+				String password = gamblerLoginPanel.getPassword();
+				
+				MessageGambler message = new MessageGambler(GamblerCommand.GamblerLogin, username, password);
+				client.loginGambler(message);
 				//Check gambler out in the dataBase  , get gambler,			
 				//if (successful):
-				Gambler testGambler = new Gambler(00, "Test", "pass", 1000);
+				Gambler testGambler = new Gambler(00, "Test", "pass", 9999);
 				//
 				gamblerMainPanel.setGambler(testGambler);
 				//Check gambler out  of in the dataBase/			
@@ -111,11 +120,6 @@ public class GamblerView extends Application{
 			}
 		}
 	};
-	
-
-	public GamblerView(ObjectOutputStream outputStreamToServer) {
-		this.outputStreamToServer = outputStreamToServer;
-	}
 
 	public GamblerLogin getGamblerLoginPanel() {
 		return gamblerLoginPanel;

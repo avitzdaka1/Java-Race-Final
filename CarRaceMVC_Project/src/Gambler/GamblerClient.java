@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import Entities.Gambler;
 import Entities.GamblerCommand;
 import Entities.MessageGambler;
 
@@ -14,7 +15,6 @@ public class GamblerClient implements Runnable{
 	private ObjectOutputStream outputStreamToServer;
 	private ObjectInputStream inputStreamFromServer;		
 	private boolean connected = false;
-	private MessageGambler message;
 	private GamblerView gamblerView;
 	
 	@Override
@@ -27,8 +27,7 @@ public class GamblerClient implements Runnable{
 			outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			connected = true;	
-			gamblerView = new GamblerView(outputStreamToServer);
-			
+			gamblerView = new GamblerView(this);		
 			//	Listen for server commands.
 			initReceiverFromServer();
 
@@ -52,21 +51,33 @@ public class GamblerClient implements Runnable{
 
 	private void processMessage(MessageGambler message) {
 		switch(message.getCommand()){
+					
+			case  GamblerLogin:
+				///
+				break;
+				
+			case  GamblerBet:
+				///
+				break;
 				
 			case  GamblerDisconnect:
 				///
 				break;
-			case  GamblerLogin:
-				///
-				break;
-			case  GamblerBet:
-				///
-				break;
+				
 			default:
 				break;
  		}
 	}
  	
 
+	public void loginGambler(MessageGambler message){
+		try {
+			outputStreamToServer.writeObject(message);
+		} catch (IOException e) {
+			//	Update message on LoginPanel
+			gamblerView.getGamblerLoginPanel().showMessage("Connection error!");
+			e.printStackTrace();
+		}
+	}
 
 }
