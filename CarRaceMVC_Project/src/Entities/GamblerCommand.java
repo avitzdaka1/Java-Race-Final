@@ -1,5 +1,5 @@
 package Entities;
 
 public enum GamblerCommand {
-	GamblerConnect, GamblerDisconnect, GamblerLogin, GamblerLogout, GamblerBet;
+	Connect, Disconnect, Register, Login, Logout, Bet;
 }

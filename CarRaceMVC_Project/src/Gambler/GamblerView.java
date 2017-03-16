@@ -77,7 +77,7 @@ public class GamblerView implements GamblerListener{
 			case Login:			
 				String username = gamblerLoginPanel.getName();
 				String password = gamblerLoginPanel.getPassword();				
-				MessageGambler message = new MessageGambler(GamblerCommand.GamblerLogin, username, password);
+				MessageGambler message = new MessageGambler(GamblerCommand.Login, username, password);
 				client.loginGambler(message);
 				break;
 

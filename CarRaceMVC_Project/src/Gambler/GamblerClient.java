@@ -54,7 +54,7 @@ public class GamblerClient implements Runnable {
 	private void processMessage(MessageGambler message) {
 		switch(message.getCommand()){
 					
-			case  GamblerLogin:
+			case  Login:
 				if(message.getStatus()) {
 					Gambler gambler = new Gambler(message.getId(), message.getUsername(), message.getPassword(),
 							message.getBalance());
@@ -64,11 +64,11 @@ public class GamblerClient implements Runnable {
 					gamblerView.loginUnsuccessful();				
 				break;
 				
-			case  GamblerBet:
+			case  Bet:
 				///
 				break;
 				
-			case  GamblerDisconnect:
+			case  Disconnect:
 				///
 				break;
 				

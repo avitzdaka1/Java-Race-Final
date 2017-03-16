@@ -57,14 +57,14 @@ class HandlerGambler implements Runnable, MainServerListener {
 		try {
 			switch (inputMessage.getCommand()) {
 
-			case GamblerDisconnect:
+			case Disconnect:
 				///
 				break;
 
-			case GamblerLogin:
+			case Login:
 				loginGambler(inputMessage.getUsername(), inputMessage.getPassword());
 				break;
-			case GamblerBet:
+			case Bet:
 				///
 				break;
 			default:
@@ -79,7 +79,7 @@ class HandlerGambler implements Runnable, MainServerListener {
 		if (database.checkGamblerAuth(username, password)) {
 			database.updateGamblerOnline(username, password, true);
 			Gambler gambler = database.getGamblerDetails(username);
-			MessageGambler message = new MessageGambler(GamblerCommand.GamblerLogin, username, 
+			MessageGambler message = new MessageGambler(GamblerCommand.Login, username, 
 					password, gambler.getBalance(), gambler.getId(), true);
 			outputStream.writeObject(message);
 		}
