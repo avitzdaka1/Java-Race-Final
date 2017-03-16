@@ -13,13 +13,14 @@ public class CarLog extends BorderPane {
 		srcPane = new ScrollPane();
 		srcPane.setFitToHeight(true);
 		srcPane.setFitToWidth(true);
+		srcPane.setPrefHeight(200);
 		vBoxInSrcPane = new VBox(3);
 		srcPane.setContent(vBoxInSrcPane);
 		setCenter(srcPane);
 	}
 
 	public void printMsg(String str) {
-		Label action = new Label(str);
+		Label action = new Label(str +"\n------------------------------");
 		vBoxInSrcPane.getChildren().add(action);
 		srcPane.setVvalue(action.getScaleY() + action.getHeight());
 	}

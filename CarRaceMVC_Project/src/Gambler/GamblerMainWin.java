@@ -45,7 +45,7 @@ public class GamblerMainWin extends StackPane {
 		betTxt = new GamblerTextField("Your Bet: ", 0);
 		messageLbl = new Label();
 		
-		gamblerInfoLbl = new Label("Welcome " + gambler.getName() + ". Your balance: " + gambler.getBalance());
+		gamblerInfoLbl = new Label();
 		gamblerInfoLbl.setFont(new Font("Serif", 20));
 		gamblerInfoLbl.setTextFill(Color.DEEPSKYBLUE);
 		gamblerInfoLbl.setStyle("-fx-font-weight: bold;");
@@ -82,6 +82,8 @@ public class GamblerMainWin extends StackPane {
 
 	public void setGambler(Gambler gambler) {
 		this.gambler = gambler;
+		gamblerInfoLbl.setText("Welcome " + gambler.getName() + ". Your balance: " + gambler.getBalance());
+
 	}
 
 	public void setEventHandler(EventHandler<MouseEvent> mouseEventHandler){
