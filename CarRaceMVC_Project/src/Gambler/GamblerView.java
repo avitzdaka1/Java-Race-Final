@@ -74,11 +74,19 @@ public class GamblerView implements GamblerListener{
 			GamblerButton btnClicked = (GamblerButton)e.getSource();
 
 			switch (btnClicked.getButtonId()) {
+			
+			case Registration:
+					String regUsername = gamblerRegistrationPanel.getName();
+					String regPassword = gamblerRegistrationPanel.getPassword();
+					MessageGambler messageReg = new MessageGambler(GamblerCommand.Register, regUsername, regPassword);
+					client.SendGamblerMessage(messageReg);
+				break;
+				
 			case Login:			
 				String username = gamblerLoginPanel.getName();
 				String password = gamblerLoginPanel.getPassword();				
 				MessageGambler message = new MessageGambler(GamblerCommand.Login, username, password);
-				client.loginGambler(message);
+				client.SendGamblerMessage(message);
 				break;
 
 			case Cancel:
@@ -137,19 +145,33 @@ public class GamblerView implements GamblerListener{
 
 
 	@Override
-	public void loginSuccessful(Gambler gambler) {
-		Platform.runLater(() -> {		
-			gamblerMainPanel.setGambler(gambler);
-			mainPane.getChildren().remove(gamblerLoginPanel);
-			mainPane.getChildren().add(gamblerMainPanel);
-		});
-
-	}
-
-	@Override
-	public void loginUnsuccessful() {
-		// TODO Auto-generated method stub
+	public void registerSuccess(boolean success) {
+		if(success) {
+			Platform.runLater(() -> {		
+				mainPane.getChildren().remove(gamblerRegistrationPanel);
+				mainPane.getChildren().add(gamblerLoginPanel);
+			});
+		}
+		else{
+			gamblerLoginPanel.showMessage("Error! Login unsuccessful!");
+		}
 		
+	}
+	
+	@Override
+	public void loginSuccess(Gambler gambler) {
+		if(gambler != null) {
+			Platform.runLater(() -> {		
+				gamblerMainPanel.setGambler(gambler);
+				mainPane.getChildren().remove(gamblerLoginPanel);
+				mainPane.getChildren().add(gamblerMainPanel);
+			});
+		}
+		else{
+			gamblerLoginPanel.showMessage("Error! Login unsuccessful!");
+		}
+		
+
 	}
 
 	@Override
@@ -175,4 +197,5 @@ public class GamblerView implements GamblerListener{
 		// TODO Auto-generated method stub
 		
 	}
+
 }
