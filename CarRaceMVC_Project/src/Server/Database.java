@@ -157,6 +157,38 @@ public class Database {
 		}
 	}
 
+	/**
+	 * Updates a race result when a race has finished.
+	 * @param raceNumber the race's number.
+	 * @param carName the car's name.
+	 * @param position the car's position in the race.
+	 * @return whether the update succeeded.
+	 */
+	public synchronized boolean updateCarRaceResult(int raceNumber, String carName, int position) {
+		String query = "UPDATE CarRaceResult " + 
+					"SET position = ? " + 
+					"WHERE raceNumber = ? " +
+					"AND carName = ?";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					int raceTotalBets = getRaceTotalBets(raceNumber);
+					if (raceTotalBets != -1) {
+						dbPrepStatement.setInt(1, position);
+						dbPrepStatement.setInt(2, raceNumber);
+						dbPrepStatement.setString(3, carName);
+						dbPrepStatement.executeUpdate();
+						return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	// TODO: Create some sort of a race result to return to the function caller
 	// and to display
@@ -274,6 +306,62 @@ public class Database {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Returns all available races that haven't started yet (but are betable).
+	 * @return array of races that a gambler can bet on.
+	 */
+	public ArrayList<Integer> getHoldingRaces() {
+		String query = "SELECT Race.number " + 
+					"FROM Race " + 
+					"WHERE Race.state => 0 " +
+ 					"AND Race.state < 4";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						ArrayList<Integer> raceNumbers = new ArrayList<>();
+						while (resultSet.next()) {
+							raceNumbers.add(resultSet.getInt(1));
+						}
+						return raceNumbers;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns a given race's cars.
+	 * @return arraylist of car names.
+	 */
+	public ArrayList<String> getCarsInRace(int raceNumber) {
+		String query = "SELECT CarRaceResult.carName " + 
+					"FROM CarRaceResult ";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						ArrayList<String> carNames = new ArrayList<>();
+						while (resultSet.next()) {
+							carNames.add(resultSet.getString(1));
+						}
+						return carNames;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -608,7 +696,7 @@ public class Database {
 	 * Inserts new car-race result (car's position in race).
 	 * @param raceNumber the result's race number.
 	 * @param carName the result's car name.
-	 * @param position the position of the car.
+	 * @param position the position of the car, starts from 1.
 	 * @return whether the insertion succeeded.
 	 * @exception exception
 	 */

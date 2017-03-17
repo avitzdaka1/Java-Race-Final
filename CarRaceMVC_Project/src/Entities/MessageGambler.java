@@ -12,8 +12,10 @@ public class MessageGambler implements Serializable {
 
 	private static final long serialVersionUID = 4074618552007098484L;
 	private GamblerCommand command;
-	private String username, password, carName;
-	private int raceNumber, bet, balance, id;
+	private String username, password;
+	private String[] carNames;
+	private int bet, balance, id;
+	private int[] raceNumbers;
 
 	private boolean status;
 	
@@ -66,11 +68,11 @@ public class MessageGambler implements Serializable {
 	 * @param carName the car's name.
 	 * @param bet the bet.
 	 */
-	public MessageGambler(GamblerCommand command, int id, int raceNumber, String carName, int bet) {
+	public MessageGambler(GamblerCommand command, int id, int[] raceNumbers, String[] carNames, int bet) {
 		this.command = command;
 		this.id = id;
-		this.raceNumber = raceNumber;
-		this.carName = carName;
+		this.raceNumbers = raceNumbers;
+		this.carNames = carNames;
 		this.bet = bet;
 	}
 	
@@ -126,32 +128,32 @@ public class MessageGambler implements Serializable {
 	 * Returns the name of the car thats inside the message.
 	 * @return the name of the car thats inside the message.
 	 */
-	public String getCarName() {
-		return carName;
+	public String[] getCarName() {
+		return carNames;
 	}
 	
 	/**
 	 * Sets the name of the car thats inside the message.
 	 * @param carName the new car name.
 	 */
-	public void setCarName(String carName) {
-		this.carName = carName;
+	public void setCarName(String[] carNames) {
+		this.carNames = carNames;
 	}
 	
 	/**
 	 * Returns the number of the race thats inside the message.
 	 * @return the number of the race thats inside the message.
 	 */
-	public int getRaceNumber() {
-		return raceNumber;
+	public int[] getRaceNumber() {
+		return raceNumbers;
 	}
 	
 	/**
 	 * Sets the number of the race thats inside the message.
 	 * @param raceNumber the new race number.
 	 */
-	public void setRaceNumber(int raceNumber) {
-		this.raceNumber = raceNumber;
+	public void setRaceNumber(int[] raceNumbers) {
+		this.raceNumbers = raceNumbers;
 	}
 	
 	/**
