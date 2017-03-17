@@ -58,6 +58,21 @@ public class MessageGambler implements Serializable {
 		this.password = password;
 	}
 	
+	/**
+	 * Constructor used by gambler to place bets.
+	 * @param command the gambler message command.
+	 * @param username the gambler's user name.
+	 * @param raceNumber the race number.
+	 * @param carName the car's name.
+	 * @param bet the bet.
+	 */
+	public MessageGambler(GamblerCommand command, String username, int raceNumber, String carName, int bet) {
+		this.command = command;
+		this.username = username;
+		this.raceNumber = raceNumber;
+		this.carName = carName;
+		this.bet = bet;
+	}
 	
 	/**
 	 * Returns the command thats inside the message.
