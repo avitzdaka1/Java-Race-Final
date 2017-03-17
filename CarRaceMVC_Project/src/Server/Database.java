@@ -13,7 +13,6 @@ public class Database {
 
 	// DB connecting information
 	private final String RACE_DB = "RACE_DB.txt";
-	private int gamblerIdCounter = 0;
 
 	/**
 	 * Database constructor, if the database is empty, it creates it.
@@ -21,9 +20,6 @@ public class Database {
 	public Database() {
 		if (!checkDBExists())
 			createNewDB();
-		else {
-			gamblerIdCounter = getLastGamblerId();
-		}
 	}
 	
 	/**
@@ -810,7 +806,6 @@ public class Database {
 			e.printStackTrace();
 			return false;
 		}
-		gamblerIdCounter++;
 		return true;
 	}
 
