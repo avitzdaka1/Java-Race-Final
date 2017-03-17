@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
+
 import Entities.*;
 
 class HandlerGambler implements Runnable, MainServerListener {
@@ -28,10 +30,9 @@ class HandlerGambler implements Runnable, MainServerListener {
 			inputStream = new ObjectInputStream(clientSocket.getInputStream());
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 
-			while (true) {
-				MessageGambler inputMessage = (MessageGambler) inputStream.readObject();
-				handleMessage(outputStream, inputMessage);
-			}
+			while (true)
+			//	MessageGambler inputMessage = (MessageGambler) inputStream.readObject();
+				handleMessage((MessageGambler) inputStream.readObject());
 		} 		
 		catch (SocketException e) {
 			e.printStackTrace();
@@ -51,29 +52,50 @@ class HandlerGambler implements Runnable, MainServerListener {
 		}
 	}
 
-	private void handleMessage(ObjectOutputStream outputStream, MessageGambler inputMessage) 
-								throws IOException {
+	private void handleMessage(MessageGambler inputMessage) throws IOException {
+		
 			switch (inputMessage.getCommand()) {
 
 			case Disconnect:
 				///
 				break;
 			case Register:
+				// TODO: update log on server!
 				registerGambler(inputMessage.getUsername(), inputMessage.getPassword());
 				break;
 			case Login:
+				// TODO: update log on server!
 				loginGambler(inputMessage.getUsername(), inputMessage.getPassword());
 				break;
 			case Logout:
+				// TODO: update log on server!
 				logoutGambler(inputMessage.getUsername(), inputMessage.getPassword());
 				break;
 			case Bet:
-				processBet(inputMessage.getId(),inputMessage.getRaceNumber(), 
-						inputMessage.getCarName(), inputMessage.getBet());
+				// TODO: update log on server!
+				processBet(inputMessage.getId(),inputMessage.getRaceNumber()[0], 
+						inputMessage.getCarName()[0], inputMessage.getBet());
+				break;
+			case getRaces:
+				getCurrentRaces();
 				break;
 			default:
 				break;
 			}
+	}
+
+	private void getCurrentRaces() throws IOException {
+		
+		ArrayList<Integer> racesList = database.getHoldingRaces();
+		int[] races = new int[racesList.size()];
+		for (int i = 0; i < racesList.size(); i++) 
+			races[i] = racesList.get(i);
+		String[] cars = new String[15];
+		ArrayList<String> carsList = new ArrayList<>();
+		for (int i = 0; i < races.length; i++) 
+			carsList.addAll(database.getCarsInRace(races[i]));			
+		
+		outputStream.writeObject(new MessageGambler(GamblerCommand.getRaces,0, races, cars, 0));	
 	}
 
 	private void logoutGambler(String username, String password) {
@@ -112,9 +134,12 @@ class HandlerGambler implements Runnable, MainServerListener {
 	
 	private void processBet(int gamblerId, int raceNumber, String carName, int bet) throws IOException {
 		MessageGambler message = null;
-		if (database.placeGamblerBet(gamblerId, raceNumber, carName, bet))
-			message = new MessageGambler(GamblerCommand.Bet, gamblerId, raceNumber, carName,
+		if (database.placeGamblerBet(gamblerId, raceNumber, carName, bet)){
+			int races[] = new int[] { raceNumber };
+			String cars[] = new String[] {carName};
+			message = new MessageGambler(GamblerCommand.Bet, gamblerId, races, cars,
 					database.getGamblerDetails(gamblerId).getBalance());
+		}
 		else
 			message = new MessageGambler(GamblerCommand.Bet, false);
 		outputStream.writeObject(message);

@@ -103,7 +103,6 @@ public class GamblerClient implements Runnable {
 
 		case Bet:
 				currentGambler.setBalance(message.getBalance()); 
-				//CHECK HANDLER for current balance if not updated
 				gamblerView.betPlaceSuccess(currentGambler.getBalance(), message.getStatus());
 			break;
 
@@ -112,14 +111,13 @@ public class GamblerClient implements Runnable {
 			shutdownClient();
 			break;
 		
-		case UpdateCar:
+		case getCars:
 			//	TODO: update the cars the gambler can bet on.
 			//	either add or remove car (use message.getCarName, and status true / false).
 			break;
 			
-		case UpdateRace:
-			//	TODO: update the races the gambler can bet in.
-			//	either add or remove race (use message.getRaceNumber, and status true / false).
+		case getRaces:
+			gamblerView.getGamblerMainPanel().updateRacesAndCars(message.getRaceNumber(), message.getCarName());
 			break;
 		default:
 			//	TODO: show an error message like "invalid gambler command"

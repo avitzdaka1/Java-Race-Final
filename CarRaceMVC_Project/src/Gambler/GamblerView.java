@@ -128,17 +128,14 @@ public class GamblerView implements GamblerListener{
 					MessageGambler messageLogin = new MessageGambler(GamblerCommand.Login, usernameLogin, passwordLogin);
 					client.SendGamblerMessage(messageLogin);
 					gamblerLoginPanel.clearPanel();
-				}
-				
-				updateRaceList();
-				
-				
+				//	requestRaceList();
+				}			
 				break;
 
 			case Bet:
 				int gamblerBet = gamblerMainPanel.getBet();
-				int raceNum = gamblerMainPanel.getRaceNumber();
-				String carName = gamblerMainPanel.getCarName();
+				int raceNum[] = new int[] {gamblerMainPanel.getRaceNumber()};
+				String carName[] = new String[] {gamblerMainPanel.getCarName()};
 				
 				MessageGambler messageBet = new MessageGambler(GamblerCommand.Bet, 
 						client.getCurrentGambler().getId(), raceNum, carName, gamblerBet );
@@ -169,12 +166,15 @@ public class GamblerView implements GamblerListener{
 				break;
 			}
 		}
-
-		private void updateRaceList() {
-			MessageGambler messageGetRaces = new MessageGambler(GamblerCommand.getRaces, true);
-			client.SendGamblerMessage(messageGetRaces);
-		}
 	};
+	
+	/**
+	 * Send request for races list from server.
+	 */
+	private void requestRaceList() {
+		MessageGambler messageGetRaces = new MessageGambler(GamblerCommand.getRaces, true);
+		client.SendGamblerMessage(messageGetRaces);
+	}
 	
 	/**
 	 * Returns the gambler login panel.

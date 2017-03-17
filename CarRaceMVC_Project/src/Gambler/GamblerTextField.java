@@ -91,7 +91,7 @@ class GamblerComboBox extends GridPane {
 		add(comboBox, 1, 0);
 	}
 
-	public Control getTextControl() {
+	public Control getComboControl() {
 		return comboBox;
 	}
 	

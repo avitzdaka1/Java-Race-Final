@@ -1,10 +1,17 @@
 package Gambler;
 
+import java.util.ArrayList;
+
 import Entities.Gambler;
 import Gambler.GamblerButton.ButtonId;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -24,7 +31,10 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 	private GamblerTextField betTxt;
 	private Label messageLbl, gamblerInfoLbl;
 	private Gambler gambler = new Gambler(0, "empty", "Empty");
+	private ObservableList<String> races;
+	private ObservableList<String> cars;
 	
+	@SuppressWarnings("unchecked")
 	public GamblerMainWin(int panelWidth,int panelHeight) {
 		
 		setStyle( "-fx-background-image: url(/Gambler/resources/gamblerBackground1.jpg);"
@@ -33,6 +43,24 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		exitBtn = new GamblerButton(ButtonId.Exit,"exit.png", panelWidth*0.25, panelHeight*0.15);				
 		
 		raceCombo = new GamblerComboBox("Race: ");
+		/////////////////////////////////////////////////
+		
+		raceCombo.setOptionsList(races);
+        
+		((ComboBox<String>) raceCombo.getComboControl()).getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener<Object>() {
+					@Override
+					public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+
+						int race_index = raceCombo.getOptionsList().indexOf(newValue);
+
+						for (int i = race_index*5; i < race_index + 5; i++) {
+							carCombo.getOptionsList().add(cars.get(i));
+						}
+					}
+				});
+		
+		//////////////////////////////////////////////////
 		carCombo = new GamblerComboBox("Car: ");
 		betTxt = new GamblerTextField("Your Bet: ", 0);
 		
@@ -92,6 +120,19 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		betBtn.setOnMousePressed(mouseEventHandler);
 	}
 
+	public void updateRacesAndCars(int[] races, String[] cars){
+		for(int race:races)
+			this.races.add(String.valueOf(race));
+		for(String car:cars)
+			this.cars.add(car);		
+		raceCombo.getOptionsList().addAll(this.races);
+	}
+	
+/*	public void requestCarsOfRace(int place) {
+		for (int i = place; i < place + 5; i++)
+			carCombo.getOptionsList().add(this.cars.get(i));
+	}*/
+	
 	public int getRaceNumber(){
 		if(!raceCombo.getSelectedOption().isEmpty())
 			return Integer.parseInt(raceCombo.getSelectedOption());
