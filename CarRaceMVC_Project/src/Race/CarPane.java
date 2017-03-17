@@ -1,3 +1,5 @@
+package Race;
+import Entities.Car;
 import Server.CarEvents;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -11,19 +13,6 @@ import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
 
 public class CarPane extends Pane implements CarEvents {
-	class ColorEvent implements EventHandler<Event> {
-		@Override
-		public void handle(Event event) {
-			setColor(car.getColor());
-		}
-	}
-
-	class RadiusEvent implements EventHandler<Event> {
-		@Override
-		public void handle(Event event) {
-			setRadius(car.getRadius());
-		}
-	}
 
 	class SpeedEvent implements EventHandler<Event> {
 		@Override
@@ -37,7 +26,7 @@ public class CarPane extends Pane implements CarEvents {
 	private double xCoor;
 	private double yCoor;
 	private Timeline tl; // speed=setRate()
-	private Color color;
+	private Color color = Color.BLACK;
 	private int r;// radius
 	private Car car;
 
@@ -47,11 +36,8 @@ public class CarPane extends Pane implements CarEvents {
 	}
 
 	public void setCarModel(Car myCar) {
-		car = myCar;
 		if (car != null) {
-			car.addEventHandler(new ColorEvent(), eventType.COLOR);
-			car.addEventHandler(new RadiusEvent(), eventType.RADIUS);
-			car.addEventHandler(new SpeedEvent(), eventType.SPEED);
+			car = myCar;
 		}
 	}
 
@@ -93,18 +79,6 @@ public class CarPane extends Pane implements CarEvents {
 
 	public Timeline getTimeline() {
 		return tl;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-		if (car.getSpeed() == STOP)
-			moveCar(STOP);
-	}
-
-	public void setRadius(int r) {
-		this.r = r;
-		if (car.getSpeed() == STOP)
-			moveCar(STOP);
 	}
 
 	public void setSpeed(double speed) {

@@ -5,24 +5,37 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import Entities.MessageGambler;
+import Entities.Car;
+import Entities.MessageRace;
+import Entities.Race;
+import Entities.RaceCommand;
+import javafx.application.Platform;
 
 public class HandlerRace implements Runnable, MainServerListener{
 
 	private Socket clientSocket;
-	private boolean gamblerConnected;
+	private boolean raceConnected;
 	private ObjectInputStream inputStream;
 	private ObjectOutputStream outputStream;
-	private int id;
+	private int raceNumber;
 	private CarRaceServer mainServer;
 	private Database database;
+	private CarLog carLog;
+	private Car[] cars;
+	private Race race;
+	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
-	public HandlerRace(Socket clientSocket, CarRaceServer mainServer, int id, Database database){
+	public HandlerRace(Socket clientSocket, CarRaceServer mainServer, int raceNumber, 
+			Database database, CarLog carLog){
 		this.clientSocket = clientSocket;
 		this.mainServer = mainServer;
-		this.id = id;
+		this.raceNumber = raceNumber;
 		this.database = database;
+		this.carLog = carLog;
 	}
 
 	@Override
@@ -30,10 +43,10 @@ public class HandlerRace implements Runnable, MainServerListener{
 		try {
 			inputStream = new ObjectInputStream(clientSocket.getInputStream());
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-
-			while (gamblerConnected) {
-				MessageGambler inputMessage = (MessageGambler) inputStream.readObject();
-				handleMessage(outputStream, inputMessage);
+			sendCarNames();
+			while (raceConnected) {
+				MessageRace inputMessage = (MessageRace) inputStream.readObject();
+				handleMessage(inputMessage);
 			}
 		} 		
 		catch (SocketException e) {
@@ -54,8 +67,86 @@ public class HandlerRace implements Runnable, MainServerListener{
 		}		
 	}
 	
-	private void handleMessage(ObjectOutputStream outputStream, MessageGambler inputMessage) {
-		// TODO Auto-generated method stub		
+	/**
+	 * Sends the race controller all available car names.
+	 * @throws IOException
+	 */
+	private void sendCarNames() throws IOException {
+		String[] carNames = database.getCarNames();
+		MessageRace message = new MessageRace(RaceCommand.InitSettings, raceNumber, carNames, true);
+		outputStream.writeObject(message);
+	}
+	
+	/**
+	 * Sends the race controller his chosen cars and their properties.
+	 * @throws IOException
+	 */
+	private void sendCars(MessageRace message) throws IOException {
+		String[] carNames = message.getCarNames().clone();
+		String[] carMakes = new String[message.getCarNames().length];
+		String[] carSizes = new String[message.getCarNames().length];
+		String[] carColors = new String[message.getCarNames().length];
+		String[] carTypes = new String[message.getCarNames().length];
+
+		for(int i = 0; i < carNames.length; i++) {
+			Car car = database.getCarProps(carNames[i]);
+			carMakes[i] = car.getMake();
+			carSizes[i] = car.getSize();
+			carColors[i] = car.getColor();
+			carTypes[i] = car.getType();
+		}
+		MessageRace messageRace = new MessageRace(RaceCommand.CarSettings, message.getRaceNumber(),
+				carNames, carMakes, carSizes, carColors, carTypes, true);
+		outputStream.writeObject(messageRace);
+	}
+	
+	/**
+	 * Updates car speeds.
+	 * @param message
+	 */
+	private void setSpeeds(MessageRace message) {
+		int[] carSpeeds = message.getCarSpeeds();
+		for(int i = 0; i < carSpeeds.length; i++) {
+			cars[i].setSpeed(carSpeeds[i]);
+			int j = i;
+			Platform.runLater(()-> {
+				carLog.printMsg("Race no. " + message.getRaceNumber() + ", Car " + cars[j].getName() + ": speed changed to " + carSpeeds[j] + " at " + dateFormat.format(new Date()));
+			});
+		}
+	}
+	
+	/**
+	 * Handles incoming messages from the race controller.
+	 * @param message the race message.
+	 */
+	private void handleMessage(MessageRace message) throws IOException {
+		switch(message.getCommand()) {
+		case Connect:
+			
+			break;
+		case Disconnect:
+			
+			break;
+		case Start:
+			
+			break;
+		case End:
+			
+			break;
+		case ChangeSpeed:
+			setSpeeds(message);
+			break;
+		case InitSettings:
+			// TODO: insert to car race result and position 0
+			sendCars(message);
+			break;
+		case CarSettings:
+			
+			break;
+		default: 
+			
+			break;
+		}
 	}
 	
 	@Override

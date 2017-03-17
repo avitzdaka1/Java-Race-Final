@@ -391,6 +391,36 @@ public class Database {
 	}
 	
 	/**
+	 * Returns car's properties given its name.
+	 * @return the car object that holds the car and its props.
+	 */
+	public Car getCarProps(String carName) {
+		String query = "SELECT Car.name, Car.make, Car.size, Car.color, Car.type" + 
+					"FROM Car" +
+					"WHERE Car.name = '" + carName + "'";
+		Car car = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott",
+					"tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next()) {
+							car = new Car(resultSet.getString(1), resultSet.getString(2), 
+									resultSet.getString(3), resultSet.getString(4), 
+									resultSet.getString(5));
+						}
+						return car;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns the last race number.
 	 * @return the last race number.
 	 * @exception Exception

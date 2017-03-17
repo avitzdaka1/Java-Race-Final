@@ -16,14 +16,6 @@ public class Model {
 		c3 = new Car(2, raceCounter, log);
 	}
 
-	public void changeColor(int id, Color color) {
-		getCarById(id).setColor(color);
-	}
-
-	public void changeRadius(int id, int radius) {
-		getCarById(id).setRadius(radius);
-	}
-
 	public void changeSpeed(int id, double speed) {
 		getCarById(id).setSpeed(speed);
 	}

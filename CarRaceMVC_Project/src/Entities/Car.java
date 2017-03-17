@@ -1,75 +1,64 @@
 package Entities;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
+import Server.CarEvents;
 import javafx.event.Event;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.paint.Color;
-//
-public class Car implements CarEvents {
-	private int id;
-	//	The model the car belongs to
-	private int model_id;
-	private CarLog log;
-	private double speed;
-	private Color color;
-	private int wheelRadius;
-	private Map<eventType, ArrayList<EventHandler<Event>>> carHashMap;
 
-	///test
+public class Car implements CarEvents {
+	//	The model the car belongs to
+	private int speed;
+	private int wheelRadius;
+	private String name, make, size, color, type;
+	private Map<eventType, ArrayList<EventHandler<Event>>> carHashMap;
 	
-	public Car(int id, int model_id, CarLog log) {
-		this.id = id;
-		this.model_id = model_id;
-		this.log = log;
+	public Car(String name, String make, String size, String color, String type) {
+		this.name = name;
+		this.make = make;
+		this.size = size;
+		this.color = color;
+		this.type = type;
 		this.speed = 1;
-		this.color = Color.RED;
 		this.wheelRadius = 5;
 		carHashMap = new HashMap<eventType, ArrayList<EventHandler<Event>>>();
 		for (eventType et : eventType.values())
 			carHashMap.put(et, new ArrayList<EventHandler<Event>>());
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public int getModelId() {
-		return model_id;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public int getRadius() {
+	public int getWheelRadius() {
 		return wheelRadius;
 	}
 
-	public double getSpeed() {
+	public String getMake() {
+		return make;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public String getSize() {
+		return size;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public int getSpeed() {
 		return speed;
 	}
 	
-	//	TODO: create string name attribute and change what this getter returns.
 	public String getName() {
-		return "";
+		return name;
 	}
 
-	public void setColor(Color color) {
-		this.color = color;
-		processEvent(eventType.COLOR, new ActionEvent());
-	}
-
-	public void setSpeed(double speed) {
+	public void setSpeed(int speed) {
 		this.speed = speed;
 		processEvent(eventType.SPEED, new ActionEvent());
-	}
-
-	public void setRadius(int wheelRadius) {
-		this.wheelRadius = wheelRadius;
-		processEvent(eventType.RADIUS, new ActionEvent());
 	}
 
 	public synchronized void addEventHandler(EventHandler<Event> l, eventType et) {
@@ -90,16 +79,12 @@ public class Car implements CarEvents {
 	}
 
 	private void processEvent(eventType et, Event e) {
-		String msg;
 		ArrayList<EventHandler<Event>> al;
 		synchronized (this) {
 			al = carHashMap.get(et);
 			if (al == null)
 				return;
 		}
-		msg = "CarRaceView" + (getModelId() + 1) + " | car number: " + (getId() + 1) + " | actionCommand: "
-				+ et.toString() + " | array size is: " + al.size();
-		log.printMsg(msg);
 		for (int i = 0; i < al.size(); i++) {
 			EventHandler<Event> handler = (EventHandler<Event>) al.get(i);
 			handler.handle(e);

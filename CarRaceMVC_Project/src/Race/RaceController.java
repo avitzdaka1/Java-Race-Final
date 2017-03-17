@@ -4,20 +4,19 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Random;
 import Entities.*;
 
 public class RaceController implements Runnable {
 
-	private final int totalNumOfCars = 5;
 	private Socket clientSocket;
 	private ObjectOutputStream outputStreamToServer;
 	private ObjectInputStream inputStreamFromServer;		
-	private Random random;
-	private boolean connected;
-	private View raceView;
-	private ArrayList<Car> cars;
+	private Random random = new Random(System.currentTimeMillis());
+	private boolean connectedToServer = false;
+	private RaceView raceView;
+	private String[] carNames;
+	private int raceNumber;
 
 	@Override
 	public void run() {
@@ -25,9 +24,8 @@ public class RaceController implements Runnable {
 		clientSocket = new Socket("localhost", 8888);
 		outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 		inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
-		connected = true;
-		cars = new ArrayList<>();
-		raceView = new View();
+		connectedToServer = true;
+		raceView = new RaceView(raceNumber);
 		initReceiverFromServer();
 		
 		}
@@ -38,16 +36,36 @@ public class RaceController implements Runnable {
 	}
 
 	/**
-	 * Generates cars for this race.
+	 * Selects cars for this race.
 	 */
-	private void initCars() {
-		
+	private void selectCars(MessageRace message) throws IOException {
+		raceNumber = message.getRaceNumber();
+		carNames = new String[RaceCommand.TotalNumOfCars.ordinal()];
+		for(int i = 0; i < carNames.length; i++) {
+			int j = random.nextInt(message.getCarNames().length);
+			carNames[i] = new String(message.getCarNames()[j]);
+		}
+		message.setCarNames(carNames);
+		outputStreamToServer.writeObject(message);
 	}
 
+	/**
+	 * Initialises the cars at the view after receiving their properties from the server (handler).
+	 * @param message the race message.
+	 */
+	private void initCars(MessageRace message) {
+		Car[] cars = new Car[RaceCommand.TotalNumOfCars.ordinal()];
+		for(int i = 0; i < cars.length; i++) {
+			cars[i] = new Car(message.getCarNames()[i], message.getCarMakes()[i], 
+					message.getCarSizes()[i], message.getCarColors()[i], message.getCarTypes()[i]);
+		}
+		raceView.setCarsProps(cars);
+	}
+	
 	private void initReceiverFromServer() {
 
 		new Thread(() -> {
-			while (connected) {
+			while (connectedToServer) {
 				try {
 					MessageRace message = (MessageRace) inputStreamFromServer.readObject();
 					processMessage(message);
@@ -59,7 +77,7 @@ public class RaceController implements Runnable {
 		}).start();
 	}
 
-	private void processMessage(MessageRace message) {
+	private void processMessage(MessageRace message) throws IOException {
 		switch(message.getCommand()){
 			case Connect:
 
@@ -77,34 +95,16 @@ public class RaceController implements Runnable {
 				
 				break;
 			case InitSettings:
-				
+				selectCars(message);
+				break;
+			case CarSettings:
+				initCars(message);
 				break;
 			default:
 				
 				break;
  		}
 	}
-
-	
- 	public void disconnectFromServer(){
-		try {
-			outputStreamToServer.writeObject(SERVER_COMMAND.closeConnection);
-			outputStreamToServer.writeObject(null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void changeColor(Car car){
-		try {
-			outputStreamToServer.writeObject(SERVER_COMMAND.colorChanged);
-			outputStreamToServer.writeObject(Serializer.serialize(car.getLog())); // or Car.getLog()
-		//	outputStreamToServer.writeObject(5);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 
 }
