@@ -924,26 +924,4 @@ public class Database {
 		}
 		return true;
 	}
-
-/*
-	// Inserts a given new car to the database. public boolean
-	public synchronized boolean insertNewCar(ServerCar car) {
-		String query = "INSERT INTO Car " + 
-					"(name, make, size, color, type) " + 
-					"VALUES ( ?, ?, ?, ?, ?)";
-		try {
-			PreparedStatement statement = dbConnection.prepareStatement(query);
-			statement.setString(1, car.getName());
-			statement.setString(2, car.getMake());
-			statement.setString(3, car.getSize());
-			statement.setString(4, car.getColor());
-			statement.setString(5, car.getType());
-			statement.executeUpdate();
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	*/
 }
