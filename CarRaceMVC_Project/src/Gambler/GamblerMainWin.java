@@ -47,7 +47,6 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 
 		setPrefWidth(panelWidth);
 		setPrefHeight(panelHeight);
-		//setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 
 		VBox mainVbox = new VBox();
 		mainVbox.setAlignment(Pos.TOP_CENTER);
@@ -74,11 +73,18 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 	public Gambler getGambler() {
 		return gambler;
 	}
+	
+	public int getGamblerId() {
+		return gambler.getId();
+	}
 
 	public void setGambler(Gambler gambler) {
 		this.gambler = gambler;
-		gamblerInfoLbl.setText("Welcome " + gambler.getName() + ". Your balance: " + gambler.getBalance());
-
+		showGamblerInfo(gambler.getName(),gambler.getBalance());
+	}
+	
+	public void showGamblerInfo(String name, int balance){
+		gamblerInfoLbl.setText("Welcome " + name + ". Your balance: " + balance);
 	}
 
 	public void setEventHandler(EventHandler<MouseEvent> mouseEventHandler){
@@ -86,11 +92,28 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		betBtn.setOnMousePressed(mouseEventHandler);
 	}
 
-	public String getBet(){
-		return "Bet";
+	public int getRaceNumber(){
+		if(!raceCombo.getSelectedOption().isEmpty())
+			return Integer.parseInt(raceCombo.getSelectedOption());
+		else 
+			return -1;
 	}
 	
+	public String getCarName(){
+		if(!raceCombo.getSelectedOption().isEmpty())
+			return raceCombo.getSelectedOption();
+		else 
+			return null;
+	}
 	
+	public int getBet(){
+		String bet = ((TextField)betTxt.getTextControl()).getText();
+		if(!bet.isEmpty() && bet.matches("^[1-9]\\d*$"))
+			return Integer.parseInt(bet);
+		else
+			return -1;
+	}
+		
 	public void showMessage(String message, MessageColor color){
 		if(color==MessageColor.Red)
 			messageLbl.setTextFill(Color.RED);

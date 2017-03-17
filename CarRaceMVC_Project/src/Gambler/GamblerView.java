@@ -129,8 +129,23 @@ public class GamblerView implements GamblerListener{
 					client.SendGamblerMessage(messageLogin);
 					gamblerLoginPanel.clearPanel();
 				}
+				
+				updateRaceList();
+				
+				
 				break;
 
+			case Bet:
+				int gamblerBet = gamblerMainPanel.getBet();
+				int raceNum = gamblerMainPanel.getRaceNumber();
+				String carName = gamblerMainPanel.getCarName();
+				
+				MessageGambler messageBet = new MessageGambler(GamblerCommand.Bet, 
+						client.getCurrentGambler().getId(), raceNum, carName, gamblerBet );
+				client.SendGamblerMessage(messageBet);
+				gamblerMainPanel.clearPanel();
+				break;
+				
 			case Cancel:
 				mainPane.getChildren().remove(gamblerRegistrationPanel);
 				mainPane.getChildren().add(gamblerLoginPanel);
@@ -154,10 +169,15 @@ public class GamblerView implements GamblerListener{
 				break;
 			}
 		}
+
+		private void updateRaceList() {
+			MessageGambler messageGetRaces = new MessageGambler(GamblerCommand.getRaces, true);
+			client.SendGamblerMessage(messageGetRaces);
+		}
 	};
 	
 	/**
-	 * Returns the gambelr login panel.
+	 * Returns the gambler login panel.
 	 * @return the gambler login panel.
 	 */
 	public GamblerLogin getGamblerLoginPanel() {
@@ -271,8 +291,17 @@ public class GamblerView implements GamblerListener{
 	 */
 	@Override
 	public void betPlaceSuccess(int newBalance, boolean success) {
-		// TODO Auto-generated method stub
-		
+		if (success) {
+			Platform.runLater(() -> {
+				gamblerMainPanel.showGamblerInfo(gamblerMainPanel.getGambler().getName(), newBalance);
+				gamblerMainPanel.showMessage("Bet placed successful! Yor current balance: " + newBalance,
+						MessageColor.Green);
+			});
+		} else {
+			Platform.runLater(() -> {
+				gamblerMainPanel.showMessage("Error! Bet unsuccessful!", MessageColor.Red);
+			});
+		}
 	}
 
 	/**

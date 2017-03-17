@@ -87,9 +87,6 @@ public class GamblerClient implements Runnable {
 		switch (message.getCommand()) {
 		case Register:
 				gamblerView.registerSuccess(message.getStatus());
-			//	TODO: if registration successful:
-			//	TODO: show an informative message like "registration successful" to the user, and show the main gambler login panel
-			//	TODO: if registration wasn't successful, show an error message.
 			break;
 		
 		case Login:
@@ -105,12 +102,9 @@ public class GamblerClient implements Runnable {
 			break;
 
 		case Bet:
-			//	If bet was placed successfully
-			if (message.getStatus()) {
-				// TODO: deduct bet from the balance (at the message, message.getBet, message.getBalance) and display "bet placed" message.
-			} else {
-				// TODO: show error message bet
-			}
+				currentGambler.setBalance(message.getBalance()); 
+				//CHECK HANDLER for current balance if not updated
+				gamblerView.betPlaceSuccess(currentGambler.getBalance(), message.getStatus());
 			break;
 
 		case Disconnect:

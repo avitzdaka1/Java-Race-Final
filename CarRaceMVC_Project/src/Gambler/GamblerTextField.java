@@ -14,6 +14,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 
 public class GamblerTextField extends GridPane {
@@ -37,6 +38,7 @@ public class GamblerTextField extends GridPane {
 		Label textLbl = new Label(text);
 		textLbl.setTextFill(Color.DARKBLUE);
 		textLbl.setStyle("-fx-font-weight: bold;");
+		textLbl.setFont(new Font("Serif", 22));
 
 		if (type == fieldTypeText) 
 			textField = new TextField();
@@ -63,7 +65,7 @@ class GamblerComboBox extends GridPane {
 
 	public GamblerComboBox(String text) {
 		options =  FXCollections.observableArrayList();
-		ComboBox comboBox = new ComboBox(options);
+		comboBox = new ComboBox<String>(options);
 				 			 
 		ColumnConstraints column1 = new ColumnConstraints();
 		column1.setPercentWidth(35);
@@ -95,5 +97,14 @@ class GamblerComboBox extends GridPane {
 	
 	public ObservableList<String> getOptionsList() {
 		return options;
+	}
+	
+	public void setOptionsList(ObservableList<String> options) {
+		this.options = options;
+	}
+	
+	
+	public String getSelectedOption() {
+		return ((ComboBox<String>)comboBox).getValue();
 	}
 }

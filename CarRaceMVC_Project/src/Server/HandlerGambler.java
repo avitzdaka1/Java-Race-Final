@@ -70,7 +70,8 @@ class HandlerGambler implements Runnable, MainServerListener {
 				logoutGambler(inputMessage.getUsername(), inputMessage.getPassword());
 				break;
 			case Bet:
-				processBet();
+				processBet(inputMessage.getId(),inputMessage.getRaceNumber(), 
+						inputMessage.getCarName(), inputMessage.getBet());
 				break;
 			default:
 				break;
@@ -111,8 +112,14 @@ class HandlerGambler implements Runnable, MainServerListener {
 		outputStream.writeObject(message);
 	}
 	
-	private void processBet() {
-		
+	private void processBet(int gamblerId, int raceNumber, String carName, int bet) throws IOException {
+		MessageGambler message = null;
+		if (database.placeGamblerBet(gamblerId, raceNumber, carName, bet))
+			message = new MessageGambler(GamblerCommand.Bet, gamblerId, raceNumber, carName,
+					database.getGamblerDetails(gamblerId).getBalance());
+		else
+			message = new MessageGambler(GamblerCommand.Bet, false);
+		outputStream.writeObject(message);
 	}
 	
 	@Override

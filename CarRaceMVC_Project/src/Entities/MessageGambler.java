@@ -66,9 +66,9 @@ public class MessageGambler implements Serializable {
 	 * @param carName the car's name.
 	 * @param bet the bet.
 	 */
-	public MessageGambler(GamblerCommand command, String username, int raceNumber, String carName, int bet) {
+	public MessageGambler(GamblerCommand command, int id, int raceNumber, String carName, int bet) {
 		this.command = command;
-		this.username = username;
+		this.id = id;
 		this.raceNumber = raceNumber;
 		this.carName = carName;
 		this.bet = bet;
