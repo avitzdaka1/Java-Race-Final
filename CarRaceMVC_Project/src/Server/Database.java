@@ -315,8 +315,7 @@ public class Database {
 	public ArrayList<Integer> getHoldingRaces() {
 		String query = "SELECT Race.number " + 
 					"FROM Race " + 
-					"WHERE Race.state => 0 " +
- 					"AND Race.state < 4";
+					"WHERE Race.state BETWEEN 0 AND 3";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
