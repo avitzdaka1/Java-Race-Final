@@ -53,8 +53,8 @@ class HandlerGambler implements Runnable, MainServerListener {
 		}
 	}
 
-	private void handleMessage(ObjectOutputStream outputStream, MessageGambler inputMessage) {
-		try {
+	private void handleMessage(ObjectOutputStream outputStream, MessageGambler inputMessage) 
+								throws IOException {
 			switch (inputMessage.getCommand()) {
 
 			case Disconnect:
@@ -75,9 +75,6 @@ class HandlerGambler implements Runnable, MainServerListener {
 			default:
 				break;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void logoutGambler(String username, String password) {
