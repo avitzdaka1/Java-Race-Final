@@ -10,6 +10,7 @@ import java.util.Date;
 
 import Entities.MessageGambler;
 import Gambler.GamblerClient;
+import Race.RaceController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -26,11 +27,13 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class CarRaceServer extends Application {
-
+	
+	
 	public static int numOfConnections = 0;
-	public Database database;
-	private ArrayList<Model> modelList;
-	private ArrayList<MainServerListener> ClientHandlersArray;
+	private Database database;
+	private final int totalNumOfRaces = 3;
+	private ArrayList<HandlerRace> modelList;
+	private ArrayList<MainServerListener> clientHandlersArray;
 	private int raceCounter = 0; // = race Number
 	private int gamblerCounter = 0; // = gambler Number
 	private CarLog carLog;
@@ -104,7 +107,7 @@ public class CarRaceServer extends Application {
 			public void handle(WindowEvent event) {
 				try {
 					//	Notify all handlers to close their windows amd disconnect clients.
-					 for(MainServerListener listener : ClientHandlersArray )
+					 for(MainServerListener listener : clientHandlersArray )
 						 listener.serverDisconnection();					 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -117,8 +120,8 @@ public class CarRaceServer extends Application {
 
 		carLog.printMsg("Server was started at " + dateFormat.format(new Date()));
 		
-		modelList = new ArrayList<Model>();
-		ClientHandlersArray = new ArrayList<MainServerListener>();
+		modelList = new ArrayList<HandlerRace>();
+		clientHandlersArray = new ArrayList<MainServerListener>();
 		
 		listenNewGambler();
 		listenNewRace();		
@@ -130,7 +133,21 @@ public class CarRaceServer extends Application {
 		Thread thread = new Thread(gamblerClient);
 		thread.start();
 	}
+	/**
+	 * Starts 3 races when the program first starts up.
+	 */
+	public void startRaces() {
+		for(int i = 0; i < totalNumOfRaces; i++) {
+			RaceController raceController = new RaceController();
+			Thread thread = new Thread(raceController);
+			thread.start();
+		}
+	}
 
+	/**
+	 * Listens for new race connections (from race controllers) and allocates a handler for each one.
+	 * @exception IOException
+	 */
 	public void listenNewRace() {
 
 		new Thread(() -> {
@@ -145,7 +162,8 @@ public class CarRaceServer extends Application {
 						
 					});
 					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter, database);
-					ClientHandlersArray.add(handlerRace);
+					clientHandlersArray.add(handlerRace);
+					modelList.add(handlerRace);
 					Thread thread = new Thread(handlerRace);
 					thread.start();
 				}
@@ -168,7 +186,7 @@ public class CarRaceServer extends Application {
 						carLog.printMsg("New gambler connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(new Date()));
 					});
 					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, ++gamblerCounter, database);
-					ClientHandlersArray.add(handlerGambler);
+					clientHandlersArray.add(handlerGambler);
 					Thread thread = new Thread(handlerGambler);
 					thread.start();		
 				}

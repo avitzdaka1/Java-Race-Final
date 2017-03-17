@@ -4,43 +4,53 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Random;
 import Entities.*;
 
-public class RaceController {
+public class RaceController implements Runnable {
 
+	private final int totalNumOfCars = 5;
 	private Socket clientSocket;
 	private ObjectOutputStream outputStreamToServer;
 	private ObjectInputStream inputStreamFromServer;		
 	private Random random;
+	private boolean connected;
+	private View raceView;
+	private ArrayList<Car> cars;
 
-	public RaceController() {
-		//
+	@Override
+	public void run() {
+		try {
+		clientSocket = new Socket("localhost", 8888);
+		outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+		inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
+		connected = true;
+		cars = new ArrayList<>();
+		raceView = new View();
+		initReceiverFromServer();
+		
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
-	public void connectToServer() {
-
-		new Thread(() -> {
-			try {
-				clientSocket = new Socket("127.0.0.1", 8888);				
-				outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-				inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
-				
-				initReceiverFromServer();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}).start();
+	/**
+	 * Generates cars for this race.
+	 */
+	private void initCars() {
+		
 	}
 
 	private void initReceiverFromServer() {
 
 		new Thread(() -> {
-			while (!clientSocket.isClosed()) {
+			while (connected) {
 				try {
 					MessageRace message = (MessageRace) inputStreamFromServer.readObject();
-
-					receiveFromServer(message);
+					processMessage(message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -49,18 +59,33 @@ public class RaceController {
 		}).start();
 	}
 
-	private void receiveFromServer(MessageRace message) {
-		switch(message){
-			case closeConnection:
-				///closeConnection
+	private void processMessage(MessageRace message) {
+		switch(message.getCommand()){
+			case Connect:
+
+				break;
+			case Disconnect:
+				
+				break;
+			case Start:
+				
+				break;
+			case End:
+				
+				break;
+			case ChangeSpeed:
+				
+				break;
+			case InitSettings:
+				
+				break;
+			default:
+				
 				break;
  		}
-		//
-		//controller do something
-		//
-		//
 	}
- 	
+
+	
  	public void disconnectFromServer(){
 		try {
 			outputStreamToServer.writeObject(SERVER_COMMAND.closeConnection);
@@ -79,5 +104,7 @@ public class RaceController {
 			e.printStackTrace();
 		}
 	}
+
+
 
 }
