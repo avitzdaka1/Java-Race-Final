@@ -378,7 +378,7 @@ public class Database {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						while (resultSet.next())
 							cars.add(resultSet.getString(1));
-						String[] carsArr = (String[]) cars.toArray();
+						String[] carsArr = (String[]) cars.toArray(new String[cars.size()]);
 						return carsArr;
 					}
 				}

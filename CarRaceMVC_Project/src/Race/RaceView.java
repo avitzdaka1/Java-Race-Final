@@ -1,6 +1,7 @@
 package Race;
 import Entities.Car;
 import Entities.RaceCommand;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
@@ -18,6 +19,7 @@ public class RaceView {
 	private CarPane[] carPanes = new CarPane[RaceCommand.TotalNumOfCars.ordinal()];
 
 	public RaceView(int raceNumber) {
+		Platform.runLater(() -> {
 		border_pane = new BorderPane();
 		createCarsGrid();
 		border_pane.setCenter(cars_grid);
@@ -34,6 +36,7 @@ public class RaceView {
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) { // TODO																								// stub
 				setCarPanesMaxWidth(newValue.doubleValue());
 			}
+		});
 		});
 	}
 
