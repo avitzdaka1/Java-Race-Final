@@ -86,8 +86,7 @@ public class GamblerClient implements Runnable {
 	private void processMessage(MessageGambler message) throws IOException {
 		switch (message.getCommand()) {
 		case Register:
-			gamblerView.registerSuccess(true);
-			
+				gamblerView.registerSuccess(message.getStatus());
 			//	TODO: if registration successful:
 			//	TODO: show an informative message like "registration successful" to the user, and show the main gambler login panel
 			//	TODO: if registration wasn't successful, show an error message.

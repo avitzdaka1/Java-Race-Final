@@ -92,7 +92,6 @@ class HandlerGambler implements Runnable, MainServerListener {
 			Gambler gambler = database.getGamblerDetails(username);
 			message = new MessageGambler(GamblerCommand.Login, username, 
 					password, gambler.getBalance(), gambler.getId(), true);
-
 		}
 		else {
 			message = new MessageGambler(GamblerCommand.Login, false);

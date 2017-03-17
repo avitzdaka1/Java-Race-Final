@@ -102,25 +102,45 @@ public class GamblerView implements GamblerListener{
 			case Registration:
 					String regUsername = gamblerRegistrationPanel.getName();
 					String regPassword = gamblerRegistrationPanel.getPassword();
-					MessageGambler messageReg = new MessageGambler(GamblerCommand.Register, regUsername, regPassword);
-					client.SendGamblerMessage(messageReg);
+					String regPasswordConfirm = gamblerRegistrationPanel.getConfPassword();
+					
+					if(regUsername.isEmpty() || regPassword.isEmpty())
+						gamblerRegistrationPanel.showMessage("Registration error,\nusername or password is empty!!", MessageColor.Red);
+					else if(regUsername.length()>10 || regPassword.length()>10)
+						gamblerRegistrationPanel.showMessage("Registration error, username and password lengths\nmust be less then 10 characters!", MessageColor.Red);
+					else if (!regPassword.equals(regPasswordConfirm))
+						gamblerRegistrationPanel.showMessage("Registration error, passwords don't match!", MessageColor.Red);
+					else{
+						MessageGambler messageReg = new MessageGambler(GamblerCommand.Register, regUsername, regPassword);
+						client.SendGamblerMessage(messageReg);
+						// Clear the message after registration
+						gamblerRegistrationPanel.clearPanel();
+					}
 				break;
 				
 			case Login:			
-				String username = gamblerLoginPanel.getName();
-				String password = gamblerLoginPanel.getPassword();				
-				MessageGambler messageLogin = new MessageGambler(GamblerCommand.Login, username, password);
-				client.SendGamblerMessage(messageLogin);
+				String usernameLogin = gamblerLoginPanel.getName();
+				String passwordLogin = gamblerLoginPanel.getPassword();	
+				
+				if(usernameLogin.isEmpty() || passwordLogin.isEmpty())
+					gamblerLoginPanel.showMessage("Login error,\nusername or password is empty!!", MessageColor.Red);
+				else{
+					MessageGambler messageLogin = new MessageGambler(GamblerCommand.Login, usernameLogin, passwordLogin);
+					client.SendGamblerMessage(messageLogin);
+					gamblerLoginPanel.clearPanel();
+				}
 				break;
 
 			case Cancel:
 				mainPane.getChildren().remove(gamblerRegistrationPanel);
 				mainPane.getChildren().add(gamblerLoginPanel);
+				gamblerRegistrationPanel.clearPanel();
 				break;
 				
 			case goToRegistration:	
 				mainPane.getChildren().remove(gamblerLoginPanel);
 				mainPane.getChildren().add(gamblerRegistrationPanel);
+				gamblerLoginPanel.clearPanel();
 				break;
 				
 			case Exit:
@@ -215,7 +235,9 @@ public class GamblerView implements GamblerListener{
 			});
 		}
 		else{
+			Platform.runLater(() -> {
 			gamblerRegistrationPanel.showMessage("Error! Registration unsuccessful!", MessageColor.Red);
+			});
 		}
 		
 	}

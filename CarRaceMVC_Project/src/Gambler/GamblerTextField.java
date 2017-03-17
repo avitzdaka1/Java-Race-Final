@@ -19,7 +19,7 @@ import javafx.scene.paint.Color;
 public class GamblerTextField extends GridPane {
 
 	private final int fieldTypeText = 0;
-	private Control textControl;
+	private Control textField;
 
 	public GamblerTextField(String text, int type) {
 
@@ -34,25 +34,25 @@ public class GamblerTextField extends GridPane {
 		getColumnConstraints().add(column1);
 		getColumnConstraints().add(column2);
 
-		Label textLB = new Label(text);
-		textLB.setTextFill(Color.DARKBLUE);
-		textLB.setStyle("-fx-font-weight: bold;");
+		Label textLbl = new Label(text);
+		textLbl.setTextFill(Color.DARKBLUE);
+		textLbl.setStyle("-fx-font-weight: bold;");
 
 		if (type == fieldTypeText) 
-			textControl = new TextField();
+			textField = new TextField();
 		else
-			textControl = new PasswordField();
+			textField = new PasswordField();
 
-		textControl.setBackground(new Background(new BackgroundFill(Color.web("#ff000000"), CornerRadii.EMPTY, Insets.EMPTY)));
-		textControl.setStyle("-fx-text-inner-color: white;");
-		textControl.setStyle("-fx-background-color: rgba(255,255,255, 0.5)");
+		textField.setBackground(new Background(new BackgroundFill(Color.web("#ff000000"), CornerRadii.EMPTY, Insets.EMPTY)));
+		textField.setStyle("-fx-text-inner-color: white;");
+		textField.setStyle("-fx-background-color: rgba(255,255,255, 0.5)");
 
-		add(textLB, 0, 0);
-		add(textControl, 1, 0);
+		add(textLbl, 0, 0);
+		add(textField, 1, 0);
 	}
 
 	public Control getTextControl() {
-		return textControl;
+		return textField;
 	}
 }
 

@@ -16,10 +16,11 @@ public class GamblerButton extends ImageView {
 	private DropShadow shadowEffect = new DropShadow();
 	public ButtonId btnId;
 
-	public GamblerButton(ButtonId btnId, String buttonName, int imgWidth, int imgHeight, double buttonWidth, double buttonHeight) {
+	public GamblerButton(ButtonId btnId, String buttonName, double buttonWidth, double buttonHeight) {
 
 		this.btnId = btnId;
-		setImage(new Image( GamblerButton.class.getClass().getResource("/Gambler/resources/" + buttonName).toExternalForm(), imgWidth, imgHeight, true, true));
+		setImage(new Image( GamblerButton.class.getClass().getResource("/Gambler/resources/" + buttonName).toExternalForm()));
+
 		setFitWidth(buttonWidth);
 		setFitHeight(buttonHeight);
 		shadowEffect.setColor(Color.WHITE);

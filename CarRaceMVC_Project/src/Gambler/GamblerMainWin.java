@@ -6,16 +6,10 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -25,7 +19,6 @@ import javafx.scene.text.Font;
 
 public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 	
-	private Image backgroundImage;
 	private GamblerComboBox raceCombo, carCombo;
 	private GamblerButton betBtn, exitBtn;
 	private GamblerTextField betTxt;
@@ -36,14 +29,16 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		
 		setStyle( "-fx-background-image: url(/Gambler/resources/gamblerBackground1.jpg);"
 	            + "-fx-background-size: cover;" );
-		//backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/gamblerBackground1.jpg").toExternalForm()); 
-		betBtn = new GamblerButton(ButtonId.Bet,"bet.png", 180, 170, panelWidth*0.40, panelHeight*0.15);				
-		exitBtn = new GamblerButton(ButtonId.Exit,"exit.png", 190, 150, panelWidth*0.25, panelHeight*0.15);				
+		betBtn = new GamblerButton(ButtonId.Bet,"bet.png", panelWidth*0.40, panelHeight*0.15);				
+		exitBtn = new GamblerButton(ButtonId.Exit,"exit.png", panelWidth*0.25, panelHeight*0.15);				
 		
 		raceCombo = new GamblerComboBox("Race: ");
 		carCombo = new GamblerComboBox("Car: ");
 		betTxt = new GamblerTextField("Your Bet: ", 0);
+		
 		messageLbl = new Label();
+		messageLbl.setFont(new Font("Serif", 24));
+		messageLbl.setStyle("-fx-font-weight: bold;");
 		
 		gamblerInfoLbl = new Label();
 		gamblerInfoLbl.setFont(new Font("Serif", 20));
@@ -102,5 +97,11 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		else
 			messageLbl.setTextFill(Color.GREEN);
 		messageLbl.setText(message);
+	}
+	
+	@Override
+	public void clearPanel() {
+		messageLbl.setText("");	
+		((TextField)betTxt.getTextControl()).clear();
 	}
 }
