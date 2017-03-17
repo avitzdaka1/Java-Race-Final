@@ -104,7 +104,7 @@ class HandlerGambler implements Runnable, MainServerListener {
 	private void registerGambler(String username, String password) throws IOException {
 		MessageGambler message = null;
 		if (!database.gamblerExists(username)) {
-			Gambler gambler = new Gambler(database.getLastGamblerId(), username, password);
+			Gambler gambler = new Gambler(database.getLastGamblerId() + 1, username, password);
 			database.insertNewGambler(gambler);
 			message = new MessageGambler(GamblerCommand.Register, username,
 					password, gambler.getBalance(), gambler.getId(), true);
