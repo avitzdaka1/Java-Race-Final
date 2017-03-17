@@ -123,7 +123,7 @@ public class CarRaceServer extends Application {
 		
 		listenNewGambler();
 		listenNewRace();
-		startRaces();
+		//startRaces();
 	}
 
 	// Open new thread for new client.
