@@ -31,7 +31,7 @@ public class Database {
 		String query = "SELECT * FROM Car";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace", "scott",
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott",
 					"tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
@@ -58,7 +58,7 @@ public class Database {
 				try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 					Class.forName("com.mysql.jdbc.Driver");
 					try (Connection dbConnection = DriverManager
-							.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+							.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 						try (Statement dbStatement = dbConnection.createStatement()) {
 							String strLine = "", strLine1 = "";
 							// Read File Line By Line
@@ -103,7 +103,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						// ArrayList<RaceResult> raceResults = new
@@ -138,7 +138,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						while (resultSet.next()) {
@@ -179,7 +179,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						// ArrayList<CarRaceResult> carRaceResults = new
@@ -218,7 +218,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						// ArrayList<CarRaceResult> carRaceResults = new
@@ -256,7 +256,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						// ArrayList<CarRaceResult> carRaceResults = new
@@ -285,7 +285,7 @@ public class Database {
 		ArrayList<String> cars = new ArrayList<>();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace", "scott",
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott",
 					"tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
@@ -314,7 +314,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next()) {
@@ -343,7 +343,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next())
@@ -370,7 +370,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next())
@@ -398,7 +398,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next())
@@ -426,7 +426,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next())
@@ -456,7 +456,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next()) {
@@ -490,7 +490,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next()) {
@@ -530,7 +530,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					dbPrepStatement.setInt(1, gamblerId);
 					dbPrepStatement.setInt(2, raceNumber);
@@ -561,7 +561,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					dbPrepStatement.setInt(1, gamblerId);
 					dbPrepStatement.setInt(2, raceNumber);
@@ -590,7 +590,7 @@ public class Database {
 					"VALUES ( ?, ?, ?)";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace", "scott",
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott",
 					"tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					dbPrepStatement.setInt(1, raceNumber);
@@ -620,7 +620,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					int raceTotalBets = getRaceTotalBets(raceNumber);
 					if (raceTotalBets != -1) {
@@ -650,7 +650,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next())
@@ -678,7 +678,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					dbPrepStatement.setInt(1, balance);
 					dbPrepStatement.setString(2, gambler.getName());
@@ -708,7 +708,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					dbPrepStatement.setBoolean(1, online);
 					dbPrepStatement.setString(2, gamblerName);
@@ -736,7 +736,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next())
@@ -764,7 +764,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					dbPrepStatement.setInt(1, race.getNumber());
 					dbPrepStatement.setDate(2, race.getDate());
@@ -793,7 +793,7 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace", "scott", "tiger")) {
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					dbPrepStatement.setInt(1, gambler.getId());
 					dbPrepStatement.setString(2, gambler.getName());
