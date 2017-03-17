@@ -20,7 +20,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class GamblerLogin extends StackPane{
+public class GamblerLogin extends StackPane implements IGamblerPanelMessage{
 	
 	private final int fieldTypeText=0, fieldTypePassword=1;
 	private GamblerTextField txtName,txtPassword;
@@ -33,23 +33,15 @@ public class GamblerLogin extends StackPane{
 		txtName = new GamblerTextField("Name : ",fieldTypeText);
 		txtPassword = new GamblerTextField("Password : ",fieldTypePassword);
 		messageLbl = new Label();
-		
-		//backgroundImage = new Image(GamblerLogin.class.getResource("/Gambler/resources/gamblerBackground1.jpg").toExternalForm()); 
 		setStyle(
 	            "-fx-background-image: url(/Gambler/resources/gamblerBackground1.jpg);"
-	            + "-fx-background-size: cover;"
-	        );
-		
-
-		
-		
+	            + "-fx-background-size: cover;" );
+	
 		loginBtn = new GamblerButton(ButtonId.Login,"loginNew.png", 180, 170, panelWidth*0.6, panelHeight*0.12);				
 		regiserBtn = new GamblerButton(ButtonId.goToRegistration,"register.png", 190, 150, panelWidth*0.5, panelHeight*0.3);
 		
 		setPrefWidth(panelWidth);
 		setPrefHeight(panelHeight);
-		//setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
-
 		
 		VBox mainVbox = new VBox();
 		mainVbox.setAlignment(Pos.TOP_CENTER);
@@ -86,8 +78,11 @@ public class GamblerLogin extends StackPane{
 		return((PasswordField)txtPassword.getTextControl()).getText();
 	}
 	
-	public void showMessage(String message){
-		messageLbl.setTextFill(Color.RED);
+	public void showMessage(String message, MessageColor color){
+		if(color==MessageColor.Red)
+			messageLbl.setTextFill(Color.RED);
+		else
+			messageLbl.setTextFill(Color.GREEN);
 		messageLbl.setText(message);
 	}
 	

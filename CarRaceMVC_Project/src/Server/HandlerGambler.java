@@ -66,6 +66,9 @@ class HandlerGambler implements Runnable, MainServerListener {
 			case Login:
 				loginGambler(inputMessage.getUsername(), inputMessage.getPassword());
 				break;
+			case Logout:
+				logoutGambler(inputMessage.getUsername(), inputMessage.getPassword());
+				break;
 			case Bet:
 				processBet();
 				break;
@@ -75,6 +78,10 @@ class HandlerGambler implements Runnable, MainServerListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void logoutGambler(String username, String password) {
+			database.updateGamblerOnline(username, password, false);	
 	}
 
 	//	Logins a new gambler to the database.

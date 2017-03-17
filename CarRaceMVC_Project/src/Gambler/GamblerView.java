@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -64,14 +65,17 @@ public class GamblerView implements GamblerListener{
 			// Set up properties of mainStage
 			Image appIcon = new Image(GamblerView.class.getResource("/Server/resources/icon2.png").toExternalForm(), 225,
 					225, true, true);
-			mainStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-				
+			mainStage.setOnCloseRequest(new EventHandler<WindowEvent>() {			
 				@Override
 				public void handle(WindowEvent event) {
-					Platform.exit();
-					System.exit(0);
+					if(mainPane.getChildren().get(0)==gamblerMainPanel){
+						MessageGambler messageLogout = new MessageGambler(GamblerCommand.Logout, 
+								client.getCurrentGambler().getName(), client.getCurrentGambler().getPassword());
+						client.SendGamblerMessage(messageLogout);
+					}				
 				}
 			});
+			
 			mainStage.getIcons().add(appIcon);
 			mainStage.setTitle("CarRace Gambler");
 			mainStage.setAlwaysOnTop(true);
@@ -105,8 +109,8 @@ public class GamblerView implements GamblerListener{
 			case Login:			
 				String username = gamblerLoginPanel.getName();
 				String password = gamblerLoginPanel.getPassword();				
-				MessageGambler message = new MessageGambler(GamblerCommand.Login, username, password);
-				client.SendGamblerMessage(message);
+				MessageGambler messageLogin = new MessageGambler(GamblerCommand.Login, username, password);
+				client.SendGamblerMessage(messageLogin);
 				break;
 
 			case Cancel:
@@ -120,10 +124,11 @@ public class GamblerView implements GamblerListener{
 				break;
 				
 			case Exit:
-				//LOG OUT Gambler, change status to 'offLine'
 				mainPane.getChildren().remove(gamblerMainPanel);
 				mainPane.getChildren().add(gamblerLoginPanel);
-				
+				MessageGambler messageLogout = new MessageGambler(GamblerCommand.Logout, 
+						client.getCurrentGambler().getName(), client.getCurrentGambler().getPassword());
+				client.SendGamblerMessage(messageLogout);			
 				break;
 			default:
 				break;
@@ -206,10 +211,11 @@ public class GamblerView implements GamblerListener{
 			Platform.runLater(() -> {		
 				mainPane.getChildren().remove(gamblerRegistrationPanel);
 				mainPane.getChildren().add(gamblerLoginPanel);
+				gamblerLoginPanel.showMessage("Registration Successful!", MessageColor.Green);
 			});
 		}
 		else{
-			gamblerLoginPanel.showMessage("Error! Registration unsuccessful!");
+			gamblerRegistrationPanel.showMessage("Error! Registration unsuccessful!", MessageColor.Red);
 		}
 		
 	}
@@ -229,7 +235,7 @@ public class GamblerView implements GamblerListener{
 		}
 		else{
 			Platform.runLater(() -> {	
-			gamblerLoginPanel.showMessage("Error! Login unsuccessful!");
+			gamblerLoginPanel.showMessage("Error! Login unsuccessful!", MessageColor.Red);
 			});
 		}
 		
@@ -265,6 +271,15 @@ public class GamblerView implements GamblerListener{
 	public void raceEnded() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * Display message on current Panel in main Pane.
+	 * @param message
+	 * @param color
+	 */
+	public void showMessageOnCurrentPanel(String message, MessageColor color) {
+		((IGamblerPanelMessage) mainPane.getChildren().get(0)).showMessage(message, color);;
 	}
 
 }

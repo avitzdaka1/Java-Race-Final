@@ -20,6 +20,7 @@ public class GamblerClient implements Runnable {
 	private ObjectInputStream inputStreamFromServer;		
 	private boolean connectedToServer = false;
 	private GamblerView gamblerView;
+	private Gambler currentGambler;
 	
 	@Override
 	public void run() {
@@ -85,6 +86,8 @@ public class GamblerClient implements Runnable {
 	private void processMessage(MessageGambler message) throws IOException {
 		switch (message.getCommand()) {
 		case Register:
+			gamblerView.registerSuccess(true);
+			
 			//	TODO: if registration successful:
 			//	TODO: show an informative message like "registration successful" to the user, and show the main gambler login panel
 			//	TODO: if registration wasn't successful, show an error message.
@@ -93,9 +96,9 @@ public class GamblerClient implements Runnable {
 		case Login:
 			//	If login was successful, create a new gamble and notify the gambler view.
 			if (message.getStatus()) {
-				Gambler gambler = new Gambler(message.getId(), message.getUsername(), message.getPassword(),
+				currentGambler = new Gambler(message.getId(), message.getUsername(), message.getPassword(),
 						message.getBalance());
-				gamblerView.loginSuccess(gambler);
+				gamblerView.loginSuccess(currentGambler);
 			} 
 			//	Otherwise, just notify the view with null.
 			else
@@ -140,11 +143,13 @@ public class GamblerClient implements Runnable {
 		try {
 			outputStreamToServer.writeObject(message);
 		} catch (IOException e) {
-			//	TODO: why does it update only the login panel? update other panels too
-			//	Update message on LoginPanel
-			gamblerView.getGamblerLoginPanel().showMessage("Connection error!");
+			gamblerView.showMessageOnCurrentPanel("Connection error!", MessageColor.Red);
 			e.printStackTrace();
 		}
+	}
+	
+	public Gambler getCurrentGambler(){
+		return currentGambler != null ? currentGambler : null;
 	}
 	
 

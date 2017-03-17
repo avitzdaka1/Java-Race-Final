@@ -21,7 +21,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class GamblerRegister extends StackPane{
+public class GamblerRegister extends StackPane implements IGamblerPanelMessage{
 	
 	
 	private Label messageLbl;
@@ -85,8 +85,11 @@ public class GamblerRegister extends StackPane{
 		return((PasswordField)txtPassword.getTextControl()).getText();
 	}
 	
-	public void showErrorMessage(String message){
-		messageLbl.setTextFill(Color.RED);
+	public void showMessage(String message, MessageColor color){
+		if(color==MessageColor.Red)
+			messageLbl.setTextFill(Color.RED);
+		else
+			messageLbl.setTextFill(Color.GREEN);
 		messageLbl.setText(message);
 	}
 }

@@ -23,7 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class GamblerMainWin extends StackPane {
+public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 	
 	private Image backgroundImage;
 	private GamblerComboBox raceCombo, carCombo;
@@ -96,9 +96,11 @@ public class GamblerMainWin extends StackPane {
 	}
 	
 	
-	public void showErrorMessage(String message){
-		messageLbl.setTextFill(Color.RED);
+	public void showMessage(String message, MessageColor color){
+		if(color==MessageColor.Red)
+			messageLbl.setTextFill(Color.RED);
+		else
+			messageLbl.setTextFill(Color.GREEN);
 		messageLbl.setText(message);
 	}
-
 }
