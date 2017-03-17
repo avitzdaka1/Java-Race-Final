@@ -5,12 +5,15 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.ArrayList;
+
 import Entities.*;
 
 public class Database {
 
 	// DB connecting information
 	private final String RACE_DB = "RACE_DB.txt";
+	private int gamblerIdCounter = 0;
 
 	/**
 	 * Database constructor, if the database is empty, it creates it.
@@ -18,6 +21,9 @@ public class Database {
 	public Database() {
 		if (!checkDBExists())
 			createNewDB();
+		else {
+			gamblerIdCounter = getLastGamblerId();
+		}
 	}
 	
 	/**
@@ -274,6 +280,32 @@ public class Database {
 		}
 	}
 
+	/**
+	 * Returns all car names.
+	 * @return the string array of car names.
+	 */
+	public String[] getCarNames() {
+		String query = "SELECT Car.name " + "FROM Car ";
+		ArrayList<String> cars = new ArrayList<>();
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace", "scott",
+					"tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						while (resultSet.next())
+							cars.add(resultSet.getString(1));
+						String[] carsArr = (String[]) cars.toArray();
+						return carsArr;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * Returns the last race number.
 	 * @return the last race number.
@@ -778,6 +810,7 @@ public class Database {
 			e.printStackTrace();
 			return false;
 		}
+		gamblerIdCounter++;
 		return true;
 	}
 
