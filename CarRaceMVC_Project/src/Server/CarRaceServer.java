@@ -35,7 +35,6 @@ public class CarRaceServer extends Application {
 	private ArrayList<HandlerRace> modelList;
 	private ArrayList<MainServerListener> clientHandlersArray;
 	private int raceCounter = 0; // = race Number
-	private int gamblerCounter = 0; // = gambler Number
 	private CarLog carLog;
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
@@ -76,7 +75,6 @@ public class CarRaceServer extends Application {
 		
 		database = new Database();
 		raceCounter = database.getLastRaceNumber();
-		gamblerCounter = database.getLastGamblerId();
 		//	Creates a new gambler window.
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -124,7 +122,8 @@ public class CarRaceServer extends Application {
 		clientHandlersArray = new ArrayList<MainServerListener>();
 		
 		listenNewGambler();
-		listenNewRace();		
+		listenNewRace();
+		//startRaces();
 	}
 
 	// Open new thread for new client.
@@ -161,7 +160,8 @@ public class CarRaceServer extends Application {
 						carLog.printMsg("New race connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(new Date()));
 						
 					});
-					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter, database);
+					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter,
+							database, carLog);
 					clientHandlersArray.add(handlerRace);
 					modelList.add(handlerRace);
 					Thread thread = new Thread(handlerRace);
@@ -185,7 +185,7 @@ public class CarRaceServer extends Application {
 					Platform.runLater(()-> {
 						carLog.printMsg("New gambler connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(new Date()));
 					});
-					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, ++gamblerCounter, database);
+					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, database);
 					clientHandlersArray.add(handlerGambler);
 					Thread thread = new Thread(handlerGambler);
 					thread.start();		
