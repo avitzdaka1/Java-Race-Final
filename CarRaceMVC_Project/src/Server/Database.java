@@ -363,10 +363,10 @@ public class Database {
 	 * @return gambler details.
 	 * @exception Exception
 	 */
-	public Gambler getGamblerDetails(String gamblerName) {
+	public Gambler getGamblerDetails(int gamblerId) {
 		String query = "SELECT * " + 
 					"FROM Gambler " + 
-					"WHERE Gambler.name = '" + gamblerName + "'";
+					"WHERE Gambler.id = " + gamblerId;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
