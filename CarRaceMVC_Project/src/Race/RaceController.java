@@ -10,8 +10,8 @@ import Entities.*;
 public class RaceController {
 
 	private Socket clientSocket;
-	public ObjectOutputStream outputStreamToServer;
-	public ObjectInputStream inputStreamFromServer;		
+	private ObjectOutputStream outputStreamToServer;
+	private ObjectInputStream inputStreamFromServer;		
 	private Random random;
 
 	public RaceController() {
