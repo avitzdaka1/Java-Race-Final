@@ -358,7 +358,7 @@ public class Database {
 	}
 
 	/**
-	 * Returns gambler details using given gambler name.
+	 * Returns gambler details using given gambler id.
 	 * @param gamblerName the gambler's name to search for.
 	 * @return gambler details.
 	 * @exception Exception
@@ -367,6 +367,34 @@ public class Database {
 		String query = "SELECT * " + 
 					"FROM Gambler " + 
 					"WHERE Gambler.id = " + gamblerId;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							return new Gambler(resultSet.getInt(1), resultSet.getString(2), 
+									resultSet.getString(3), resultSet.getInt(4));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns gambler details using given gambler name.
+	 * @param gamblerName the gambler's name to search for.
+	 * @return gambler details.
+	 * @exception Exception
+	 */
+	public Gambler getGamblerDetails(String gamblerName) {
+		String query = "SELECT * " + 
+					"FROM Gambler " + 
+					"WHERE Gambler.name = '" + gamblerName + "'";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
