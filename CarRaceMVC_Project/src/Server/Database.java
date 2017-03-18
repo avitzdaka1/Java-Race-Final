@@ -1035,7 +1035,6 @@ public class Database {
             for(int i=1 ; i<=rs.getMetaData().getColumnCount(); i++){            
                 row.add(rs.getString(i)); //Iterate Column
             }
-            System.out.println("Row [1] added "+row );
             data.add(row);
         }
         //FINALLY ADDED TO TableView

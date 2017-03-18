@@ -55,8 +55,6 @@ public class CarRaceServer extends Application {
 		VBox buttonsBoxVB = new VBox(), serverLogVB = new VBox();
 		buttonsBoxVB.setPrefSize(160, 50);
 
-		tableView.setPrefSize(primaryStage.getWidth(), 260);
-
 		Button  btnNewGambler = new Button("New Gambler"), btnShowGamlers = new Button("Gamblers"), 
 				btnHistory = new Button("History"), btnCurrentState = new Button("Current State"), 
 				btnStatistics = new Button("Statistics"), btnClearLog = new Button("Clear Log");
@@ -78,6 +76,10 @@ public class CarRaceServer extends Application {
 
 		Scene scene = new Scene(pane, 900, buttonsBoxVB.getMinHeight());
 		scene.getStylesheets().add("Server/serverStyles.css");
+		
+	//	tableView.setPrefSize(primaryStage.getWidth(), 260);
+		tableView.getStyleClass().add("table-view");
+	//	tableView.setId("my-table");
 		
 		database = new Database();
 		raceCounter = database.getLastRaceNumber();
