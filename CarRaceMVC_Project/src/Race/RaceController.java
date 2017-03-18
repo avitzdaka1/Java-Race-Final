@@ -6,10 +6,14 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import Entities.*;
 
 public class RaceController implements Runnable {
 
+	private final int speedRangeMin = 10, speedRangeMax = 15, timeBetweenSpeedChange = 30000;
 	private Socket clientSocket;
 	private ObjectOutputStream outputStreamToServer;
 	private ObjectInputStream inputStreamFromServer;		
@@ -18,6 +22,7 @@ public class RaceController implements Runnable {
 	private RaceView raceView;
 	private String[] carNames;
 	private int raceNumber;
+	private Timer timer;
 
 	@Override
 	public void run() {
@@ -29,7 +34,6 @@ public class RaceController implements Runnable {
 			raceView = new RaceView(raceNumber);
 			initReceiverFromServer();
 			requestCarNames();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -80,6 +84,21 @@ public class RaceController implements Runnable {
 			e.printStackTrace();
 		}
 		raceView.setCarsProps(cars);
+		timer = new Timer();
+		timer.schedule(new SpeedChangeTask(), 1, timeBetweenSpeedChange);
+	}
+	
+	/**
+	 * Updates the model (race handler) with the new speed rates.
+	 * @param carSpeeds the new speed rates.
+	 */
+	private void sendSpeedChangesToModel(double[] carSpeeds) {
+		MessageRace message = new MessageRace(RaceCommand.ChangeSpeed, raceNumber, carNames, carSpeeds, true);
+		try {
+			outputStreamToServer.writeObject(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void initReceiverFromServer() {
@@ -120,9 +139,6 @@ public class RaceController implements Runnable {
 			case End:
 				
 				break;
-			case ChangeSpeed:
-				
-				break;
 			case InitSettings:
 				selectCars(message);
 				break;
@@ -133,6 +149,25 @@ public class RaceController implements Runnable {
 				
 				break;
  		}
+	}
+	
+	/**
+	 * The timer task that is responsible of changing the speeds of all cars in a running race,
+	 * every 30 seconds.
+	 *
+	 */
+	class SpeedChangeTask extends TimerTask {
+		@Override
+		public void run() {
+			double[] newCarSpeeds = new double[raceView.getCars().length];
+			for(int i = 0; i < raceView.getCars().length; i++) {
+				double newSpeed = speedRangeMin + (speedRangeMax - speedRangeMin) * random.nextDouble();
+				raceView.getCars()[i].setSpeed(newSpeed);
+				newCarSpeeds[i] = newSpeed;
+			}
+			sendSpeedChangesToModel(newCarSpeeds);
+		}
+		
 	}
 
 

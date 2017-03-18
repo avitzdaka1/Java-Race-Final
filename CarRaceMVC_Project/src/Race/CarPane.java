@@ -39,6 +39,7 @@ public class CarPane extends Pane implements CarEvents {
 		if (car != null) {
 			this.car = car;
 			color = Color.valueOf(car.getColor());
+			car.addEventHandler(new SpeedEvent(), eventType.SPEED);
 		}
 	}
 

@@ -10,7 +10,7 @@ import javafx.event.EventHandler;
 
 public class Car implements CarEvents {
 	//	The model the car belongs to
-	private int speed;
+	private double speed;
 	private int wheelRadius;
 	private String name, make, size, color, type;
 	private Map<eventType, ArrayList<EventHandler<Event>>> carHashMap;
@@ -48,7 +48,7 @@ public class Car implements CarEvents {
 		return type;
 	}
 
-	public int getSpeed() {
+	public double getSpeed() {
 		return speed;
 	}
 	
@@ -56,7 +56,7 @@ public class Car implements CarEvents {
 		return name;
 	}
 
-	public void setSpeed(int speed) {
+	public void setSpeed(double speed) {
 		this.speed = speed;
 		processEvent(eventType.SPEED, new ActionEvent());
 	}

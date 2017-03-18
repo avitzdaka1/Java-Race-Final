@@ -115,12 +115,12 @@ public class HandlerRace implements Runnable, MainServerListener{
 	 * @param message
 	 */
 	private void setSpeeds(MessageRace message) {
-		int[] carSpeeds = message.getCarSpeeds();
+		double[] carSpeeds = message.getCarSpeeds();
 		for(int i = 0; i < carSpeeds.length; i++) {
-			cars[i].setSpeed(carSpeeds[i]);
+			//cars[i].setSpeed(carSpeeds[i]);
 			int j = i;
 			Platform.runLater(()-> {
-				carLog.printMsg("Race no. " + message.getRaceNumber() + ", Car " + cars[j].getName() + ": speed changed to " + carSpeeds[j] + " at " + dateFormat.format(new Date()));
+				carLog.printMsg("Race no. " + message.getRaceNumber() + ", Car " + message.getCarNames()[j] + ": speed changed to " + (int)carSpeeds[j] + " at " + dateFormat.format(new Date()));
 			});
 		}
 	}

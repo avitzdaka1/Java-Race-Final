@@ -8,7 +8,7 @@ public class MessageRace implements Serializable {
 	private RaceCommand command;
 	private int raceNumber;
 	private String[] carNames, carMakes, carSizes, carColors, carTypes;
-	private int[] carSpeeds;
+	private double[] carSpeeds;
 	private boolean status;
 	
 	/**
@@ -59,7 +59,7 @@ public class MessageRace implements Serializable {
 	 * @param status the message's status.
 	 */
 	public MessageRace(RaceCommand command, int raceNumber, String[] carNames, 
-			int[] carSpeeds, boolean status) {
+			double[] carSpeeds, boolean status) {
 		this.command = command;
 		this.raceNumber = raceNumber;
 		this.carNames = carNames;
@@ -135,11 +135,11 @@ public class MessageRace implements Serializable {
 		this.carNames = carNames;
 	}
 	
-	public int[] getCarSpeeds() {
+	public double[] getCarSpeeds() {
 		return carSpeeds;
 	}
 	
-	public void setCarSpeeds(int[] carSpeeds) {
+	public void setCarSpeeds(double[] carSpeeds) {
 		this.carSpeeds = carSpeeds;
 	}
 	

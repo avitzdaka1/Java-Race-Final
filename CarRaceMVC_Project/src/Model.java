@@ -1,4 +1,4 @@
-package Server;
+
 import javafx.scene.paint.Color;
 
 public class Model {
