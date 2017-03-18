@@ -140,25 +140,22 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 	
 	private void processBet(int gamblerId, int raceNumber, String carName, int bet) throws IOException {
 		MessageGambler message = null;
-		
-		if (database.gamblerBet(gamblerId, raceNumber, carName, bet)){
-		//if (database.placeGamblerBet(gamblerId, raceNumber, carName, bet)){
+
+		if (database.gamblerBet(gamblerId, raceNumber, carName, bet)) {
 			int races[] = new int[] { raceNumber };
-			String cars[] = new String[] {carName};
-			message = new MessageGambler(GamblerCommand.Bet, gamblerId, races, cars,
-					bet);
+			String cars[] = new String[] { carName };
+			message = new MessageGambler(GamblerCommand.Bet, gamblerId, races, cars, bet);
 			message.setBalance(database.getGamblerDetails(gamblerId).getBalance());
 			message.setStatus(true);
-		}
-		else
+		} else
 			message = new MessageGambler(GamblerCommand.Bet, false);
 		outputStream.writeObject(message);
 	}
 	
 	@Override
-	public void serverDisconnection() {		
+	public void serverDisconnection() {
 		try {
-			outputStream.writeObject(new MessageGambler(GamblerCommand.Disconnect,true));
+			outputStream.writeObject(new MessageGambler(GamblerCommand.Disconnect, true));
 			gamblerConnected = false;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -172,5 +169,5 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		}
+	}
 }

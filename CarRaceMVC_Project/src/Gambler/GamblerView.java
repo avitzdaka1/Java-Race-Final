@@ -136,11 +136,13 @@ public class GamblerView implements GamblerListener{
 				
 				if(gamblerBet <=0 || raceNum[0] == -1 || carName[0]==null)
 					gamblerMainPanel.showMessage("Bet error, fill the fields correctly!!", MessageColor.Red);
+				else if (gamblerBet > client.getCurrentGambler().getBalance())
+					gamblerMainPanel.showMessage("Bet error, balance too low!", MessageColor.Red);
 				else{
 					MessageGambler messageBet = new MessageGambler(GamblerCommand.Bet, 
 							client.getCurrentGambler().getId(), raceNum, carName, gamblerBet );
 					client.SendGamblerMessage(messageBet);
-					gamblerMainPanel.clearPanel();
+					requestRaceList();
 				}
 				
 				break;
@@ -183,6 +185,7 @@ public class GamblerView implements GamblerListener{
 	 * Send request for races list from server.
 	 */
 	private void requestRaceList() {
+		gamblerMainPanel.clearPanel();
 		MessageGambler messageGetRaces = new MessageGambler(GamblerCommand.UpdateRaces, true);
 		client.SendGamblerMessage(messageGetRaces);
 	}

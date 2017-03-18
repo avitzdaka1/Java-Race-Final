@@ -110,6 +110,7 @@ public class CarRaceServer extends Application {
 					 for(MainServerListener listener : clientHandlersArray )
 						 listener.serverDisconnection();	
 					 database.updateGamblersOffline();
+					 database.updateRacesStateFinished();
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally{
