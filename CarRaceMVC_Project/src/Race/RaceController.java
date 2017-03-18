@@ -13,7 +13,7 @@ public class RaceController implements Runnable {
 	private Socket clientSocket;
 	private ObjectOutputStream outputStreamToServer;
 	private ObjectInputStream inputStreamFromServer;		
-	private Random random = new Random(System.currentTimeMillis());
+	private Random random;
 	private boolean connectedToServer = false;
 	private RaceView raceView;
 	private String[] carNames;
@@ -46,6 +46,7 @@ public class RaceController implements Runnable {
 	 * Selects cars for this race.
 	 */
 	private void selectCars(MessageRace message) throws IOException {
+		random = new Random(message.getRaceNumber());
 		ArrayList<Integer> chosenCarsNumbers = new ArrayList<>();
 		raceNumber = message.getRaceNumber();
 		carNames = new String[RaceCommand.TotalNumOfCars.ordinal()];
@@ -53,6 +54,7 @@ public class RaceController implements Runnable {
 			int j = random.nextInt(message.getCarNames().length);
 			if (!chosenCarsNumbers.contains(j)) {
 				chosenCarsNumbers.add(j);
+				System.out.println(message.getCarNames()[j]);
 				carNames[i] = new String(message.getCarNames()[j]);
 			}
 			else 
