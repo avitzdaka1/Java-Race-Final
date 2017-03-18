@@ -107,7 +107,6 @@ public class GamblerClient implements Runnable {
 			break;
 
 		case Disconnect:
-			//	If server ordered the client to shutdown (happens when the main server shuts down).
 			shutdownClient();
 			break;
 		
