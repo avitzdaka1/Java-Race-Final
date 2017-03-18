@@ -868,6 +868,27 @@ public class Database {
 		}
 		return true;
 	}
+	
+	/**
+	 * Updates all gamblers and sets their online status to 0 (offline).
+	 * Used by the main server when it shuts down.
+	 * @return
+	 */
+	public synchronized void updateGamblersOffline() {
+		String query = "UPDATE Gambler " + 
+					"SET isOnline = 0 ";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					dbStatement.executeUpdate(query);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Finds out of a given car already exists in database (checks name).

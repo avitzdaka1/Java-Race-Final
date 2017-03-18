@@ -106,9 +106,10 @@ public class CarRaceServer extends Application {
 			@Override
 			public void handle(WindowEvent event) {
 				try {
-					//	Notify all handlers to close their windows amd disconnect clients.
+					//	Notify all handlers to close their windows and disconnect clients.
 					 for(MainServerListener listener : clientHandlersArray )
-						 listener.serverDisconnection();					 
+						 listener.serverDisconnection();	
+					 database.updateGamblersOffline();
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally{
