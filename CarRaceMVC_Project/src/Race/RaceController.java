@@ -26,11 +26,9 @@ public class RaceController implements Runnable {
 			outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			connectedToServer = true;
-			new Thread(() -> {
-				requestCarNames();
-			});
 			raceView = new RaceView(raceNumber);
 			initReceiverFromServer();
+			requestCarNames();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -39,13 +37,9 @@ public class RaceController implements Runnable {
 	}
 
 	
-	private void requestCarNames() {
+	private void requestCarNames() throws IOException {
 		MessageRace message = new MessageRace(RaceCommand.InitSettings, true);
-		try {
-			outputStreamToServer.writeObject(message);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		outputStreamToServer.writeObject(message);
 	}
 	
 	/**
@@ -64,6 +58,7 @@ public class RaceController implements Runnable {
 			else 
 				i--;
 		}
+		message.setCommand(RaceCommand.CarSettings);
 		message.setCarNames(carNames);
 		outputStreamToServer.writeObject(message);
 	}

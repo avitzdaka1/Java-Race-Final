@@ -43,6 +43,7 @@ public class HandlerRace implements Runnable, MainServerListener{
 		try {
 			inputStream = new ObjectInputStream(clientSocket.getInputStream());
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+			raceConnected = true;
 			while (raceConnected) {
 				MessageRace inputMessage = (MessageRace) inputStream.readObject();
 				handleMessage(inputMessage);

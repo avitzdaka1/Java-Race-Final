@@ -394,8 +394,8 @@ public class Database {
 	 * @return the car object that holds the car and its props.
 	 */
 	public Car getCarProps(String carName) {
-		String query = "SELECT Car.name, Car.make, Car.size, Car.color, Car.type" + 
-					"FROM Car" +
+		String query = "SELECT Car.make, Car.size, Car.color, Car.type " + 
+					"FROM Car " +
 					"WHERE Car.name = '" + carName + "'";
 		Car car = null;
 		try {
@@ -405,9 +405,9 @@ public class Database {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
 						if (resultSet.next()) {
-							car = new Car(resultSet.getString(1), resultSet.getString(2), 
-									resultSet.getString(3), resultSet.getString(4), 
-									resultSet.getString(5));
+							car = new Car(carName, resultSet.getString(1), 
+									resultSet.getString(2), resultSet.getString(3), 
+									resultSet.getString(4));
 						}
 						return car;
 					}
