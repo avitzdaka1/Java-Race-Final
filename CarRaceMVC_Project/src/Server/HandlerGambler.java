@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import Entities.*;
 
-class HandlerGambler implements Runnable, MainServerListener {
+class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerListener{
 
 	private Socket clientSocket;
 	private boolean gamblerConnected;
@@ -29,9 +29,7 @@ class HandlerGambler implements Runnable, MainServerListener {
 		try {
 			inputStream = new ObjectInputStream(clientSocket.getInputStream());
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-
 			while (true)
-			//	MessageGambler inputMessage = (MessageGambler) inputStream.readObject();
 				handleMessage((MessageGambler) inputStream.readObject());
 		} 		
 		catch (SocketException e) {
@@ -76,7 +74,7 @@ class HandlerGambler implements Runnable, MainServerListener {
 				processBet(inputMessage.getId(),inputMessage.getRaceNumber()[0], 
 						inputMessage.getCarName()[0], inputMessage.getBet());
 				break;
-			case getRaces:
+			case UpdateRaces:
 				getCurrentRaces(); ///////////////////////////////////
 				break;
 			default:
@@ -91,14 +89,11 @@ class HandlerGambler implements Runnable, MainServerListener {
 		for (int i = 0; i < racesList.size(); i++) 
 			races[i] = racesList.get(i);
 		String[] cars = new String[15];
-		/*ArrayList<String> carsList = new ArrayList<>();
-		for (int i = 0; i < races.length; i++) 
-			carsList.addAll(database.getCarsInRace(races[i]));	*/	
 		ArrayList<String> carsList = database.getCarsInRace();
 		for (int i = 0; i < carsList.size(); i++)
 			cars[i] = carsList.get(i);
-		////////////////////////////////////////////////////////////////////////////////////////
-		outputStream.writeObject(new MessageGambler(GamblerCommand.getRaces,0, races, cars, 0));	
+
+		outputStream.writeObject(new MessageGambler(GamblerCommand.UpdateRaces,0, races, cars, 0));	
 	}
 
 	private void logoutGambler(String username, String password) {
@@ -157,4 +152,13 @@ class HandlerGambler implements Runnable, MainServerListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void updateRaces() {
+		try {
+			getCurrentRaces();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		}
 }

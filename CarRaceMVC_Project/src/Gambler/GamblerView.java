@@ -183,7 +183,7 @@ public class GamblerView implements GamblerListener{
 	 * Send request for races list from server.
 	 */
 	private void requestRaceList() {
-		MessageGambler messageGetRaces = new MessageGambler(GamblerCommand.getRaces, true);
+		MessageGambler messageGetRaces = new MessageGambler(GamblerCommand.UpdateRaces, true);
 		client.SendGamblerMessage(messageGetRaces);
 	}
 	

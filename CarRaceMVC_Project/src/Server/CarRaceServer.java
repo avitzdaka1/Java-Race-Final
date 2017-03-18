@@ -33,6 +33,7 @@ public class CarRaceServer extends Application {
 	private Database database;
 	private final int totalNumOfRaces = 3;
 	private ArrayList<HandlerRace> modelList;
+	private ArrayList<GamblerHandlerListener> gambleHandlersList;
 	private ArrayList<MainServerListener> clientHandlersArray;
 	private int raceCounter = 0; // = race Number
 	private CarLog carLog;
@@ -120,6 +121,7 @@ public class CarRaceServer extends Application {
 		
 		modelList = new ArrayList<HandlerRace>();
 		clientHandlersArray = new ArrayList<MainServerListener>();
+		gambleHandlersList = new ArrayList<GamblerHandlerListener>();
 		
 		listenNewGambler();
 		listenNewRace();
@@ -182,6 +184,7 @@ public class CarRaceServer extends Application {
 					});
 					HandlerGambler handlerGambler = new HandlerGambler(clientSocket, this, database);
 					clientHandlersArray.add(handlerGambler);
+					gambleHandlersList.add(handlerGambler);
 					Thread thread = new Thread(handlerGambler);
 					thread.start();		
 				}
@@ -189,6 +192,12 @@ public class CarRaceServer extends Application {
 				ex.printStackTrace();
 			}
 		}).start();
+	}
+	
+	public void updateGamblersRaces(int[] races, String[] carNames)
+	{
+		for (int i = 0; i < gambleHandlersList.size(); i++) 
+			gambleHandlersList.get(i).updateRaces();	
 	}
 
 	public static void main(String[] args) {

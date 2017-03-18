@@ -111,12 +111,12 @@ public class GamblerClient implements Runnable {
 			shutdownClient();
 			break;
 		
-		case getCars:
+		case UpdateCars:
 			//	TODO: update the cars the gambler can bet on.
 			//	either add or remove car (use message.getCarName, and status true / false).
 			break;
 			
-		case getRaces:
+		case UpdateRaces:
 			gamblerView.getGamblerMainPanel().updateRacesAndCars(message.getRaceNumber(), message.getCarName());
 			break;
 		default:
