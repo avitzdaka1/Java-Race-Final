@@ -125,7 +125,7 @@ public class GamblerView implements GamblerListener{
 					MessageGambler messageLogin = new MessageGambler(GamblerCommand.Login, usernameLogin, passwordLogin);
 					client.SendGamblerMessage(messageLogin);
 					gamblerLoginPanel.clearPanel();
-					requestRaceList();////////////////////////////////////////////////
+					requestRaceList();
 				}			
 				break;
 
@@ -134,13 +134,15 @@ public class GamblerView implements GamblerListener{
 				int raceNum[] = new int[] {gamblerMainPanel.getRaceNumber()};
 				String carName[] = new String[] {gamblerMainPanel.getCarName()};
 				
-			//	if(gamblerBet == -1 || raceNum[0] == -1 || carName[0]==null)
-			//		gamblerMainPanel.showMessage("Login error,\nusername or password is empty!!", MessageColor.Red);
-
-				MessageGambler messageBet = new MessageGambler(GamblerCommand.Bet, 
-						client.getCurrentGambler().getId(), raceNum, carName, gamblerBet );
-				client.SendGamblerMessage(messageBet);
-				gamblerMainPanel.clearPanel();
+				if(gamblerBet <=0 || raceNum[0] == -1 || carName[0]==null)
+					gamblerMainPanel.showMessage("Bet error, fill the fields correctly!!", MessageColor.Red);
+				else{
+					MessageGambler messageBet = new MessageGambler(GamblerCommand.Bet, 
+							client.getCurrentGambler().getId(), raceNum, carName, gamblerBet );
+					client.SendGamblerMessage(messageBet);
+					gamblerMainPanel.clearPanel();
+				}
+				
 				break;
 				
 			case Cancel:
@@ -303,8 +305,7 @@ public class GamblerView implements GamblerListener{
 		if (success) {
 			Platform.runLater(() -> {
 				gamblerMainPanel.showGamblerInfo(gamblerMainPanel.getGambler().getName(), newBalance);
-				gamblerMainPanel.showMessage("Bet placed successful! Yor current balance: " + newBalance,
-						MessageColor.Green);
+				gamblerMainPanel.showMessage("Bet placed successful!\nYor current balance: " + newBalance, MessageColor.Green);
 			});
 		} else {
 			Platform.runLater(() -> {

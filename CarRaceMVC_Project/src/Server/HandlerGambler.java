@@ -137,11 +137,15 @@ class HandlerGambler implements Runnable, MainServerListener {
 	
 	private void processBet(int gamblerId, int raceNumber, String carName, int bet) throws IOException {
 		MessageGambler message = null;
-		if (database.placeGamblerBet(gamblerId, raceNumber, carName, bet)){
+		
+		if (database.gamblerBet(gamblerId, raceNumber, carName, bet)){
+		//if (database.placeGamblerBet(gamblerId, raceNumber, carName, bet)){
 			int races[] = new int[] { raceNumber };
 			String cars[] = new String[] {carName};
 			message = new MessageGambler(GamblerCommand.Bet, gamblerId, races, cars,
-					database.getGamblerDetails(gamblerId).getBalance());
+					bet);
+			message.setBalance(database.getGamblerDetails(gamblerId).getBalance());
+			message.setStatus(true);
 		}
 		else
 			message = new MessageGambler(GamblerCommand.Bet, false);

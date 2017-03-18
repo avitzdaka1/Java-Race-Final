@@ -628,10 +628,10 @@ public class Database {
 	 * @return whether the bet has been placed or not.
 	 * @exception Exception
 	 */
-	public boolean gamblerBet(Gambler gambler, Race race, Car car, int bet) {
+	public boolean gamblerBet(int gamblerId, int raceNum, String carName, int bet) {
 		String query = "SELECT Gambler.balance " + 
 					"FROM Gambler " +
-					"WHERE Gambler.name = '" + gambler.getName() + "' ";
+					"WHERE Gambler.id = " + gamblerId;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
@@ -643,9 +643,9 @@ public class Database {
 							// If gambler's balance is equal or greater than bet.
 							if (bet <= balance) {
 								// Place gambler bet.
-								placeGamblerBet(gambler.getId(), race.getNumber(), car.getName(), bet);
-								updateRaceTotalBets(race.getNumber(), bet);
-								updateGamblerBalance(gambler, balance - bet);
+								placeGamblerBet(gamblerId, raceNum, carName, bet);
+								updateRaceTotalBets(raceNum, bet);
+								updateGamblerBalance(gamblerId, balance - bet);
 								return true;
 							}
 						}
@@ -816,7 +816,7 @@ public class Database {
 	 * @return whether update succeeded.
 	 * @exception Exception
 	 */
-	public synchronized boolean updateGamblerBalance(Gambler gambler, int balance) {
+	public synchronized boolean updateGamblerBalance(int gamblerId, int balance) {
 		String query = "UPDATE Gambler " + 
 					"SET balance = ? " + 
 					"WHERE id = ?";
@@ -826,7 +826,7 @@ public class Database {
 					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
 					dbPrepStatement.setInt(1, balance);
-					dbPrepStatement.setString(2, gambler.getName());
+					dbPrepStatement.setInt(2, gamblerId);
 					dbPrepStatement.executeUpdate();
 				}
 			}

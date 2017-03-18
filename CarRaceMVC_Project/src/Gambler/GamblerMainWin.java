@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import Entities.Gambler;
 import Gambler.GamblerButton.ButtonId;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -45,14 +46,17 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		raceCombo = new GamblerComboBox("Race: ");		
 		raceCombo.setOptionsList(races);
         
-		((ComboBox<String>) raceCombo.getComboControl()).getSelectionModel().selectedItemProperty()
+		((ComboBox<String>) raceCombo.getComboBox()).getSelectionModel().selectedItemProperty()
 				.addListener(new ChangeListener<Object>() {
 					@Override
 					public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
 						carCombo.getOptionsList().clear();
-						int race_index = raceCombo.getOptionsList().indexOf(newValue);
-						for (int i = race_index*5; i < race_index*5 + 5; i++)
-							carCombo.getOptionsList().add(cars.get(i));						
+						if(raceCombo.getOptionsList().size()>0)
+						{
+						int race_index = raceCombo.getOptionsList().indexOf(newValue);					
+							for (int i = race_index*5; i < race_index*5 + 5; i++)
+								carCombo.getOptionsList().add(cars.get(i));		
+						}
 					}
 				});
 		
@@ -115,12 +119,14 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		betBtn.setOnMousePressed(mouseEventHandler);
 	}
 
-	public void updateRacesAndCars(int[] races, String[] cars){
-		for(int race:races)
-			this.races.add(String.valueOf(race));
-		for(String car:cars)
-			this.cars.add(car);		
-		raceCombo.setOptionsList(this.races);
+	public void updateRacesAndCars(int[] races, String[] cars) {
+		Platform.runLater(() -> {
+			for (int race : races)
+				this.races.add(String.valueOf(race));
+			for (String car : cars)
+				this.cars.add(car);
+			raceCombo.setOptionsList(this.races);
+		});
 	}
 	
 /*	public void requestCarsOfRace(int place) {
@@ -136,10 +142,7 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 	}
 	
 	public String getCarName(){
-		if(!carCombo.getSelectedOption().isEmpty())
-			return carCombo.getSelectedOption();
-		else 
-			return null;
+		return carCombo.getSelectedOption();
 	}
 	
 	public int getBet(){
@@ -154,18 +157,17 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		if(color==MessageColor.Red)
 			messageLbl.setTextFill(Color.RED);
 		else
-			messageLbl.setTextFill(Color.GREEN);
+			messageLbl.setTextFill(Color.LAWNGREEN);
 		messageLbl.setText(message);
 	}
 	
 	@Override
 	public void clearPanel() {
-		messageLbl.setText("");	
-		((TextField)betTxt.getTextControl()).clear();
-		cars.clear();
-	//	races.clear();
-	//	carCombo.getOptionsList().clear();		
-	//	raceCombo.getOptionsList().clear();
-		
+		Platform.runLater(() -> {
+			messageLbl.setText("");	
+			((TextField)betTxt.getTextControl()).clear();
+			cars.clear();
+			races.clear();
+		});
 	}
 }

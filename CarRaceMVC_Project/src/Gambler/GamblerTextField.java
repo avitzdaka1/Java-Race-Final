@@ -91,7 +91,7 @@ class GamblerComboBox extends GridPane {
 		add(comboBox, 1, 0);
 	}
 
-	public Control getComboControl() {
+	public ComboBox<String> getComboBox() {
 		return comboBox;
 	}
 	
@@ -109,6 +109,6 @@ class GamblerComboBox extends GridPane {
 	}
 	
 	public void clearComboBox(){
-		
+		options.clear();
 	}
 }
