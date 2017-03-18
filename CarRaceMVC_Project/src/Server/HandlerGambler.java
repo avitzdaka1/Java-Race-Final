@@ -34,7 +34,7 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 				handleMessage((MessageGambler) inputStream.readObject());
 		} 		
 		catch (SocketException e) {
-			e.printStackTrace();
+		//	e.printStackTrace();
 		} 					
 		catch (IOException e) {
 			e.printStackTrace();
@@ -156,10 +156,21 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 	public void serverDisconnection() {
 		try {
 			outputStream.writeObject(new MessageGambler(GamblerCommand.Disconnect, true));
-			gamblerConnected = false;
+			shutDownServer();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void shutDownServer() {
+		gamblerConnected = false;
+		try {
+			inputStream.close();
+			outputStream.close();
+			clientSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 
 	@Override
