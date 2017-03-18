@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import Entities.MessageGambler;
+import Entities.Race;
 import Gambler.GamblerClient;
 import Race.RaceController;
 import javafx.application.Application;
@@ -161,6 +162,8 @@ public class CarRaceServer extends Application {
 					});
 					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter,
 							database, carLog);
+					Race race = new Race(raceCounter, new java.sql.Date(new Date().getTime()));
+					database.insertNewRace(race);
 					clientHandlersArray.add(handlerRace);
 					modelList.add(handlerRace);
 					Thread thread = new Thread(handlerRace);
@@ -194,8 +197,7 @@ public class CarRaceServer extends Application {
 		}).start();
 	}
 	
-	public void updateGamblersRaces(int[] races, String[] carNames)
-	{
+	public void updateGamblersRaces() {
 		for (int i = 0; i < gambleHandlersList.size(); i++) 
 			gambleHandlersList.get(i).updateRaces();	
 	}

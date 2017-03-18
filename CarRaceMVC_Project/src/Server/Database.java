@@ -340,9 +340,10 @@ public class Database {
 	 * Returns a given race's cars.
 	 * @return arraylist of car names.
 	 */
-	public ArrayList<String> getCarsInRace() {
+	public ArrayList<String> getCarsInRace(int raceNumber) {
 		String query = "SELECT CarRaceResult.carName " + 
-					"FROM CarRaceResult ";
+					"FROM CarRaceResult " + 
+					"WHERE CarRaceResult.raceNumber = " + raceNumber;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager

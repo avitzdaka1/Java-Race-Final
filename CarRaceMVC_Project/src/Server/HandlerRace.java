@@ -101,6 +101,16 @@ public class HandlerRace implements Runnable, MainServerListener{
 	}
 	
 	/**
+	 * Inserts new race-car rows to the car race result table when a new race has started.
+	 * @param raceNumber the race that has just started.
+	 * @param carNames the cars that participate in the race.
+	 */
+	private void updateDBNewRace(int raceNumber, String[] carNames) {
+		for(String carName : carNames)
+			database.insertCarRaceResult(raceNumber, carName, 0);
+	}
+	
+	/**
 	 * Updates car speeds.
 	 * @param message
 	 */
@@ -140,7 +150,8 @@ public class HandlerRace implements Runnable, MainServerListener{
 			sendCarNames();
 			break;
 		case CarSettings:
-			// TODO: insert to car race result and position 0
+			updateDBNewRace(message.getRaceNumber(), message.getCarNames());
+			mainServer.updateGamblersRaces();
 			sendCars(message);
 			break;
 		default: 
