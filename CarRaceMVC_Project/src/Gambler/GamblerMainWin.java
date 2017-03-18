@@ -31,8 +31,8 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 	private GamblerTextField betTxt;
 	private Label messageLbl, gamblerInfoLbl;
 	private Gambler gambler = new Gambler(0, "empty", "Empty");
-	private ObservableList<String> races;
-	private ObservableList<String> cars;
+	private ObservableList<String> races = FXCollections.observableArrayList();
+	private ObservableList<String> cars = FXCollections.observableArrayList();
 	
 	@SuppressWarnings("unchecked")
 	public GamblerMainWin(int panelWidth,int panelHeight) {
@@ -42,25 +42,20 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 		betBtn = new GamblerButton(ButtonId.Bet,"bet.png", panelWidth*0.40, panelHeight*0.15);				
 		exitBtn = new GamblerButton(ButtonId.Exit,"exit.png", panelWidth*0.25, panelHeight*0.15);				
 		
-		raceCombo = new GamblerComboBox("Race: ");
-		/////////////////////////////////////////////////
-		
+		raceCombo = new GamblerComboBox("Race: ");		
 		raceCombo.setOptionsList(races);
         
 		((ComboBox<String>) raceCombo.getComboControl()).getSelectionModel().selectedItemProperty()
 				.addListener(new ChangeListener<Object>() {
 					@Override
 					public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-
+						carCombo.getOptionsList().clear();
 						int race_index = raceCombo.getOptionsList().indexOf(newValue);
-
-						for (int i = race_index*5; i < race_index + 5; i++) {
-							carCombo.getOptionsList().add(cars.get(i));
-						}
+						for (int i = race_index*5; i < race_index*5 + 5; i++)
+							carCombo.getOptionsList().add(cars.get(i));						
 					}
 				});
 		
-		//////////////////////////////////////////////////
 		carCombo = new GamblerComboBox("Car: ");
 		betTxt = new GamblerTextField("Your Bet: ", 0);
 		
@@ -125,7 +120,7 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 			this.races.add(String.valueOf(race));
 		for(String car:cars)
 			this.cars.add(car);		
-		raceCombo.getOptionsList().addAll(this.races);
+		raceCombo.setOptionsList(this.races);
 	}
 	
 /*	public void requestCarsOfRace(int place) {
@@ -141,8 +136,8 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 	}
 	
 	public String getCarName(){
-		if(!raceCombo.getSelectedOption().isEmpty())
-			return raceCombo.getSelectedOption();
+		if(!carCombo.getSelectedOption().isEmpty())
+			return carCombo.getSelectedOption();
 		else 
 			return null;
 	}
@@ -167,5 +162,10 @@ public class GamblerMainWin extends StackPane implements IGamblerPanelMessage{
 	public void clearPanel() {
 		messageLbl.setText("");	
 		((TextField)betTxt.getTextControl()).clear();
+		cars.clear();
+	//	races.clear();
+	//	carCombo.getOptionsList().clear();		
+	//	raceCombo.getOptionsList().clear();
+		
 	}
 }

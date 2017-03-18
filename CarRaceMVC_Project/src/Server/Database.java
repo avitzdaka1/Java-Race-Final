@@ -340,7 +340,7 @@ public class Database {
 	 * Returns a given race's cars.
 	 * @return arraylist of car names.
 	 */
-	public ArrayList<String> getCarsInRace(int raceNumber) {
+	public ArrayList<String> getCarsInRace() {
 		String query = "SELECT CarRaceResult.carName " + 
 					"FROM CarRaceResult ";
 		try {

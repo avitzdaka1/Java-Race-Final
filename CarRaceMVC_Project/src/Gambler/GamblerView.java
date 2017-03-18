@@ -68,12 +68,9 @@ public class GamblerView implements GamblerListener{
 			mainStage.setOnCloseRequest(new EventHandler<WindowEvent>() {			
 				@Override
 				public void handle(WindowEvent event) {
-					if(mainPane.getChildren().get(0)==gamblerMainPanel){
-						MessageGambler messageLogout = new MessageGambler(GamblerCommand.Logout, 
-								client.getCurrentGambler().getName(), client.getCurrentGambler().getPassword());
-						client.SendGamblerMessage(messageLogout);
-					}				
-				}
+					if(mainPane.getChildren().get(0)==gamblerMainPanel)
+						logoutGambler();													
+				}				
 			});
 			
 			mainStage.getIcons().add(appIcon);
@@ -128,7 +125,7 @@ public class GamblerView implements GamblerListener{
 					MessageGambler messageLogin = new MessageGambler(GamblerCommand.Login, usernameLogin, passwordLogin);
 					client.SendGamblerMessage(messageLogin);
 					gamblerLoginPanel.clearPanel();
-				//	requestRaceList();
+					requestRaceList();////////////////////////////////////////////////
 				}			
 				break;
 
@@ -137,6 +134,9 @@ public class GamblerView implements GamblerListener{
 				int raceNum[] = new int[] {gamblerMainPanel.getRaceNumber()};
 				String carName[] = new String[] {gamblerMainPanel.getCarName()};
 				
+			//	if(gamblerBet == -1 || raceNum[0] == -1 || carName[0]==null)
+			//		gamblerMainPanel.showMessage("Login error,\nusername or password is empty!!", MessageColor.Red);
+
 				MessageGambler messageBet = new MessageGambler(GamblerCommand.Bet, 
 						client.getCurrentGambler().getId(), raceNum, carName, gamblerBet );
 				client.SendGamblerMessage(messageBet);
@@ -158,15 +158,24 @@ public class GamblerView implements GamblerListener{
 			case Exit:
 				mainPane.getChildren().remove(gamblerMainPanel);
 				mainPane.getChildren().add(gamblerLoginPanel);
-				MessageGambler messageLogout = new MessageGambler(GamblerCommand.Logout, 
-						client.getCurrentGambler().getName(), client.getCurrentGambler().getPassword());
-				client.SendGamblerMessage(messageLogout);			
+				logoutGambler();		
 				break;
 			default:
 				break;
 			}
 		}
 	};
+	
+	/**
+	 * Logout gambler: Send message of logout to handler on server.
+	 * And clear the main panel of gambler.
+	 */
+	private void logoutGambler() {
+		MessageGambler messageLogout = new MessageGambler(GamblerCommand.Logout, 
+				client.getCurrentGambler().getName(), client.getCurrentGambler().getPassword());
+		client.SendGamblerMessage(messageLogout);
+		gamblerMainPanel.clearPanel();		
+	}
 	
 	/**
 	 * Send request for races list from server.

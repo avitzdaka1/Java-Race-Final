@@ -61,7 +61,7 @@ public class GamblerTextField extends GridPane {
 class GamblerComboBox extends GridPane {
 
 	private ObservableList<String> options;
-	private Control comboBox;
+	private ComboBox<String> comboBox;
 
 	public GamblerComboBox(String text) {
 		options =  FXCollections.observableArrayList();
@@ -101,10 +101,14 @@ class GamblerComboBox extends GridPane {
 	
 	public void setOptionsList(ObservableList<String> options) {
 		this.options = options;
+		comboBox.setItems(this.options);
+	}
+		
+	public String getSelectedOption() {
+		return comboBox.getValue();
 	}
 	
-	
-	public String getSelectedOption() {
-		return ((ComboBox<String>)comboBox).getValue();
+	public void clearComboBox(){
+		
 	}
 }
