@@ -3,17 +3,20 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import Entities.MessageGambler;
 import Entities.Race;
 import Gambler.GamblerClient;
 import Race.RaceController;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -21,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -39,6 +43,7 @@ public class CarRaceServer extends Application {
 	private int raceCounter = 0; // = race Number
 	private CarLog carLog;
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	private TableView<ObservableList> tableView = new TableView<>();
 
 	public void start(Stage primaryStage) {
 		createServerGUI(primaryStage);
@@ -49,11 +54,10 @@ public class CarRaceServer extends Application {
 		BorderPane pane = new BorderPane();
 		VBox buttonsBoxVB = new VBox(), serverLogVB = new VBox();
 		buttonsBoxVB.setPrefSize(160, 50);
-		
-		TableView<String> tableView = new TableView<>();
+
 		tableView.setPrefSize(primaryStage.getWidth(), 260);
 
-		Button  btnNewGambler = new Button("New Gambler"), btnEditUsers = new Button("Users"), 
+		Button  btnNewGambler = new Button("New Gambler"), btnShowGamlers = new Button("Gamblers"), 
 				btnHistory = new Button("History"), btnCurrentState = new Button("Current State"), 
 				btnStatistics = new Button("Statistics"), btnClearLog = new Button("Clear Log");
 
@@ -63,7 +67,7 @@ public class CarRaceServer extends Application {
 		srcPane.setFitToWidth(true);
 		srcPane.setContent(carLog);
 		
-		buttonsBoxVB.getChildren().addAll( btnNewGambler, btnEditUsers, btnHistory, 
+		buttonsBoxVB.getChildren().addAll( btnNewGambler, btnShowGamlers, btnHistory, 
 				btnCurrentState, btnStatistics, btnClearLog);
 		serverLogVB.getChildren().addAll(new Label("Server LOG:"), srcPane);
 		serverLogVB.setAlignment(Pos.CENTER);
@@ -77,6 +81,23 @@ public class CarRaceServer extends Application {
 		
 		database = new Database();
 		raceCounter = database.getLastRaceNumber();
+
+		primaryStage.setScene(scene);
+		primaryStage.setTitle("CarRace Server");
+		primaryStage.setAlwaysOnTop(true);
+		primaryStage.show();
+		
+		//	Creates a new gambler window.
+		btnShowGamlers.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				database.getAllGamblers(tableView);
+				
+			//	tableView.getColumns().get(0).setVisible(true);
+		//		populateTableView(database.getAllGamblers(), tableView);
+			}
+		});
+		
 		//	Creates a new gambler window.
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -85,7 +106,7 @@ public class CarRaceServer extends Application {
 				startNewGambler();
 			}
 		});
-
+		
 		//	Clears the server log.
 		btnClearLog.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -96,11 +117,6 @@ public class CarRaceServer extends Application {
 				});
 			}
 		});
-
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("CarRace Server");
-		primaryStage.setAlwaysOnTop(true);
-		primaryStage.show();
 		
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override

@@ -8,6 +8,18 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import Entities.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.ResizeFeatures;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.util.Callback;
 
 public class Database {
 
@@ -131,7 +143,7 @@ public class Database {
 	 * Returns all gambler records.
 	 * TODO: update @param and @return after changing this method.
 	 */
-	public void getAllGamblers() {
+	public void getAllGamblers(TableView tableView) {
 		String query = "SELECT Gambler.id, Gambler.name, Gambler.password, Gambler.balance " + 
 					"FROM Gambler " + 
 					"ORDER BY Gambler.id ASC";
@@ -141,14 +153,15 @@ public class Database {
 					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (Statement dbStatement = dbConnection.createStatement()) {
 					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
-						while (resultSet.next()) {
+						populateTableView(resultSet, tableView);
+						/*while (resultSet.next()) {
 							// GamblerResult result = new
 							// GamblerResult(resultSet.getInt(1),
 							// resultSet.getString(2), resultSet.getString(3),
 							// resultSet.getInt(4));
 							// gamblerResults.add(result);
 						}
-						// return raceResults;
+						// return raceResults;*/
 					}
 				}
 			}
@@ -996,4 +1009,36 @@ public class Database {
 		}
 		return true;
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void populateTableView (ResultSet rs, TableView<ObservableList> tableView) throws SQLException {
+		tableView.getColumns().clear();
+		ObservableList<ObservableList> data = FXCollections.observableArrayList();		
+		
+		for(int i=0 ; i<rs.getMetaData().getColumnCount(); i++){
+            //We are using non property style for making dynamic table
+            final int j = i;                
+            TableColumn col = new TableColumn(rs.getMetaData().getColumnName(i+1));
+            col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList,String>,ObservableValue<String>>(){                    
+                public ObservableValue<String> call(CellDataFeatures<ObservableList, String> param) {                                                                                              
+                    return new SimpleStringProperty(param.getValue().get(j).toString());                        
+                }                    
+            });
+            tableView.getColumns().addAll(col); 
+        }
+
+        /********************************
+         * Data added to ObservableList *
+         ********************************/
+        while(rs.next()){           
+            ObservableList<String> row = FXCollections.observableArrayList();  //Iterate Row
+            for(int i=1 ; i<=rs.getMetaData().getColumnCount(); i++){            
+                row.add(rs.getString(i)); //Iterate Column
+            }
+            System.out.println("Row [1] added "+row );
+            data.add(row);
+        }
+        //FINALLY ADDED TO TableView
+        tableView.setItems(data);
+	}	
 }
