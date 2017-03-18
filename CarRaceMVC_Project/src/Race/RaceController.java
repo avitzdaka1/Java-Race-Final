@@ -74,6 +74,11 @@ public class RaceController implements Runnable {
 			cars[i] = new Car(message.getCarNames()[i], message.getCarMakes()[i], 
 					message.getCarSizes()[i], message.getCarColors()[i], message.getCarTypes()[i]);
 		}
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		raceView.setCarsProps(cars);
 	}
 	
