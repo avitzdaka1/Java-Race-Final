@@ -54,7 +54,6 @@ public class RaceController implements Runnable {
 			int j = random.nextInt(message.getCarNames().length);
 			if (!chosenCarsNumbers.contains(j)) {
 				chosenCarsNumbers.add(j);
-				System.out.println(message.getCarNames()[j]);
 				carNames[i] = new String(message.getCarNames()[j]);
 			}
 			else 

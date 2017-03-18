@@ -26,7 +26,6 @@ public class RaceView {
 		Stage stg = new Stage();
 		Scene scene = new Scene(border_pane, 750, 500);
 		//	Saves the stage object reference at the controller to show error messages.
-		createAllTimelines();
 		stg.setScene(scene);
 		stg.setTitle("CarRaceView" + raceNumber);
 		stg.setAlwaysOnTop(true);
@@ -51,6 +50,7 @@ public class RaceView {
 				carPanes[i].setCarModel(cars[i]);
 			}
 		}
+		createAllTimelines();
 	}
 
 	public Car[] getCars() {

@@ -26,7 +26,7 @@ public class CarPane extends Pane implements CarEvents {
 	private double xCoor;
 	private double yCoor;
 	private Timeline tl; // speed=setRate()
-	private Color color = Color.BLACK;
+	private Color color;
 	private int r;// radius
 	private Car car;
 
@@ -35,9 +35,10 @@ public class CarPane extends Pane implements CarEvents {
 		r = 5;
 	}
 
-	public void setCarModel(Car myCar) {
+	public void setCarModel(Car car) {
 		if (car != null) {
-			car = myCar;
+			this.car = car;
+			color = Color.valueOf(car.getColor());
 		}
 	}
 
