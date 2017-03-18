@@ -173,6 +173,19 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 		}		
 	}
 
+	/**
+	 * Updates the race's total bets 
+	 * @param raceNumber
+	 * @param bet
+	 * @param ready
+	 */
+	private void updateRaceBets (int raceNumber, int bet, boolean ready) {
+		Race tempRace = new Race(raceNumber, null);
+		int idx = mainServer.getOpenedRaces().indexOf(tempRace);
+		int totalBets = mainServer.getOpenedRaces().get(idx).getTotalBets();
+		mainServer.getOpenedRaces().get(idx).setTotalBets(totalBets + bet);
+	}
+	
 	@Override
 	public void updateRaces() {
 		try {

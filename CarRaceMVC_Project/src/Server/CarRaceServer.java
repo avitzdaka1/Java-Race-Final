@@ -33,6 +33,7 @@ import javafx.stage.WindowEvent;
 
 public class CarRaceServer extends Application {
 	
+	private ArrayList<Race> openedRaces = new ArrayList<>();
 	
 	public static int numOfConnections = 0;
 	private Database database;
@@ -183,6 +184,7 @@ public class CarRaceServer extends Application {
 					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter,
 							database, carLog);
 					Race race = new Race(raceCounter, new java.sql.Date(new Date().getTime()));
+					openedRaces.add(race);
 					database.insertNewRace(race);
 					clientHandlersArray.add(handlerRace);
 					modelList.add(handlerRace);
@@ -222,6 +224,10 @@ public class CarRaceServer extends Application {
 			gambleHandlersList.get(i).updateRaces();	
 	}
 
+	public ArrayList<Race> getOpenedRaces() {
+		return openedRaces;
+	}
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
