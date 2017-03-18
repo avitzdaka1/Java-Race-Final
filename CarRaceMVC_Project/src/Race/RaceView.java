@@ -20,22 +20,25 @@ public class RaceView {
 
 	public RaceView(int raceNumber) {
 		Platform.runLater(() -> {
-		border_pane = new BorderPane();
-		createCarsGrid();
-		border_pane.setCenter(cars_grid);
-		Stage stg = new Stage();
-		Scene scene = new Scene(border_pane, 750, 500);
-		//	Saves the stage object reference at the controller to show error messages.
-		stg.setScene(scene);
-		stg.setTitle("CarRaceView" + raceNumber);
-		stg.setAlwaysOnTop(true);
-		stg.show();
-		scene.widthProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) { // TODO																								// stub
-				setCarPanesMaxWidth(newValue.doubleValue());
-			}
-		});
+			border_pane = new BorderPane();
+			createCarsGrid();
+			border_pane.setCenter(cars_grid);
+			Stage stg = new Stage();
+			Scene scene = new Scene(border_pane, 750, 500);
+			// Saves the stage object reference at the controller to show error
+			// messages.
+			stg.setScene(scene);
+			stg.setTitle("CarRaceView" + raceNumber);
+			stg.setAlwaysOnTop(true);
+			stg.show();
+			scene.widthProperty().addListener(new ChangeListener<Number>() {
+				@Override
+				public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) { // TODO
+																														// //
+																														// stub
+					setCarPanesMaxWidth(newValue.doubleValue());
+				}
+			});
 		});
 	}
 
