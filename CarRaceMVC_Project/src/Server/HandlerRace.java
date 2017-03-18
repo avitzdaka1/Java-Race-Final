@@ -43,7 +43,6 @@ public class HandlerRace implements Runnable, MainServerListener{
 		try {
 			inputStream = new ObjectInputStream(clientSocket.getInputStream());
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-			sendCarNames();
 			while (raceConnected) {
 				MessageRace inputMessage = (MessageRace) inputStream.readObject();
 				handleMessage(inputMessage);
@@ -137,11 +136,11 @@ public class HandlerRace implements Runnable, MainServerListener{
 			setSpeeds(message);
 			break;
 		case InitSettings:
-			// TODO: insert to car race result and position 0
-			sendCars(message);
+			sendCarNames();
 			break;
 		case CarSettings:
-			
+			// TODO: insert to car race result and position 0
+			sendCars(message);
 			break;
 		default: 
 			

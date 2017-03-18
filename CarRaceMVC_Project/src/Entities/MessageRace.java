@@ -67,6 +67,11 @@ public class MessageRace implements Serializable {
 		this.status = status;
 	}
 	
+	public MessageRace(RaceCommand command, boolean status) {
+		this.command = command;
+		this.status = status;
+	}
+	
 	public RaceCommand getCommand() {
 		return command;
 	}

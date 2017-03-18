@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Random;
 import Entities.*;
 
@@ -21,29 +22,47 @@ public class RaceController implements Runnable {
 	@Override
 	public void run() {
 		try {
-		clientSocket = new Socket("localhost", 8888);
-		outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-		inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
-		connectedToServer = true;
-		raceView = new RaceView(raceNumber);
-		initReceiverFromServer();
-		
-		}
-		catch (IOException e) {
+			clientSocket = new Socket("localhost", 8888);
+			outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+			inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
+			connectedToServer = true;
+			new Thread(() -> {
+				requestCarNames();
+			});
+			raceView = new RaceView(raceNumber);
+			initReceiverFromServer();
+
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
+	
+	private void requestCarNames() {
+		MessageRace message = new MessageRace(RaceCommand.InitSettings, true);
+		try {
+			outputStreamToServer.writeObject(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Selects cars for this race.
 	 */
 	private void selectCars(MessageRace message) throws IOException {
+		ArrayList<Integer> chosenCarsNumbers = new ArrayList<>();
 		raceNumber = message.getRaceNumber();
 		carNames = new String[RaceCommand.TotalNumOfCars.ordinal()];
 		for(int i = 0; i < carNames.length; i++) {
 			int j = random.nextInt(message.getCarNames().length);
-			carNames[i] = new String(message.getCarNames()[j]);
+			if (!chosenCarsNumbers.contains(j)) {
+				chosenCarsNumbers.add(j);
+				carNames[i] = new String(message.getCarNames()[j]);
+			}
+			else 
+				i--;
 		}
 		message.setCarNames(carNames);
 		outputStreamToServer.writeObject(message);
@@ -65,15 +84,24 @@ public class RaceController implements Runnable {
 	private void initReceiverFromServer() {
 
 		new Thread(() -> {
-			while (connectedToServer) {
-				try {
+			try {
+				while (connectedToServer) {
 					MessageRace message = (MessageRace) inputStreamFromServer.readObject();
 					processMessage(message);
-				} catch (Exception e) {
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} 
+			finally {
+				try {
+					clientSocket.close();
+				}
+				catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-
 		}).start();
 	}
 

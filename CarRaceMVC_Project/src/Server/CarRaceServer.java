@@ -123,7 +123,7 @@ public class CarRaceServer extends Application {
 		
 		listenNewGambler();
 		listenNewRace();
-		//startRaces();
+		startRaces();
 	}
 
 	// Open new thread for new client.
@@ -150,15 +150,12 @@ public class CarRaceServer extends Application {
 	public void listenNewRace() {
 
 		new Thread(() -> {
-			try {
-				ServerSocket serverSocket = new ServerSocket(8888);	//	TODO: Create final for port number.
+			try (ServerSocket serverSocket = new ServerSocket(8888)) {	//	TODO: Create final for port number.
 				while (true) {
 					Socket clientSocket = serverSocket.accept();
 					InetAddress clientAddress = clientSocket.getInetAddress();
-					
 					Platform.runLater(()-> {
 						carLog.printMsg("New race connected from " + clientAddress.getHostAddress() + " at " + dateFormat.format(new Date()));
-						
 					});
 					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter,
 							database, carLog);
@@ -176,10 +173,8 @@ public class CarRaceServer extends Application {
 	public void listenNewGambler() {
 
 		new Thread(() -> {
-			try {
-				ServerSocket serverSocket = new ServerSocket(8889);	//	TODO: Create final for port number.
+			try (ServerSocket serverSocket = new ServerSocket(8889)) {	//	TODO: Create final for port number.
 				while (true) {
-					
 					Socket clientSocket = serverSocket.accept();
 					InetAddress clientAddress = clientSocket.getInetAddress();
 					Platform.runLater(()-> {
