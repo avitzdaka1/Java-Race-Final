@@ -29,7 +29,8 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 		try {
 			inputStream = new ObjectInputStream(clientSocket.getInputStream());
 			outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-			while (true)
+			gamblerConnected = true;
+			while (gamblerConnected)
 				handleMessage((MessageGambler) inputStream.readObject());
 		} 		
 		catch (SocketException e) {
@@ -75,21 +76,28 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 						inputMessage.getCarName()[0], inputMessage.getBet());
 				break;
 			case UpdateRaces:
-				getCurrentRaces(); ///////////////////////////////////
+				getCurrentRaces();
 				break;
 			default:
 				break;
 			}
 	}
 
+	/**
+	 *  Sends to gambler client arrays of race numbers 
+	 *  and all car names in these races.
+	 * @throws IOException
+	 */
 	private void getCurrentRaces() throws IOException {
 		
 		ArrayList<Integer> racesList = database.getHoldingRaces();
 		int[] races = new int[racesList.size()];
-		for (int i = 0; i < racesList.size(); i++) 
+		ArrayList<String> carsList = new ArrayList<>();
+		for (int i = 0; i < racesList.size(); i++)  {
 			races[i] = racesList.get(i);
-		String[] cars = new String[15];
-		ArrayList<String> carsList = database.getCarsInRace();
+			carsList.addAll(database.getCarsInRace(races[i]));
+		}		
+		String[] cars = new String[15];		
 		for (int i = 0; i < carsList.size(); i++)
 			cars[i] = carsList.get(i);
 
@@ -148,9 +156,13 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 	}
 	
 	@Override
-	public void serverDisconnection() {
-		// TODO Auto-generated method stub
-		
+	public void serverDisconnection() {		
+		try {
+			outputStream.writeObject(new MessageGambler(GamblerCommand.Disconnect,true));
+			gamblerConnected = false;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
