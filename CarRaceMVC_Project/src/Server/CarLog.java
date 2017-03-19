@@ -13,7 +13,7 @@ public class CarLog extends BorderPane {
 		srcPane = new ScrollPane();
 		srcPane.setFitToHeight(true);
 		srcPane.setFitToWidth(true);
-		srcPane.setPrefHeight(200);
+		srcPane.setPrefHeight(240);
 		vBoxInSrcPane = new VBox(3);
 		srcPane.setContent(vBoxInSrcPane);
 		setCenter(srcPane);
