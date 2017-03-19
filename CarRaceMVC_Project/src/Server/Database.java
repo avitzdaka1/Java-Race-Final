@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import Entities.*;
 import javafx.beans.property.SimpleStringProperty;
@@ -325,7 +326,7 @@ public class Database {
 	 * Returns all available races that haven't started yet (but are betable).
 	 * @return array of races that a gambler can bet on.
 	 */
-	public ArrayList<Integer> getHoldingRaces() {
+	public ArrayList<Integer> getHoldingRaceNumbers() {
 		String query = "SELECT Race.number " + 
 					"FROM Race " + 
 					"WHERE Race.state BETWEEN 0 AND 3";
@@ -348,6 +349,73 @@ public class Database {
 		}
 		return null;
 	}
+	
+	/**
+	 * Returns the number of the race that is ready and has most bets.
+	 * @return race number.
+	 */
+	public ArrayList<GamblerCarRace> getCurrentGamblerCarRaceRows() {
+		String query = "SELECT GamblerCarRace.gamblerId, GamblerCarRace.raceNumber, GamblerCarRace.carName, GamblerCarRace.bet " + 
+					"FROM GamblerCarRace, Race " + 
+					"WHERE Race.number = GamblerCarRace.raceNumber " +
+					"AND Race.state BETWEEN 0 AND 3";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						ArrayList<GamblerCarRace> resultList = new ArrayList<>();
+						while (resultSet.next()) {
+							GamblerCarRace gcr = new GamblerCarRace(resultSet.getInt(1), resultSet.getInt(2), 
+									resultSet.getString(3), resultSet.getInt(4));
+							resultList.add(gcr);
+						}
+						return resultList;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the number of the race that is ready and has most bets.
+	 * @return race number.
+	 */
+	public HashMap<Integer, Integer> getRaceToStart() {
+		String query = "SELECT GamblerCarRace.raceNumber, GamblerCarRace.carName " + 
+					"FROM GamblerCarRace, Race " + 
+					"WHERE Race.number = GamblerCarRace.raceNumber " +
+					"AND Race.state BETWEEN 0 AND 3";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						HashMap<Integer, Integer> resultList = new HashMap<>();
+						while (resultSet.next()) {
+							if (resultList.containsKey(resultSet.getInt(1))) {
+								Integer carsCount = resultList.get(resultSet.getInt(1));
+								carsCount++;
+							}
+							else 
+								resultList.put(resultSet.getInt(1), new Integer(1));
+						}
+						return resultList;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 	
 	/**
 	 * Returns a given race's cars.
@@ -788,6 +856,34 @@ public class Database {
 						dbPrepStatement.executeUpdate();
 						return true;
 					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * Updates a given race's state.
+	 * @param raceNumber the race number to update.
+	 * @param state the state to update.
+	 * @return whether update succeeded.
+	 * @exception Exception
+	 */
+	public synchronized boolean updateRaceState(int raceNumber, int state) {
+		String query = "UPDATE Race " + 
+					"SET state = ? " + 
+					"WHERE number = ?";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setInt(1, state);
+					dbPrepStatement.setInt(2, raceNumber);
+					dbPrepStatement.executeUpdate();
+					return true;
 				}
 			}
 		} catch (Exception e) {

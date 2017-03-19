@@ -10,7 +10,7 @@ import javafx.event.EventHandler;
 
 public class Car implements CarEvents {
 	//	The model the car belongs to
-	private double speed;
+	private double speed, distance = 0;
 	private int wheelRadius;
 	private String name, make, size, color, type;
 	private Map<eventType, ArrayList<EventHandler<Event>>> carHashMap;
@@ -89,5 +89,13 @@ public class Car implements CarEvents {
 			EventHandler<Event> handler = (EventHandler<Event>) al.get(i);
 			handler.handle(e);
 		}
+	}
+	
+	public double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(double distance) {
+		this.distance = distance;
 	}
 }

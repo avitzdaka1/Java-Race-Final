@@ -28,9 +28,13 @@ public class CarPane extends Pane implements CarEvents {
 	private Timeline tl; // speed=setRate()
 	private Color color;
 	private int r;// radius
+	private boolean lastLap = false;
+	private RaceView view;
+
 	private Car car;
 
-	public CarPane() {
+	public CarPane(RaceView view) {
+		this.view = view;
 		xCoor = 0;
 		r = 5;
 	}
@@ -50,10 +54,17 @@ public class CarPane extends Pane implements CarEvents {
 	public void moveCar(int n) {
 		yCoor = getHeight();
 		setMinSize(10 * r, 6 * r);
-		if (xCoor > getWidth()) {
+		if (xCoor > getWidth() && lastLap) {
+			tl.stop();
+			view.raceEnd(car.getName(), car.getDistance());
+		}
+		else if (xCoor > getWidth()) {
 			xCoor = -10 * r;
-		} else {
+		} 
+		else {
 			xCoor += n;
+			if (!lastLap)
+				car.setDistance(car.getDistance() + n);
 		}
 		// Draw the car
 		Polygon polygon = new Polygon(xCoor, yCoor - r, xCoor, yCoor - 4 * r, xCoor + 2 * r, yCoor - 4 * r,
@@ -79,6 +90,10 @@ public class CarPane extends Pane implements CarEvents {
 		tl.play();
 	}
 
+	public void stopTimeline() {
+		lastLap = true;
+	}
+	
 	public Timeline getTimeline() {
 		return tl;
 	}

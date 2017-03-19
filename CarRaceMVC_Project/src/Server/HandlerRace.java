@@ -14,9 +14,10 @@ import Entities.Car;
 import Entities.MessageRace;
 import Entities.Race;
 import Entities.RaceCommand;
+import Race.RaceView;
 import javafx.application.Platform;
 
-public class HandlerRace implements Runnable, MainServerListener{
+public class HandlerRace implements Runnable, MainServerListener, RaceHandlerListener {
 
 	private Socket clientSocket;
 	private boolean raceConnected;
@@ -51,7 +52,7 @@ public class HandlerRace implements Runnable, MainServerListener{
 			}
 		} 		
 		catch (SocketException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} 					
 		catch (IOException e) {
 			e.printStackTrace();
@@ -139,10 +140,13 @@ public class HandlerRace implements Runnable, MainServerListener{
 			
 			break;
 		case Start:
-			
+			Platform.runLater(() -> {
+			carLog.printMsg("Race no. " + raceNumber + " started at " + dateFormat.format(new Date()) + "!");
+			});
+			database.updateRaceState(raceNumber, 4);
 			break;
 		case End:
-			
+			processRaceResults(message);
 			break;
 		case ChangeSpeed:
 			setSpeeds(message);
@@ -161,9 +165,68 @@ public class HandlerRace implements Runnable, MainServerListener{
 		}
 	}
 	
+	/**
+	 * Processes race results when the race has ended.
+	 * @param message
+	 */
+	private void processRaceResults(MessageRace message) {
+		for(int i = 0; i < message.getCarNames().length; i++) {
+			//	Car speeds are used to store car positions.
+			database.updateCarRaceResult(raceNumber, message.getCarNames()[i], (int)message.getCarSpeeds()[i]);
+		}
+		mainServer.getReadyRaces().remove(raceNumber);
+		Platform.runLater(() -> {
+		carLog.printMsg("Race no. " + raceNumber + " ended at " + dateFormat.format(new Date()) + ", Car " + message.getCarNames()[0] + " won!");
+		});
+		database.updateRaceState(raceNumber, 5);
+		mainServer.openNewRace();
+		mainServer.startNewRace();
+		//	TODO: update the main server to calculate revenue for each gambler,
+		// 	and update GamblerRaceResult accordingly (also update the winning player's balance).
+		try {
+			outputStream.writeObject(new MessageRace(RaceCommand.Disconnect, true));
+			shutDownHandler();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void shutDownHandler() throws IOException {
+		raceConnected = false;
+		inputStream.close();
+		outputStream.close();
+		outputStream = null;
+		clientSocket.close();
+	}
+	
 	@Override
 	public void serverDisconnection() {
-		// TODO Auto-generated method stub	
+		try {
+			if (outputStream != null) {
+				outputStream.writeObject(new MessageRace(RaceCommand.Disconnect, true));
+				shutDownHandler();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Signals the race controller to start the race.
+	 */
+	@Override
+	public void startRace() {
+		MessageRace message = new MessageRace(RaceCommand.Start, true);
+		try {
+			outputStream.writeObject(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	public int getRaceNumber() {
+		return raceNumber;
 	}
 
 }

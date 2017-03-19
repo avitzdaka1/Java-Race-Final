@@ -5,9 +5,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Stream;
 
 import Entities.*;
 
@@ -22,7 +28,7 @@ public class RaceController implements Runnable {
 	private RaceView raceView;
 	private String[] carNames;
 	private int raceNumber;
-	private Timer timer;
+	private Timer speedChangeTimer, raceTimer;
 
 	@Override
 	public void run() {
@@ -31,7 +37,7 @@ public class RaceController implements Runnable {
 			outputStreamToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inputStreamFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			connectedToServer = true;
-			raceView = new RaceView(raceNumber);
+			raceView = new RaceView(this);
 			initReceiverFromServer();
 			requestCarNames();
 		} catch (IOException e) {
@@ -53,6 +59,7 @@ public class RaceController implements Runnable {
 		random = new Random(message.getRaceNumber());
 		ArrayList<Integer> chosenCarsNumbers = new ArrayList<>();
 		raceNumber = message.getRaceNumber();
+		raceView.setRaceNumber(raceNumber);
 		carNames = new String[RaceCommand.TotalNumOfCars.ordinal()];
 		for(int i = 0; i < carNames.length; i++) {
 			int j = random.nextInt(message.getCarNames().length);
@@ -84,8 +91,6 @@ public class RaceController implements Runnable {
 			e.printStackTrace();
 		}
 		raceView.setCarsProps(cars);
-		timer = new Timer();
-		timer.schedule(new SpeedChangeTask(), 1, timeBetweenSpeedChange);
 	}
 	
 	/**
@@ -131,10 +136,19 @@ public class RaceController implements Runnable {
 
 				break;
 			case Disconnect:
-				
+				shutdownClient();
 				break;
 			case Start:
-				
+				startRace();
+				try {
+					outputStreamToServer.writeObject(new MessageRace(RaceCommand.Start, true));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				raceTimer = new Timer();
+				raceTimer.schedule(new RaceEndTask(), 60*1000 + 2);
+				speedChangeTimer = new Timer();
+				speedChangeTimer.schedule(new SpeedChangeTask(), 1, timeBetweenSpeedChange);
 				break;
 			case End:
 				
@@ -149,6 +163,51 @@ public class RaceController implements Runnable {
 				
 				break;
  		}
+	}
+	
+	/**
+	 * Starts the race.
+	 */
+	private void startRace() {
+		raceView.createAllTimelines();
+	}
+	
+	/**
+	 * Sends race results back to the race model (handler).
+	 * @param results the race results.
+	 */
+	public void sendResults(HashMap<String, Double> results) {
+		String[] cars = new String[RaceCommand.TotalNumOfCars.ordinal()];
+		double[] positions = new double[RaceCommand.TotalNumOfCars.ordinal()];
+		int i = 0;
+		Stream<Map.Entry<String, Double>> sorted =
+			    results.entrySet().stream()
+			       .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));
+		Iterator<Map.Entry<String, Double>> iterator = sorted.iterator();
+		while(iterator.hasNext()) {
+			Map.Entry<String, Double> entry = iterator.next();
+		    cars[i] = entry.getKey();
+		    positions[i] = i + 1;
+		    i++;
+		}
+		MessageRace message = new MessageRace(RaceCommand.End, raceNumber, cars, positions, true);
+		try {
+			outputStreamToServer.writeObject(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Closes all connections and attempts to shut down the race controller upon receiving a Disconnect message from the server (handler).
+	 * @throws IOException
+	 */
+	private void shutdownClient() throws IOException {
+		raceView.closeView();
+		connectedToServer = false;
+		outputStreamToServer.close();
+		inputStreamFromServer.close();
+		clientSocket.close();
 	}
 	
 	/**
@@ -167,8 +226,18 @@ public class RaceController implements Runnable {
 			}
 			sendSpeedChangesToModel(newCarSpeeds);
 		}
-		
 	}
-
-
+	
+	/**
+	 * The timer task that stops the race (after the song time + 2 seconds have passed).
+	 *
+	 */
+	class RaceEndTask extends TimerTask {
+		@Override
+		public void run() {
+			speedChangeTimer.cancel();
+			raceTimer.cancel();
+			raceView.stopRace();
+		}
+	}
 }

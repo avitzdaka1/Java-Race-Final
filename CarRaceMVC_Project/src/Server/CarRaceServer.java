@@ -8,7 +8,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
+import Entities.GamblerCarRace;
 import Entities.Race;
 import Gambler.GamblerClient;
 import Race.RaceController;
@@ -33,19 +40,19 @@ import javafx.stage.WindowEvent;
 
 public class CarRaceServer extends Application {
 	
-	private ArrayList<Race> openedRaces = new ArrayList<>();
-	
 	public static int numOfConnections = 0;
 	private Database database;
 	private final int totalNumOfRaces = 3;
-	private ArrayList<HandlerRace> modelList;
+	private ArrayList<RaceHandlerListener> raceHandList;
 	private ArrayList<GamblerHandlerListener> gambleHandlersList;
 	private ArrayList<MainServerListener> clientHandlersArray;
 	private int raceCounter = 0; // = race Number
+	private boolean raceRunning = false;
 	private CarLog carLog;
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	private TableView<ObservableList> tableView = new TableView<>();
-
+	private ConcurrentHashMap<Integer, HashSet<String>> readyRaces = new ConcurrentHashMap<>();
+	
 	public void start(Stage primaryStage) {
 		createServerGUI(primaryStage);
 	}
@@ -141,13 +148,13 @@ public class CarRaceServer extends Application {
 
 		carLog.printMsg("Server was started at " + dateFormat.format(new Date()));
 		
-		modelList = new ArrayList<HandlerRace>();
+		raceHandList = new ArrayList<RaceHandlerListener>();
 		clientHandlersArray = new ArrayList<MainServerListener>();
 		gambleHandlersList = new ArrayList<GamblerHandlerListener>();
 		
 		listenNewGambler();
 		listenNewRace();
-		startRaces();
+		openRaces();
 	}
 
 	// Open new thread for new client.
@@ -159,7 +166,7 @@ public class CarRaceServer extends Application {
 	/**
 	 * Starts 3 races when the program first starts up.
 	 */
-	public void startRaces() {
+	public void openRaces() {
 		for(int i = 0; i < totalNumOfRaces; i++) {
 			RaceController raceController = new RaceController();
 			Thread thread = new Thread(raceController);
@@ -184,10 +191,10 @@ public class CarRaceServer extends Application {
 					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter,
 							database, carLog);
 					Race race = new Race(raceCounter, new java.sql.Date(new Date().getTime()));
-					openedRaces.add(race);
+					readyRaces.put(raceCounter, new HashSet<String>());
 					database.insertNewRace(race);
 					clientHandlersArray.add(handlerRace);
-					modelList.add(handlerRace);
+					raceHandList.add(handlerRace);
 					Thread thread = new Thread(handlerRace);
 					thread.start();
 				}
@@ -224,10 +231,43 @@ public class CarRaceServer extends Application {
 			gambleHandlersList.get(i).updateRaces();	
 	}
 
-	public ArrayList<Race> getOpenedRaces() {
-		return openedRaces;
+	public ConcurrentHashMap<Integer, HashSet<String>> getReadyRaces() {
+		return readyRaces;
+	}
+
+	/**
+	 * Starts a new race (if a new race can start).
+	 */
+	public void startNewRace() {
+		int chosenRace = -1, maxBets = 0;
+		if (!raceRunning) {
+			for(Integer raceNumber : readyRaces.keySet()) {
+				if (readyRaces.get(raceNumber).size() == 3 && database.getRaceTotalBets(raceNumber) > maxBets)
+					chosenRace = raceNumber;
+			}
+			if (chosenRace != -1) {
+				for(RaceHandlerListener listener : raceHandList) {
+					if (((HandlerRace)listener).getRaceNumber() == chosenRace) {
+						listener.startRace();
+						raceRunning = true;
+					}
+				}
+			}
+		}
+		
 	}
 	
+	public boolean isRaceRunning() {
+		return raceRunning;
+	}
+
+	public void openNewRace() {
+		this.raceRunning = false;
+		RaceController raceController = new RaceController();
+		Thread thread = new Thread(raceController);
+		thread.start();
+	}
+
 	public static void main(String[] args) {
 		launch(args);
 	}

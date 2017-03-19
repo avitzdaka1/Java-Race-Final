@@ -1,4 +1,8 @@
 package Race;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
+
 import Entities.Car;
 import Entities.RaceCommand;
 import javafx.application.Platform;
@@ -12,25 +16,32 @@ import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
 public class RaceView {
+	
+	private Stage stage;
 	private Car[] cars;
 	private RaceController raceController;
 	private BorderPane border_pane;
 	private GridPane cars_grid;
 	private CarPane[] carPanes = new CarPane[RaceCommand.TotalNumOfCars.ordinal()];
+	private HashMap<String, Double> raceResults = new HashMap<>();
+	private int raceNumber;
 
-	public RaceView(int raceNumber) {
+
+
+	public RaceView(RaceController raceController) {
+		this.raceController = raceController;
 		Platform.runLater(() -> {
 			border_pane = new BorderPane();
 			createCarsGrid();
 			border_pane.setCenter(cars_grid);
-			Stage stg = new Stage();
+			stage = new Stage();
 			Scene scene = new Scene(border_pane, 750, 500);
 			// Saves the stage object reference at the controller to show error
 			// messages.
-			stg.setScene(scene);
-			stg.setTitle("CarRaceView" + raceNumber);
-			stg.setAlwaysOnTop(true);
-			stg.show();
+			stage.setScene(scene);
+			stage.setTitle("CarRaceView " + raceNumber);
+			stage.setAlwaysOnTop(true);
+			stage.show();
 			scene.widthProperty().addListener(new ChangeListener<Number>() {
 				@Override
 				public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) { // TODO
@@ -53,7 +64,6 @@ public class RaceView {
 				carPanes[i].setCarModel(cars[i]);
 			}
 		}
-		createAllTimelines();
 	}
 
 	public Car[] getCars() {
@@ -66,7 +76,7 @@ public class RaceView {
 	public void createCarsGrid() {
 		cars_grid = new GridPane();
 		for (int i = 0; i < carPanes.length; i++) {
-			CarPane carPane = new CarPane();
+			CarPane carPane = new CarPane(this);
 			carPanes[i] = carPane;
 			cars_grid.add(carPane, 0, i);
 		}
@@ -88,6 +98,12 @@ public class RaceView {
 		}
 	}
 
+	public void stopRace() {
+		for(CarPane pane : carPanes) {
+			pane.stopTimeline();
+		}
+	}
+	
 	public BorderPane getBorderPane() {
 		return border_pane;
 	}
@@ -104,5 +120,33 @@ public class RaceView {
 	
 	public CarPane[] getCarPanes() {
 		return carPanes;
+	}
+	
+	/**
+	 * Every time a car gets to the finish line it inserts itself to the race results HashMap.
+	 * @param carName the car that finished race.
+	 * @param distance the distance the car has passed (before the race ended).
+	 */
+	public void raceEnd(String carName, double distance) {
+		raceResults.put(carName, distance);
+		System.out.println("Name: " + carName + ", Distance: " + distance);
+		if (raceResults.size() == RaceCommand.TotalNumOfCars.ordinal()) {
+			//	TODO: Display results on screen for 1 minute.
+			raceController.sendResults(raceResults);
+		}
+	}
+	
+	public void closeView() {
+		Platform.runLater(() -> {
+			stage.close();
+		});
+	}
+	
+	public int getRaceNumber() {
+		return raceNumber;
+	}
+
+	public void setRaceNumber(int raceNumber) {
+		this.raceNumber = raceNumber;
 	}
 }

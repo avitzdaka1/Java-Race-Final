@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import Entities.*;
 
-class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerListener{
+class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerListener {
 
 	private Socket clientSocket;
 	private boolean gamblerConnected;
@@ -18,7 +18,7 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 	private CarRaceServer mainServer;
 	private Database database;
 	
-	public HandlerGambler(Socket clientSocket, CarRaceServer mainServer,  Database database){
+	public HandlerGambler(Socket clientSocket, CarRaceServer mainServer, Database database) {
 		this.clientSocket = clientSocket;
 		this.mainServer = mainServer;
 		this.database = database;
@@ -90,7 +90,7 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 	 */
 	private void getCurrentRaces() throws IOException {
 		
-		ArrayList<Integer> racesList = database.getHoldingRaces();
+		ArrayList<Integer> racesList = database.getHoldingRaceNumbers();
 		int[] races = new int[racesList.size()];
 		ArrayList<String> carsList = new ArrayList<>();
 		for (int i = 0; i < racesList.size(); i++)  {
@@ -138,16 +138,32 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 		outputStream.writeObject(message);
 	}
 	
+	/**
+	 * Processes gambler's bet.
+	 * @param gamblerId the gambler's id.
+	 * @param raceNumber the race the gambler bet on.
+	 * @param carName the car the gambler bet on.
+	 * @param bet the bet.
+	 * @throws IOException
+	 */
 	private void processBet(int gamblerId, int raceNumber, String carName, int bet) throws IOException {
 		MessageGambler message = null;
-
 		if (database.gamblerBet(gamblerId, raceNumber, carName, bet)) {
 			int races[] = new int[] { raceNumber };
 			String cars[] = new String[] { carName };
 			message = new MessageGambler(GamblerCommand.Bet, gamblerId, races, cars, bet);
 			message.setBalance(database.getGamblerDetails(gamblerId).getBalance());
 			message.setStatus(true);
-		} else
+			
+			int initialSize = mainServer.getReadyRaces().size();
+			mainServer.getReadyRaces().get(raceNumber).add(carName);
+			int newSize = mainServer.getReadyRaces().size();
+			if (initialSize < newSize && newSize <= 3) 
+				database.updateRaceState(raceNumber, newSize);
+			if (newSize == 3) 
+				mainServer.startNewRace();
+		} 
+		else
 			message = new MessageGambler(GamblerCommand.Bet, false);
 		outputStream.writeObject(message);
 	}
@@ -156,13 +172,13 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 	public void serverDisconnection() {
 		try {
 			outputStream.writeObject(new MessageGambler(GamblerCommand.Disconnect, true));
-			shutDownServer();
+			shutDownHandler();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void shutDownServer() {
+	private void shutDownHandler() {
 		gamblerConnected = false;
 		try {
 			inputStream.close();
@@ -171,19 +187,6 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
-	}
-
-	/**
-	 * Updates the race's total bets 
-	 * @param raceNumber
-	 * @param bet
-	 * @param ready
-	 */
-	private void updateRaceBets (int raceNumber, int bet, boolean ready) {
-		Race tempRace = new Race(raceNumber, null);
-		int idx = mainServer.getOpenedRaces().indexOf(tempRace);
-		int totalBets = mainServer.getOpenedRaces().get(idx).getTotalBets();
-		mainServer.getOpenedRaces().get(idx).setTotalBets(totalBets + bet);
 	}
 	
 	@Override
