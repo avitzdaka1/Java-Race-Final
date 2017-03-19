@@ -201,6 +201,17 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 		totalBets = (int)(totalBets * 0.95);
 		database.setSystemRaceRevenue(raceNumber, systemRevenue);
 		HashMap<Integer, Integer> winningBets = database.getWinningBets(raceNumber, winningCar);
+		int totalBetsOnWinningCar = 0;
+		for (int i : winningBets.values()) 
+			totalBetsOnWinningCar += i;
+		if (totalBetsOnWinningCar != 0) {
+			for (int gamblerId : winningBets.keySet()) {
+				double percent = winningBets.get(gamblerId) / totalBetsOnWinningCar;
+				double gamblerRevenue = percent * totalBets;
+				// update gambler revenue
+				// update gambler balance
+			}
+		}
 	}
 	
 	private void shutDownHandler() throws IOException {
