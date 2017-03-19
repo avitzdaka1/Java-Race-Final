@@ -585,6 +585,40 @@ public class Database {
 	}
 	
 	/**
+	 * Updates a given gambler bet with a new value.
+	 * @param raceNumber the race to bet in.
+	 * @param gamblerId the gambler that bet.
+	 * @param carName the car that the gambler bet on.
+	 * @param bet the bet.
+	 * @return whether the update succeeded.
+	 */
+	public synchronized boolean updateGamblerBet(int raceNumber, int gamblerId, 
+			String carName, int bet) {
+		String query = "UPDATE GamblerCarRace " + 
+					"SET bet = ? " + 
+					"WHERE number = ? " +
+					"AND gamblerId = ? " + 
+					"AND carName = ?";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
+					dbPrepStatement.setInt(1, bet);
+					dbPrepStatement.setInt(2, raceNumber);
+					dbPrepStatement.setInt(3, gamblerId);
+					dbPrepStatement.setString(4, carName);
+					dbPrepStatement.executeUpdate();
+					return true;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
 	 * Returns gambler details using given gambler name.
 	 * @param gamblerName the gambler's name to search for.
 	 * @return gambler details.
@@ -724,9 +758,18 @@ public class Database {
 							int balance = resultSet.getInt(1);
 							// If gambler's balance is equal or greater than bet.
 							if (bet <= balance) {
-								// Place gambler bet.
-								placeGamblerBet(gamblerId, raceNum, carName, bet);
-								updateRaceTotalBets(raceNum, bet);
+								// Check if gambler already bet on that car.
+								int oldBet = checkCarBetExists(raceNum, gamblerId, carName);
+								if (oldBet != -1) {
+									updateGamblerBet(raceNum, gamblerId, carName, bet + oldBet);
+									int raceTotalBets = getRaceTotalBets(raceNum);
+									updateRaceTotalBets(raceNum, bet + raceTotalBets);
+								}
+								else {
+									placeGamblerBet(gamblerId, raceNum, carName, bet);
+									int raceTotalBets = getRaceTotalBets(raceNum);
+									updateRaceTotalBets(raceNum, bet + raceTotalBets);
+								}
 								updateGamblerBalance(gamblerId, balance - bet);
 								return true;
 							}
@@ -849,13 +892,10 @@ public class Database {
 			try (Connection dbConnection = DriverManager
 					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
 				try (PreparedStatement dbPrepStatement = dbConnection.prepareStatement(query)) {
-					int raceTotalBets = getRaceTotalBets(raceNumber);
-					if (raceTotalBets != -1) {
-						dbPrepStatement.setInt(1, raceTotalBets + bet);
-						dbPrepStatement.setInt(2, raceNumber);
-						dbPrepStatement.executeUpdate();
-						return true;
-					}
+					dbPrepStatement.setInt(1, bet);
+					dbPrepStatement.setInt(2, raceNumber);
+					dbPrepStatement.executeUpdate();
+					return true;
 				}
 			}
 		} catch (Exception e) {
@@ -916,7 +956,7 @@ public class Database {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return -1;
+		return 0;
 	}
 		
 	/**
@@ -1000,13 +1040,13 @@ public class Database {
 	}
 	
 	/**
-	 * Updates all gamblers and sets their online status to 0 (offline).
-	 * Used by the main server when it shuts down.
-	 * @return
+	 * Updates all ready and running races to state 6 (failed state).
+	 * Used by the main server when it shuts down before races finished.
 	 */
 	public synchronized void updateRacesStateFinished() {
 		String query = "UPDATE Race " + 
-					"SET state = 6 ";
+					"WHERE Race.state BETWEEN 0 AND 4" + 
+					"SET Race.state = 6 ";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
@@ -1056,8 +1096,8 @@ public class Database {
 	 */
 	public synchronized boolean insertNewRace(Race race) {
 		String query = "INSERT INTO Race " + 
-					"(number, raceDate, state, totalBets) " + 
-					"VALUES ( ?, ?, ?, ?)";
+					"(number, raceDate, state, totalBets, systemRevenue) " + 
+					"VALUES ( ?, ?, ?, ?, ?)";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
@@ -1067,7 +1107,34 @@ public class Database {
 					dbPrepStatement.setDate(2, race.getDate());
 					dbPrepStatement.setInt(3, race.getState());
 					dbPrepStatement.setInt(4, race.getTotalBets());
+					dbPrepStatement.setInt(5, 0);
 					dbPrepStatement.executeUpdate();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Updates a race's revenue.
+	 * @param raceNumber the race to update.
+	 * @param revenue the revenue to update.
+	 * @return whether the update succeeded.
+	 * @exception Exception
+	 */
+	public synchronized boolean setSystemRaceRevenue(int raceNumber, int revenue) {
+		String query = "UPDATE Race " + 
+					"WHERE Race.number = " + raceNumber + " " +
+					"SET Race.systemRevenue = " + revenue;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					dbStatement.executeUpdate(query);
 				}
 			}
 		} catch (Exception e) {
@@ -1104,6 +1171,67 @@ public class Database {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Checks if a given gambler already bet on a given car in a given race.
+	 * @param raceNumber the race number.
+	 * @param gamblerId the gambler that bets.
+	 * @param carName the car that the gambler bet on.
+	 * @return whether the gambler already bet on the give car in the given race.
+	 */
+	private int checkCarBetExists(int raceNumber, int gamblerId, String carName) {
+		String query = "SELECT GamblerCarRace.bet " + 
+				"FROM GamblerCarRace " + 
+				"WHERE GamblerCarRace.carName = '" + carName + "' " +
+				"AND GamblerCarRace.raceNumber = " + raceNumber + " " + 
+				"AND GamblerCarRace.gamblerId = " + gamblerId;
+	try {
+		Class.forName("com.mysql.jdbc.Driver");
+		try (Connection dbConnection = DriverManager
+				.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+			try (Statement dbStatement = dbConnection.createStatement()) {
+				try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+					if (resultSet.next())
+						return resultSet.getInt(1);
+				}
+			}
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return -1;
+	}
+
+	/**
+	 * Returns a HashMap that consists of gambler id and his bet,
+	 * (on the winning car, if there is a bet).
+	 * @param raceNumber the race number to get the bets from.
+	 * @param carName the car that won.
+	 * @return
+	 */
+	public HashMap<Integer, Integer> getWinningBets(int raceNumber, String carName) {
+		String query = "SELECT GamblerCarRace.gamblerId, GamblerCarRace.bet " + 
+				"FROM GamblerCarRace " + 
+				"WHERE GamblerCarRace.carName = '" + carName + "' " +
+				"AND GamblerCarRace.raceNumber = " + raceNumber;
+		HashMap<Integer, Integer> winningBets = new HashMap<>();
+	try {
+		Class.forName("com.mysql.jdbc.Driver");
+		try (Connection dbConnection = DriverManager
+				.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+			try (Statement dbStatement = dbConnection.createStatement()) {
+				try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+					while (resultSet.next())
+						winningBets.put(resultSet.getInt(1), resultSet.getInt(2));
+					return winningBets;
+				}
+			}
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return null;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -155,9 +155,9 @@ class HandlerGambler implements Runnable, MainServerListener, GamblerHandlerList
 			message.setBalance(database.getGamblerDetails(gamblerId).getBalance());
 			message.setStatus(true);
 			
-			int initialSize = mainServer.getReadyRaces().size();
-			mainServer.getReadyRaces().get(raceNumber).add(carName);
-			int newSize = mainServer.getReadyRaces().size();
+			int initialSize = mainServer.getWaitingRaces().size();
+			mainServer.getWaitingRaces().get(raceNumber).add(carName);
+			int newSize = mainServer.getWaitingRaces().size();
 			if (initialSize < newSize && newSize <= 3) 
 				database.updateRaceState(raceNumber, newSize);
 			if (newSize == 3) 

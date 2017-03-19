@@ -23,13 +23,14 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 	private boolean raceConnected;
 	private ObjectInputStream inputStream;
 	private ObjectOutputStream outputStream;
-	private int raceNumber;
+	private int raceNumber, totalBets, systemRevenue;
 	private CarRaceServer mainServer;
 	private Database database;
 	private CarLog carLog;
 	private Car[] cars;
 	private Race race;
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	private String winningCar;
 	
 	public HandlerRace(Socket clientSocket, CarRaceServer mainServer, int raceNumber, 
 			Database database, CarLog carLog){
@@ -141,9 +142,10 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 			break;
 		case Start:
 			Platform.runLater(() -> {
-			carLog.printMsg("Race no. " + raceNumber + " started at " + dateFormat.format(new Date()) + "!");
+				carLog.printMsg("Race no. " + raceNumber + " started at " + dateFormat.format(new Date()) + "!");
 			});
 			database.updateRaceState(raceNumber, 4);
+			mainServer.updateGamblersRaces();
 			break;
 		case End:
 			processRaceResults(message);
@@ -174,13 +176,15 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 			//	Car speeds are used to store car positions.
 			database.updateCarRaceResult(raceNumber, message.getCarNames()[i], (int)message.getCarSpeeds()[i]);
 		}
-		mainServer.getReadyRaces().remove(raceNumber);
+		mainServer.getWaitingRaces().remove(raceNumber);
 		Platform.runLater(() -> {
 		carLog.printMsg("Race no. " + raceNumber + " ended at " + dateFormat.format(new Date()) + ", Car " + message.getCarNames()[0] + " won!");
 		});
+		winningCar = message.getCarNames()[0];
 		database.updateRaceState(raceNumber, 5);
 		mainServer.openNewRace();
 		mainServer.startNewRace();
+		
 		//	TODO: update the main server to calculate revenue for each gambler,
 		// 	and update GamblerRaceResult accordingly (also update the winning player's balance).
 		try {
@@ -189,6 +193,14 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void updateBetsAndRevenues() {
+		totalBets = database.getRaceTotalBets(raceNumber);
+		systemRevenue = (int)(totalBets * 0.05);
+		totalBets = (int)(totalBets * 0.95);
+		database.setSystemRaceRevenue(raceNumber, systemRevenue);
+		HashMap<Integer, Integer> winningBets = database.getWinningBets(raceNumber, winningCar);
 	}
 	
 	private void shutDownHandler() throws IOException {

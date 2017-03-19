@@ -1,5 +1,7 @@
 package Race;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,10 +18,14 @@ import java.util.TimerTask;
 import java.util.stream.Stream;
 
 import Entities.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class RaceController implements Runnable {
 
-	private final int speedRangeMin = 10, speedRangeMax = 15, timeBetweenSpeedChange = 30000;
+	private final int speedRangeMin = 10, speedRangeMax = 15, timeBetweenSpeedChange = 30000,
+			startRaceSound = 0, endRaceSound = 1;
 	private Socket clientSocket;
 	private ObjectOutputStream outputStreamToServer;
 	private ObjectInputStream inputStreamFromServer;		
@@ -29,6 +35,8 @@ public class RaceController implements Runnable {
 	private String[] carNames;
 	private int raceNumber;
 	private Timer speedChangeTimer, raceTimer;
+	private MediaPlayer[] raceSounds = new MediaPlayer[2];
+	private ArrayList<MediaPlayer> raceSongs = new ArrayList<>();
 
 	@Override
 	public void run() {
@@ -40,12 +48,31 @@ public class RaceController implements Runnable {
 			raceView = new RaceView(this);
 			initReceiverFromServer();
 			requestCarNames();
+			findRaceSongs();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
 
+	/**
+	 * Loads all available songs in the project's songs directory and also loads the race sounds.
+	 */
+	private void findRaceSongs() {
+		File f = new File(System.getProperty("user.dir") + "\\songs");
+		File[] matchingFiles = f.listFiles(new FilenameFilter() {
+		    public boolean accept(File dir, String name) {
+		        return name.endsWith("mp3");
+		    }
+		});
+		for(File file : matchingFiles)  {
+			String path = file.getAbsolutePath();
+			path = path.replace("\\", "/");
+			raceSongs.add(new MediaPlayer (new Media(new File(path).toURI().toString())));
+		}
+		raceSounds[startRaceSound] = new MediaPlayer(new Media(new File(System.getProperty("user.dir") + "\\sounds\\" + "raceStart.wav").toURI().toString()));
+		raceSounds[endRaceSound] = new MediaPlayer(new Media(new File(System.getProperty("user.dir") + "\\sounds\\" + "raceEnd.wav").toURI().toString()));
+	}
 	
 	private void requestCarNames() throws IOException {
 		MessageRace message = new MessageRace(RaceCommand.InitSettings, true);
@@ -145,10 +172,6 @@ public class RaceController implements Runnable {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				raceTimer = new Timer();
-				raceTimer.schedule(new RaceEndTask(), 60*1000 + 2);
-				speedChangeTimer = new Timer();
-				speedChangeTimer.schedule(new SpeedChangeTask(), 1, timeBetweenSpeedChange);
 				break;
 			case End:
 				
@@ -169,7 +192,24 @@ public class RaceController implements Runnable {
 	 * Starts the race.
 	 */
 	private void startRace() {
-		raceView.createAllTimelines();
+		MediaPlayer chosenSong = raceSongs.get((int)(random.nextDouble() * raceSongs.size()));
+		chosenSong.setOnEndOfMedia(new Thread(() -> {
+			chosenSong.getOnReady();
+			chosenSong.seek(Duration.ZERO);
+			chosenSong.stop();
+			raceTimer = new Timer();
+			raceTimer.schedule(new RaceEndTask(), 2);
+		}));
+		raceSounds[startRaceSound].play();
+		raceSounds[startRaceSound].setOnEndOfMedia(new Thread(() -> {
+			raceSounds[startRaceSound].getOnReady();
+			raceSounds[startRaceSound].seek(Duration.ZERO);
+			raceSounds[startRaceSound].stop();
+			chosenSong.play();
+			raceView.createAllTimelines();
+			speedChangeTimer = new Timer();
+			speedChangeTimer.schedule(new SpeedChangeTask(), 1, timeBetweenSpeedChange);
+		}));
 	}
 	
 	/**
@@ -197,7 +237,7 @@ public class RaceController implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Closes all connections and attempts to shut down the race controller upon receiving a Disconnect message from the server (handler).
 	 * @throws IOException
@@ -237,7 +277,13 @@ public class RaceController implements Runnable {
 		public void run() {
 			speedChangeTimer.cancel();
 			raceTimer.cancel();
-			raceView.stopRace();
+			raceSounds[endRaceSound].play();
+			raceSounds[endRaceSound].setOnEndOfMedia(new Thread(() -> {
+				raceSounds[endRaceSound].getOnReady();
+				raceSounds[endRaceSound].seek(Duration.ZERO);
+				raceSounds[endRaceSound].stop();
+				raceView.stopRace();
+			}));
 		}
 	}
 }

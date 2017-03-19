@@ -58,6 +58,9 @@ public class RaceView {
 	 * @param cars the array of cars in this race.
 	 */
 	public void setCarsProps(Car[] cars) {
+		Platform.runLater(() -> {
+			stage.setTitle("CarRaceView " + raceNumber);
+		});
 		this.cars = cars;
 		if (cars != null) {
 			for(int i = 0; i < cars.length; i++) {
@@ -129,7 +132,6 @@ public class RaceView {
 	 */
 	public void raceEnd(String carName, double distance) {
 		raceResults.put(carName, distance);
-		System.out.println("Name: " + carName + ", Distance: " + distance);
 		if (raceResults.size() == RaceCommand.TotalNumOfCars.ordinal()) {
 			//	TODO: Display results on screen for 1 minute.
 			raceController.sendResults(raceResults);

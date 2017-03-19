@@ -51,12 +51,16 @@ public class CarRaceServer extends Application {
 	private CarLog carLog;
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	private TableView<ObservableList> tableView = new TableView<>();
-	private ConcurrentHashMap<Integer, HashSet<String>> readyRaces = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<Integer, HashSet<String>> waitingRaces = new ConcurrentHashMap<>();
 	
 	public void start(Stage primaryStage) {
 		createServerGUI(primaryStage);
 	}
 
+	/**
+	 * Creates the main server gui.
+	 * @param primaryStage
+	 */
 	public void createServerGUI(Stage primaryStage) {
 
 		BorderPane pane = new BorderPane();
@@ -157,7 +161,9 @@ public class CarRaceServer extends Application {
 		openRaces();
 	}
 
-	// Open new thread for new client.
+	/**
+	 * Starts a new gambler client thread.
+	 */
 	public void startNewGambler() {
 		GamblerClient gamblerClient = new GamblerClient();
 		Thread thread = new Thread(gamblerClient);
@@ -191,7 +197,7 @@ public class CarRaceServer extends Application {
 					HandlerRace handlerRace = new HandlerRace(clientSocket, this, ++raceCounter,
 							database, carLog);
 					Race race = new Race(raceCounter, new java.sql.Date(new Date().getTime()));
-					readyRaces.put(raceCounter, new HashSet<String>());
+					waitingRaces.put(raceCounter, new HashSet<String>());
 					database.insertNewRace(race);
 					clientHandlersArray.add(handlerRace);
 					raceHandList.add(handlerRace);
@@ -204,6 +210,10 @@ public class CarRaceServer extends Application {
 		}).start();
 	}
 	
+	/**
+	 * Listens for new gambler connections (from gambler clients) and allocates a handler of each one.
+	 * @exception IOException
+	 */
 	public void listenNewGambler() {
 
 		new Thread(() -> {
@@ -226,13 +236,20 @@ public class CarRaceServer extends Application {
 		}).start();
 	}
 	
+	/**
+	 * Updates all connected gamblers with the current races that can be bet on.
+	 */
 	public void updateGamblersRaces() {
 		for (int i = 0; i < gambleHandlersList.size(); i++) 
 			gambleHandlersList.get(i).updateRaces();	
 	}
 
-	public ConcurrentHashMap<Integer, HashSet<String>> getReadyRaces() {
-		return readyRaces;
+	/**
+	 * Returns the HashMap of races that are now waiting to start.
+	 * @return the HashMap of races that are now waiting to start.
+	 */
+	public ConcurrentHashMap<Integer, HashSet<String>> getWaitingRaces() {
+		return waitingRaces;
 	}
 
 	/**
@@ -240,12 +257,16 @@ public class CarRaceServer extends Application {
 	 */
 	public void startNewRace() {
 		int chosenRace = -1, maxBets = 0;
+		//	If a race is not running already.
 		if (!raceRunning) {
-			for(Integer raceNumber : readyRaces.keySet()) {
-				if (readyRaces.get(raceNumber).size() == 3 && database.getRaceTotalBets(raceNumber) > maxBets)
+			//	Find a race that is ready and that has the highest amount of total bets.
+			for(Integer raceNumber : waitingRaces.keySet()) {
+				if (waitingRaces.get(raceNumber).size() == 3 && database.getRaceTotalBets(raceNumber) > maxBets)
 					chosenRace = raceNumber;
 			}
+			//	If a race was found (-1 means there isn't a race ready).
 			if (chosenRace != -1) {
+				//	Notify the relevant race handler to start the race.
 				for(RaceHandlerListener listener : raceHandList) {
 					if (((HandlerRace)listener).getRaceNumber() == chosenRace) {
 						listener.startRace();
@@ -257,10 +278,17 @@ public class CarRaceServer extends Application {
 		
 	}
 	
+	/**
+	 * Checks if a race is currently running.
+	 * @return whether a race is currently running.
+	 */
 	public boolean isRaceRunning() {
 		return raceRunning;
 	}
 
+	/**
+	 * Opens a new race window (controller).
+	 */
 	public void openNewRace() {
 		this.raceRunning = false;
 		RaceController raceController = new RaceController();
