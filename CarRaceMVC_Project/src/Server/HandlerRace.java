@@ -184,7 +184,7 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 		database.updateRaceState(raceNumber, 5);
 		mainServer.openNewRace();
 		mainServer.startNewRace();
-		
+		updateBalancesAndRevenues();
 		//	TODO: update the main server to calculate revenue for each gambler,
 		// 	and update GamblerRaceResult accordingly (also update the winning player's balance).
 		try {
@@ -195,7 +195,10 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 		}
 	}
 	
-	private void updateBetsAndRevenues() {
+	/**
+	 * Updates balances and revenues of gamblers and system (total revenue from race).
+	 */
+	private void updateBalancesAndRevenues() {
 		totalBets = database.getRaceTotalBets(raceNumber);
 		systemRevenue = (int)(totalBets * 0.05);
 		totalBets = (int)(totalBets * 0.95);
@@ -207,9 +210,10 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 		if (totalBetsOnWinningCar != 0) {
 			for (int gamblerId : winningBets.keySet()) {
 				double percent = winningBets.get(gamblerId) / totalBetsOnWinningCar;
-				double gamblerRevenue = percent * totalBets;
-				// update gambler revenue
-				// update gambler balance
+				int gamblerRevenue = (int)(percent * totalBets);
+				database.insertGamblerRaceResult(gamblerId, raceNumber, gamblerRevenue);
+				int currentBalance = database.getGamblerBalance(gamblerId);
+				database.updateGamblerBalance(gamblerId, currentBalance + gamblerRevenue);
 			}
 		}
 	}

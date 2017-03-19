@@ -547,6 +547,32 @@ public class Database {
 	}
 
 	/**
+	 * Get gambler balance given gambler id.
+	 * @param gamblerId the gambler id.
+	 * @return the gambler's balance.
+	 */
+	public int getGamblerBalance(int gamblerId) {
+		String query = "SELECT Gambler.balance " + 
+					"FROM Gambler " + 
+					"WHERE Gambler.id = " + gamblerId;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace?useSSL=false",
+					"scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						if (resultSet.next())
+							return resultSet.getInt(1);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	/**
 	 * Checks if gambler has enough balance to afford given bet,
 	 * if he does, bet on given car in a given race.
 	 * @param gambler the gambler that bets.
@@ -939,8 +965,9 @@ public class Database {
 	 */
 	public synchronized boolean setSystemRaceRevenue(int raceNumber, int revenue) {
 		String query = "UPDATE Race " + 
-					"WHERE Race.number = " + raceNumber + " " +
-					"SET Race.systemRevenue = " + revenue;
+					"SET Race.systemRevenue = " + revenue + " " + 
+					"WHERE Race.number = " + raceNumber;
+					
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
