@@ -857,8 +857,8 @@ public class Database {
 	 */
 	public synchronized void updateRacesStateFinished() {
 		String query = "UPDATE Race " + 
-					"WHERE Race.state BETWEEN 0 AND 4 " + 
-					"SET Race.state = 6 ";
+					"SET Race.state = 6 "+
+					"WHERE Race.state BETWEEN 0 AND 4";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
