@@ -7,10 +7,13 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import Entities.Car;
+import Entities.GamblerCarRace;
 import Entities.MessageRace;
 import Entities.Race;
 import Entities.RaceCommand;
@@ -203,8 +206,33 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 		systemRevenue = (int)(totalBets * 0.05);
 		totalBets = (int)(totalBets * 0.95);
 		database.setSystemRaceRevenue(raceNumber, systemRevenue);
-		HashMap<Integer, Integer> winningBets = database.getWinningBets(raceNumber, winningCar);
+		ArrayList<GamblerCarRace> raceBets = database.getRaceBets(raceNumber);
 		int totalBetsOnWinningCar = 0;
+		HashSet<Integer> gamblerSet = new HashSet<>();
+		for(GamblerCarRace gcr : raceBets) {
+			if (gcr.getCarName().equals(winningCar))
+				totalBetsOnWinningCar += gcr.getBet();
+			gamblerSet.add(gcr.getGamblerId());
+		}
+		for(int gamblerId : gamblerSet) {
+			int gamblerRevenue = 0;
+			for(GamblerCarRace gcr : raceBets) {
+				if (gcr.getGamblerId() == gamblerId && gcr.getCarName().equals(winningCar)) {
+					double percent = gcr.getBet() / totalBetsOnWinningCar;
+					int won = (int)(percent * totalBets);
+					gamblerRevenue += won - gcr.getBet();
+					int currentBalance = database.getGamblerBalance(gamblerId);
+					database.updateGamblerBalance(gamblerId, currentBalance + won);
+				}
+				else if (gcr.getGamblerId() == gamblerId) {
+					gamblerRevenue -= gcr.getBet();
+				}
+			}
+			database.insertGamblerRaceResult(gamblerId, raceNumber, gamblerRevenue);
+		}
+
+		
+		/*
 		for (int i : winningBets.values()) 
 			totalBetsOnWinningCar += i;
 		if (totalBetsOnWinningCar != 0) {
@@ -216,6 +244,7 @@ public class HandlerRace implements Runnable, MainServerListener, RaceHandlerLis
 				database.updateGamblerBalance(gamblerId, currentBalance + gamblerRevenue);
 			}
 		}
+		*/
 	}
 	
 	private void shutDownHandler() throws IOException {

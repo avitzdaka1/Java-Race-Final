@@ -58,7 +58,7 @@ public class RaceController implements Runnable {
 	/**
 	 * Loads all available songs in the project's songs directory and also loads the race sounds.
 	 */
-	private void findRaceSongs() {
+	private synchronized void findRaceSongs() {
 		File f = new File(System.getProperty("user.dir") + "\\songs");
 		File[] matchingFiles = f.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {

@@ -1043,33 +1043,31 @@ public class Database {
 	}
 
 	/**
-	 * Returns a HashMap that consists of gambler id and his bet,
-	 * (on the winning car, if there is a bet).
+	 * Returns a HashMap that consists of all gambler bets.
 	 * @param raceNumber the race number to get the bets from.
-	 * @param carName the car that won.
 	 * @return
 	 */
-	public HashMap<Integer, Integer> getWinningBets(int raceNumber, String carName) {
-		String query = "SELECT GamblerCarRace.gamblerId, GamblerCarRace.bet " + 
-				"FROM GamblerCarRace " + 
-				"WHERE GamblerCarRace.carName = '" + carName + "' " +
-				"AND GamblerCarRace.raceNumber = " + raceNumber;
-		HashMap<Integer, Integer> winningBets = new HashMap<>();
-	try {
-		Class.forName("com.mysql.jdbc.Driver");
-		try (Connection dbConnection = DriverManager
-				.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
-			try (Statement dbStatement = dbConnection.createStatement()) {
-				try (ResultSet resultSet = dbStatement.executeQuery(query)) {
-					while (resultSet.next())
-						winningBets.put(resultSet.getInt(1), resultSet.getInt(2));
-					return winningBets;
+	public ArrayList<GamblerCarRace> getRaceBets(int raceNumber) {
+		String query = "SELECT GamblerCarRace.gamblerId, GamblerCarRace.raceNumber, GamblerCarRace.carName, GamblerCarRace.bet " + 
+					"FROM GamblerCarRace " + 
+					"WHERE GamblerCarRace.raceNumber = " + raceNumber;
+		ArrayList<GamblerCarRace> resultList = new ArrayList<>();
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace?useSSL=false",
+					"scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						while (resultSet.next())
+							resultList.add(new GamblerCarRace(resultSet.getInt(1), resultSet.getInt(2),
+									resultSet.getString(3), resultSet.getInt(4)));
+						return resultList;
+					}
 				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-	return null;
+		return null;
 	}
 }
