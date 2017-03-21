@@ -41,29 +41,6 @@ public class TableDatabase {
 	}
 	
 	/**
-	 * Returns all gambler records.
-	 * TODO: update @param and @return after changing this method.
-	 */
-	public static void getAllRaces(TableView tableView) {
-		String query = "SELECT Race.number, Race.raceDate, Race.state, Race.totalBets " + 
-					"FROM Race " + 
-					"ORDER BY Race.number ASC";
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
-				try (Statement dbStatement = dbConnection.createStatement()) {
-					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
-						populateTableView(resultSet, tableView);
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
 	 * Returns gambler race bets (all races, bets, cars bet on),
 	 * given the gamb'ers id number.
 	 * @param gamblerId the gambler's id number.
@@ -71,7 +48,7 @@ public class TableDatabase {
 	 * @exception Exception
 	 */
 	public static void getGamblerBets(TableView tableView, int gamblerId) {
-		String query = "SELECT GamblerCarRace.raceNumber, Gambler.name, GamblerCarRace.carName, GamblerCarRace.bet " + 
+		String query = "SELECT Gambler.name, GamblerCarRace.raceNumber, GamblerCarRace.carName, GamblerCarRace.bet " + 
 					"FROM GamblerCarRace, Gambler " + 
 					"WHERE Gambler.id = " + gamblerId + " " + 
 					"AND Gambler.id = GamblerCarRace.gamblerId " + 
@@ -97,13 +74,12 @@ public class TableDatabase {
 	 * @param gamblerId the gambler's id number.
 	 * TODO: update @param and @return after changing this method.
 	 * @exception Exception
-	 */
+	 */	
 	public static void getGamblerRevenues(TableView tableView, int gamblerId) {
-		String query ="SELECT CarRaceResult.gamblerId, CarRaceResult.raceNumber, GamblerRaceResult.revenue " + 
+		String query = "SELECT name, raceNumber, revenue " + 
 				"FROM GamblerRaceResult, Gambler " + 
-				"WHERE CarRaceResult.gamblerId = " + gamblerId + " " + 
-				"AND Gambler.id = CarRaceResult.gamblerId " ;  
-			//	"AND Race.state = 5 " + "ORDER BY CarRaceResult.position ASC";
+				"WHERE gamblerId = " + gamblerId + " "+
+				"AND id = gamblerId";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			try (Connection dbConnection = DriverManager
@@ -118,6 +94,99 @@ public class TableDatabase {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Returns all finished race records.
+	 * TODO: update @param and @return after changing this method.
+	 * @exception Exception
+	 */
+	public static void getAllRaces(TableView tableView, boolean finished) {
+		String query;
+		if (finished) {
+			query = "SELECT Race.number, Race.raceDate, Race.state, Race.totalBets " + 
+					"FROM Race " + 
+					"WHERE state >= 5 " + 
+					"ORDER BY Race.number ASC";
+		} else
+			query = "SELECT Race.number, Race.raceDate, Race.state, Race.totalBets " + 
+					"FROM Race "
+					+ "WHERE state < 5 " + 
+					"ORDER BY Race.number ASC";
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost/javarace?useSSL=false",
+					"scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						populateTableView(resultSet, tableView);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Returns race bets (cars names and positions, gamblers and their bets + revenues),
+	 * given the race number.
+	 * @param raceNumber the race number you wish to search for.
+	 * TODO: update @param and @return after changing this method.
+	 * @exception Exception
+	 */
+	public static void getFinishedRaceBets(TableView tableView, int raceNumber) {
+		String query = "SELECT GamblerCarRace.raceNumber, GamblerCarRace.gamblerId, GamblerCarRace.carName, GamblerCarRace.bet " + 
+					"FROM GamblerCarRace " + 
+					"WHERE GamblerCarRace.raceNumber = " + raceNumber + " " ;
+				//	"AND CarRaceResult.raceNumber = GamblerCarRace.raceNumber " +
+				//	"AND Race.number = GamblerCarRace.raceNumber " + 
+				//	"AND Race.state >= 5 " +
+				//	"ORDER BY CarRaceResult.position ASC";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						populateTableView(resultSet, tableView);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+/*	*//**
+	 * Returns race bets (cars names and positions, gamblers and their bets + revenues),
+	 * given the race number.
+	 * @param raceNumber the race number you wish to search for.
+	 * TODO: update @param and @return after changing this method.
+	 * @exception Exception
+	 *//*
+	public static void getFinishedRaceBets(TableView tableView, int raceNumber) {
+		String query = "SELECT CarRaceResult.raceNumber, GamblerCarRace.gamblerId, CarRaceResult.carName, GamblerCarRace.bet, CarRaceResult.position " + 
+					"FROM CarRaceResult, GamblerCarRace, GamblerRaceResult, Race " + 
+					"WHERE CarRaceResult.raceNumber = " + raceNumber + " " + 
+					"AND CarRaceResult.raceNumber = Race.number " + 
+					"AND Race.number = GamblerCarRace.raceNumber " + 
+					"AND GamblerRaceResult.raceNumber = Race.number " + 
+					"AND Race.state >= 5 " + " ORDER BY CarRaceResult.position ASC";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			try (Connection dbConnection = DriverManager
+					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
+				try (Statement dbStatement = dbConnection.createStatement()) {
+					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
+						populateTableView(resultSet, tableView);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}*/
 	
 	/**
 	 * Returns race results (cars names and positions, gamblers and their bets + revenues),
@@ -154,13 +223,13 @@ public class TableDatabase {
 		}
 	}
 	
-	
-	/**
+/*	
+	*//**
 	 * Returns live race results (car names, gamblers and their bets), given the race number.
 	 * TODO: update @param and @return after changing this method.
 	 * @param raceNumber the race number to search for.
 	 * @exception Exception
-	 */
+	 *//*
 	public static void getLiveRaceResults(int raceNumber) {
 		String query = "SELECT Race.number, Race.state, GamblerCarRace.gamblerId, CarRaceResult.carName,  GamblerCarRace.bet " + 
 					"FROM CarRaceResult, GamblerCarRace, Race " + 
@@ -189,44 +258,7 @@ public class TableDatabase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	
-	
-	/**
-	 * Returns all finished race records.
-	 * TODO: update @param and @return after changing this method.
-	 * @exception Exception
-	 */
-	public static void getFinishedRaces() {
-		String query = "SELECT Race.number, Race.raceDate, Race.totalBets " + 
-					"FROM Race " + 
-					"WHERE Race.state >= 5 " + // state finished
-					"ORDER BY Race.number ASC";
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			try (Connection dbConnection = DriverManager
-					.getConnection("jdbc:mysql://localhost/javarace?useSSL=false", "scott", "tiger")) {
-				try (Statement dbStatement = dbConnection.createStatement()) {
-					try (ResultSet resultSet = dbStatement.executeQuery(query)) {
-						// ArrayList<RaceResult> raceResults = new
-						// ArrayList<>();
-						while (resultSet.next()) {
-							// RaceResult result = new
-							// RaceResult(resultSet.getInt(1),
-							// resultSet.getDate(2), resultSet.getInt(3));
-							// raceResults.add(result);
-						}
-						// return raceResults;
-					}
-
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
+	}*/
 	
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

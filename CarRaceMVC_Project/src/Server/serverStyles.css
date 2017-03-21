@@ -2,8 +2,8 @@
 
 .button
 {
-	-fx-min-width: 200;
-	-fx-min-height: 60;
+	-fx-min-width: 210;
+	-fx-min-height: 65;
     -fx-background-color: 
         #090a0c,
         linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),
@@ -20,8 +20,8 @@
 }
 
 .button:hover { 
-    -fx-pref-width: 200;
-	-fx-min-height: 65;
+    -fx-pref-width: 210;
+	-fx-min-height: 70;
     -fx-background-color: 
         #090a0c,
         linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),

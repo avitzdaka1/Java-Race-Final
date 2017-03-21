@@ -59,8 +59,9 @@ public class CarRaceServer extends Application {
 	private ConcurrentHashMap<Integer, HashSet<String>> waitingRaces = new ConcurrentHashMap<>();
 	private ComboBox<String> chooseRowCombo;
 	private ObservableList<String> comboOptions = FXCollections.observableArrayList();
-	private Label chooseLbl;
+	private Label chooseLbl, raceStateLbl;
 	private Button firstTablebutton, secondTableButton;
+	private VBox buttonsBoxVB, serverLogVB, tablesVB;
 	
 	public void start(Stage primaryStage) {
 		createServerGUI(primaryStage);
@@ -75,8 +76,10 @@ public class CarRaceServer extends Application {
 		BorderPane pane = new BorderPane();
 		pane.setStyle( "-fx-background-image: url(/Server/resources/serverBackground2.jpg);" );
 		
-		VBox buttonsBoxVB = new VBox(), serverLogVB = new VBox(), tablesVB = new VBox();
-
+		buttonsBoxVB = new VBox();
+		serverLogVB = new VBox();
+		tablesVB = new VBox();
+		
 		primaryStage.getIcons().add(new Image(CarRaceServer.class.getResource("/Server/resources/icon2.png").toExternalForm(), 225,
 				225, true, true));
 		
@@ -85,14 +88,15 @@ public class CarRaceServer extends Application {
 		tableControslHB.setAlignment(Pos.CENTER);
 		tableControslHB.setPadding(new Insets(3,10,3,10));
 		
-		Button  btnNewGambler = new Button("New Gambler"), btnShowGamlers = new Button("Gamblers"), 
-				btnShowRaces = new Button("Races"), btnCurrentState = new Button("Current State"), 
+		Button  btnNewGambler = new Button("New Gambler"), btnShowGamlersHistory = new Button("Gamblers History"), 
+				btnShowRacesHistory = new Button("Races History"), btnCurrentState = new Button("Current State"), 
 				btnStatistics = new Button("Statistics"), btnClearLog = new Button("Clear Log");
 
 		chooseRowCombo = new ComboBox<>();
 		chooseRowCombo.setItems(comboOptions);
 		firstTablebutton = new Button(); 
 		secondTableButton = new Button();
+		raceStateLbl = new Label();
 		
 		chooseRowCombo.setMinWidth(180);
 		firstTablebutton.setId("buttonTable");
@@ -104,11 +108,14 @@ public class CarRaceServer extends Application {
 		srcPane.setFitToWidth(true);
 		srcPane.setContent(carLog);
 		
-		buttonsBoxVB.getChildren().addAll( btnNewGambler, btnShowGamlers, btnShowRaces, 
-				btnCurrentState, btnStatistics, btnClearLog);
+		buttonsBoxVB.getChildren().addAll( btnNewGambler, btnShowGamlersHistory, btnShowRacesHistory, 
+				btnCurrentState, btnStatistics, btnClearLog, raceStateLbl);
+		buttonsBoxVB.setSpacing(2);
 		serverLogVB.getChildren().addAll(new Label("Server LOG:"), srcPane);
 		serverLogVB.setAlignment(Pos.CENTER);
 
+		mainTableView.setPlaceholder(new Label("\tWelcome to CarRaceServer\nPlease, select the desired option of table"));
+		subTableView.setPlaceholder(new Label("Choose an option from combo box."));
 		mainTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		subTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
@@ -132,8 +139,9 @@ public class CarRaceServer extends Application {
 		primaryStage.setAlwaysOnTop(true);
 		primaryStage.show();
 
-		btnShowGamlers.setOnAction(eventShowGamblers);	
-		btnShowRaces.setOnAction(eventShowRaces);
+		btnShowGamlersHistory.setOnAction(eventShowGamblers);	
+		btnShowRacesHistory.setOnAction(eventShowRaces);
+		btnCurrentState.setOnAction(eventCurrentRaces);
 		
 		//	Creates a new gambler window.
 		btnNewGambler.setOnAction(new EventHandler<ActionEvent>() {
@@ -149,6 +157,7 @@ public class CarRaceServer extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				Platform.runLater(() -> {
+					raceStateLbl.setText("");
 					carLog.clearLog();
 					carLog.printMsg("The Log was cleared at " + dateFormat.format(new Date()) + "\n\n");
 				});
@@ -326,9 +335,11 @@ public class CarRaceServer extends Application {
 		public void handle(ActionEvent event) {
 			Platform.runLater(() -> {
 				TableDatabase.getAllGamblers(mainTableView);
+				mainTableView.setPlaceholder(new Label("There is no registered gamblers!"));
 				chooseLbl.setText("Gambler Id: ");
 				firstTablebutton.setText("Bets");
 				secondTableButton.setText("Revenues");
+				raceStateLbl.setText("");
 				comboOptions.clear();
 
 				firstTablebutton.setOnAction(eventShowGamblerBets);
@@ -345,10 +356,15 @@ public class CarRaceServer extends Application {
 		@Override
 		public void handle(ActionEvent event) {
 			Platform.runLater(() -> {
-				TableDatabase.getAllRaces(mainTableView);
-				chooseLbl.setText("Race Id: ");
+				TableDatabase.getAllRaces(mainTableView, true);
+				mainTableView.setPlaceholder(new Label("There is no finished races!"));
+				chooseLbl.setText("Race Number: ");
 				firstTablebutton.setText("Race results");
 				secondTableButton.setText("Gamblers and Bets");
+				raceStateLbl.setText("\t\n Race states:\n 0 - Wait 3 bets"
+						+ "\n 1 - Wait 2 bets\n 2 - Wait 1 bets"
+						+ "\n 3 - Ready to start\n 4 - Started "
+						+ "\n 5 - Finished\n 6 - Fail");
 				comboOptions.clear();
 				
 				firstTablebutton.setOnAction(eventShowRaceResults);
@@ -361,12 +377,39 @@ public class CarRaceServer extends Application {
 		}
 	};
 	
+	public final EventHandler<ActionEvent> eventCurrentRaces = new EventHandler<ActionEvent>() {
+		@Override
+		public void handle(ActionEvent event) {
+			Platform.runLater(() -> {
+				TableDatabase.getAllRaces(mainTableView, false);
+				chooseLbl.setText("Race Number: ");
+				firstTablebutton.setText("Race results???");
+				secondTableButton.setText("Gamblers and Bets???");
+				raceStateLbl.setText("\t\n Race states:\n 0 - Wait 3 bets"
+						+ "\n 1 - Wait 2 bets\n 2 - Wait 1 bets"
+						+ "\n 3 - Ready to start\n 4 - Started "
+						+ "\n 5 - Finished\n 6 - Fail");
+				comboOptions.clear();
+				
+			//	firstTablebutton.setOnAction(eventShowRaceResults);
+			//	secondTableButton.setOnAction(eventShowRaceGamblerBets);
+
+				TableColumn column = mainTableView.getColumns().get(0);
+				for (ObservableList item : mainTableView.getItems())
+					comboOptions.add((String) column.getCellObservableValue(item).getValue());
+			});
+		}
+	};
+	
+	
 	public final EventHandler<ActionEvent> eventShowGamblerBets = new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent event) {
 			Platform.runLater(() -> {
 			if(chooseRowCombo.getValue()!=null)
-				TableDatabase.getGamblerBets(subTableView, Integer.parseInt(chooseRowCombo.getValue()));		
+				TableDatabase.getGamblerBets(subTableView, Integer.parseInt(chooseRowCombo.getValue()));
+			mainTableView.setPlaceholder(new Label("There is no bets in races."));
+
 			});
 		}
 	};
@@ -397,7 +440,7 @@ public class CarRaceServer extends Application {
 		public void handle(ActionEvent event) {
 			Platform.runLater(() -> {
 				if (chooseRowCombo.getValue() != null) {
-					// TODO:
+					TableDatabase.getFinishedRaceBets(subTableView, Integer.parseInt(chooseRowCombo.getValue()));
 				}
 			});
 		}
